@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KRAFTON Platform Usage Dashboard</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 100%);
+            color: #FCFDFD;
+            line-height: 1.6;
+            width: 100%;
+            overflow-x: hidden;
+        }
+        
+        .dashboard-container {
+            width: 100%;
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 50px;
+            padding: 30px;
+            background: linear-gradient(135deg, rgba(103, 234, 221, 0.1) 0%, rgba(60, 87, 75, 0.1) 100%);
+            border-radius: 15px;
+            border: 1px solid rgba(103, 234, 221, 0.2);
+        }
+        
+        .company-name {
+            font-size: 3rem;
+            font-weight: 800;
+            color: #67eadd;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+        }
+        
+        .subtitle {
+            font-size: 1.2rem;
+            color: #B6B9B5;
+        }
+        
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 40px;
+            width: 100%;
+        }
+        
+        .metric-card {
+            background: rgba(252, 253, 253, 0.03);
+            border: 1px solid rgba(103, 234, 221, 0.3);
+            border-radius: 12px;
+            padding: 25px;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .metric-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, #67eadd 0%, #3C574B 100%);
+        }
+        
+        .metric-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(103, 234, 221, 0.2);
+            border-color: #67eadd;
+        }
+        
+        .metric-value {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: #67eadd;
+            margin-bottom: 8px;
+        }
+        
+        .metric-label {
+            font-size: 0.9rem;
+            color: #B6B9B5;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        .metric-trend {
+            font-size: 0.85rem;
+            color: #3C574B;
+            margin-top: 10px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        .section {
+            background: rgba(252, 253, 253, 0.02);
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 30px;
+            border: 1px solid rgba(103, 234, 221, 0.2);
+            width: 100%;
+        }
+        
+        .section-title {
+            font-size: 1.8rem;
+            font-weight: 600;
+            color: #67eadd;
+            margin-bottom: 25px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .capabilities-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            width: 100%;
+        }
+        
+        .capability-badge {
+            padding: 12px 20px;
+            border-radius: 8px;
+            text-align: center;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+        
+        .capability-active {
+            background: rgba(103, 234, 221, 0.2);
+            border: 1px solid #67eadd;
+            color: #67eadd;
+        }
+        
+        .capability-inactive {
+            background: rgba(182, 185, 181, 0.1);
+            border: 1px solid rgba(182, 185, 181, 0.3);
+            color: #B6B9B5;
+        }
+        
+        .chart-container {
+            height: 300px;
+            margin: 20px 0;
+            position: relative;
+            width: 100%;
+        }
+        
+        .progress-bar {
+            width: 100%;
+            height: 30px;
+            background: rgba(182, 185, 181, 0.1);
+            border-radius: 15px;
+            overflow: hidden;
+            margin: 15px 0;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #67eadd 0%, #3C574B 100%);
+            border-radius: 15px;
+            transition: width 1s ease;
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            padding-right: 10px;
+        }
+        
+        .progress-text {
+            color: #FCFDFD;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+        
+        .alert-box {
+            background: rgba(103, 234, 221, 0.1);
+            border-left: 4px solid #67eadd;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+        }
+        
+        .alert-title {
+            color: #67eadd;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+        
+        .alert-text {
+            color: #FCFDFD;
+            font-size: 0.95rem;
+        }
+        
+        .department-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+            width: 100%;
+        }
+        
+        .department-card {
+            background: rgba(60, 87, 75, 0.1);
+            border: 1px solid rgba(60, 87, 75, 0.3);
+            border-radius: 10px;
+            padding: 15px;
+            text-align: center;
+        }
+        
+        .department-name {
+            color: #B6B9B5;
+            font-size: 0.9rem;
+            margin-bottom: 8px;
+        }
+        
+        .department-count {
+            color: #67eadd;
+            font-size: 1.5rem;
+            font-weight: 700;
+        }
+        
+        @media (max-width: 768px) {
+            .metrics-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .company-name {
+                font-size: 2rem;
+            }
+            
+            .metric-value {
+                font-size: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="dashboard-container">
+        <div class="header">
+            <h1 class="company-name">KRAFTON</h1>
+            <p class="subtitle">Platform Usage Summary & Analytics</p>
+        </div>
+        
+        <div class="metrics-grid">
+            <div class="metric-card">
+                <div class="metric-value">163</div>
+                <div class="metric-label">Active Recipes</div>
+                <div class="metric-trend">📈 Strong automation adoption</div>
+            </div>
+            
+            <div class="metric-card">
+                <div class="metric-value">180.6K</div>
+                <div class="metric-label">Tasks (Last 30 Days)</div>
+                <div class="metric-trend">⚡ High execution volume</div>
+            </div>
+            
+            <div class="metric-card">
+                <div class="metric-value">14.6%</div>
+                <div class="metric-label">Task Utilization</div>
+                <div class="metric-trend">💡 Room for growth</div>
+            </div>
+            
+            <div class="metric-card">
+                <div class="metric-value">7</div>
+                <div class="metric-label">Active Builders</div>
+                <div class="metric-trend">👥 Engaged team</div>
+            </div>
+            
+            <div class="metric-card">
+                <div class="metric-value">20</div>
+                <div class="metric-label">Connected Apps</div>
+                <div class="metric-trend">🔗 Well integrated</div>
+            </div>
+            
+            <div class="metric-card">
+                <div class="metric-value">5</div>
+                <div class="metric-label">TUB Score</div>
+                <div class="metric-trend">📊 Moderate health</div>
+            </div>
+        </div>
+        
+        <div class="section">
+            <h2 class="section-title">🚀 Platform Capabilities Adoption</h2>
+            <div class="capabilities-grid">
+                <div class="capability-badge capability-active">
+                    <div>iPaaS ✓</div>
+                    <div style="font-size: 0.8rem; margin-top: 5px;">47 Recipes</div>
+                </div>
+                <div class="capability-badge capability-active">
+                    <div>API ✓</div>
+                    <div style="font-size: 0.8rem; margin-top: 5px;">54 Recipes</div>
+                </div>
+                <div class="capability-badge capability-inactive">
+                    <div>Bot ✗</div>
+                    <div style="font-size: 0.8rem; margin-top: 5px;">Not Adopted</div>
+                </div>
+                <div class="capability-badge capability-inactive">
+                    <div>ETL/ELT ✗</div>
+                    <div style="font-size: 0.8rem; margin-top: 5px;">Not Adopted</div>
+                </div>
+                <div class="capability-badge capability-inactive">
+                    <div>WFA ✗</div>
+                    <div style="font-size: 0.8rem; margin-top: 5px;">Not Adopted</div>
+                </div>
+                <div class="capability-badge capability-inactive">
+                    <div>AI ✗</div>
+                    <div style="font-size: 0.8rem; margin-top: 5px;">Not Adopted</div>
+                </div>
+            </div>
+            
+            <div style="margin-top: 30px;">
+                <p style="color: #B6B9B5; margin-bottom: 10px;">Capability Adoption Rate</p>
+                <div class="progress-bar">
+                    <div class="progress-fill" style="width: 33%;">
+                        <span class="progress-text">2 of 6 (33%)</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="section">
+            <h2 class="section-title">📊 30-Day Activity Metrics</h2>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px;">
+                <div>
+                    <p style="color: #B6B9B5; margin-bottom: 8px;">Recipes Created</p>
+                    <p style="font-size: 2rem; color: #67eadd; font-weight: 700;">57</p>
+                </div>
+                <div>
+                    <p style="color: #B6B9B5; margin-bottom: 8px;">Recipes Edited</p>
+                    <p style="font-size: 2rem; color: #67eadd; font-weight: 700;">209</p>
+                </div>
+                <div>
+                    <p style="color: #B6B9B5; margin-bottom: 8px;">Recipes Started</p>
+                    <p style="font-size: 2rem; color: #67eadd; font-weight: 700;">57</p>
+                </div>
+                <div>
+                    <p style="color: #B6B9B5; margin-bottom: 8px;">Active with Jobs</p>
+                    <p style="font-size: 2rem; color: #67eadd; font-weight: 700;">101</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="section">
+            <h2 class="section-title">🏢 Department Adoption</h2>
+            <div class="alert-box">
+                <div class="alert-title">Adoption Status</div>
+                <div class="alert-text">3 of 5 departments attempted • 1 of 5 departments fully adopted</div>
+            </div>
+            
+            <div class="department-grid">
+                <div class="department-card">
+                    <div class="department-name">Finance & Accounting</div>
+                    <div class="department-count">3</div>
+                </div>
+                <div class="department-card">
+                    <div class="department-name">IT</div>
+                    <div class="department-count">5</div>
+                </div>
+                <div class="department-card">
+                    <div class="department-name">RevOps & CS Ops</div>
+                    <div class="department-count">1</div>
+                </div>
+                <div class="department-card">
+                    <div class="department-name">Human Resources</div>
+                    <div class="department-count">0</div>
+                </div>
+                <div class="department-card">
+                    <div class="department-name">Data Ops & Product</div>
+                    <div class="department-count">0</div>
+                </div>
+            </div>
+            
+            <div style="margin-top: 30px;">
+                <p style="color: #B6B9B5; margin-bottom: 10px;">Automation Index</p>
+                <div class="progress-bar">
+                    <div class="progress-fill" style="width: 2%;">
+                        <span class="progress-text">0.02</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="section">
+            <h2 class="section-title">💡 Key Insights & Opportunities</h2>
+            <div class="alert-box" style="margin-bottom: 15px;">
+                <div class="alert-title">🎯 Untapped Potential</div>
+                <div class="alert-text">Amazon S3 is connected but not used in active recipes - opportunity for data integration workflows</div>
+            </div>
+            <div class="alert-box" style="margin-bottom: 15px;">
+                <div class="alert-title">🚀 Growth Opportunity</div>
+                <div class="alert-text">No Power Builders identified - consider advanced training to develop automation champions</div>
+            </div>
+            <div class="alert-box" style="margin-bottom: 15px;">
+                <div class="alert-title">🤖 AI & Bot Potential</div>
+                <div class="alert-text">AI, Bot, and ETL capabilities not yet adopted - significant automation expansion opportunities</div>
+            </div>
+            <div class="alert-box">
+                <div class="alert-title">📈 Scaling Opportunity</div>
+                <div class="alert-text">Low automation index (0.02) indicates substantial room for platform expansion across departments</div>
+            </div>
+        </div>
+        
+        <div class="section">
+            <h2 class="section-title">🔗 Connection Utilization</h2>
+            <p style="color: #B6B9B5; margin-bottom: 20px;">132 total connections established</p>
+            <div class="progress-bar">
+                <div class="progress-fill" style="width: 85%;">
+                    <span class="progress-text">Strong Integration Base</span>
+                </div>
+            </div>
+            <p style="color: #67eadd; margin-top: 20px; font-weight: 600;">Recommendation:</p>
+            <p style="color: #FCFDFD; margin-top: 10px;">Leverage existing Amazon S3 connection for data pipeline automation and file processing workflows to maximize ROI on established integrations.</p>
+        </div>
+    </div>
+</body>
+</html>

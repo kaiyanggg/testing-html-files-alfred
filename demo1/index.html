@@ -136,4 +136,512 @@
             transition: background 0.3s ease;
         }
         
-     
+        .insight-card:hover {
+            background: #edf2f7;
+        }
+        
+        .insight-headline {
+            font-size: 18px;
+            font-weight: 600;
+            color: #2d3748;
+            margin-bottom: 10px;
+        }
+        
+        .insight-metric {
+            color: #4a5568;
+            margin-bottom: 10px;
+            font-size: 15px;
+        }
+        
+        .insight-action {
+            color: #667eea;
+            font-weight: 500;
+            font-size: 14px;
+        }
+        
+        .rationale-card {
+            background: linear-gradient(135deg, #f6f8fb 0%, #fff 100%);
+            padding: 20px;
+            margin-bottom: 15px;
+            border-radius: 8px;
+            border: 1px solid #e2e8f0;
+        }
+        
+        .rationale-headline {
+            font-size: 16px;
+            font-weight: 600;
+            color: #2d3748;
+            margin-bottom: 8px;
+        }
+        
+        .rationale-detail {
+            color: #718096;
+            font-size: 14px;
+        }
+        
+        .follow-up-section {
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+        
+        .follow-up-questions {
+            display: grid;
+            gap: 15px;
+        }
+        
+        .question-card {
+            background: #f7fafc;
+            padding: 15px 20px;
+            border-radius: 8px;
+            border-left: 3px solid #764ba2;
+            color: #4a5568;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        
+        .question-card:hover {
+            background: #edf2f7;
+            transform: translateX(5px);
+        }
+        
+        .tab-container {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #e2e8f0;
+        }
+        
+        .tab {
+            padding: 10px 20px;
+            background: none;
+            border: none;
+            color: #718096;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border-bottom: 3px solid transparent;
+            margin-bottom: -2px;
+        }
+        
+        .tab.active {
+            color: #667eea;
+            border-bottom-color: #667eea;
+        }
+        
+        .tab:hover {
+            color: #667eea;
+        }
+        
+        .tab-content {
+            display: none;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        @media (max-width: 768px) {
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .company-name {
+                font-size: 24px;
+            }
+            
+            .metric-value {
+                font-size: 28px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <div class="company-name">KRAFTON</div>
+            <div class="time-period">June 1 to August 24, 2025</div>
+            <div class="opening-statement">
+                Krafton's automation is focused on API and iPaaS recipes, with steady job and task execution over the last 3 months.
+            </div>
+        </div>
+
+        <!-- Key Metrics -->
+        <div class="dashboard-grid">
+            <div class="metric-card" onclick="animateValue(this)">
+                <div class="metric-label">Active API Recipes</div>
+                <div class="metric-value" data-value="29">29</div>
+                <div class="metric-detail">Leading capability</div>
+            </div>
+            <div class="metric-card" onclick="animateValue(this)">
+                <div class="metric-label">Active iPaaS Recipes</div>
+                <div class="metric-value" data-value="24">24</div>
+                <div class="metric-detail">Secondary focus</div>
+            </div>
+            <div class="metric-card" onclick="animateValue(this)">
+                <div class="metric-label">Weekly Tasks</div>
+                <div class="metric-value" data-value="25000">25K</div>
+                <div class="metric-detail">Average per week</div>
+            </div>
+            <div class="metric-card" onclick="animateValue(this)">
+                <div class="metric-label">Weekly Jobs</div>
+                <div class="metric-value" data-value="5000">5K</div>
+                <div class="metric-detail">Average per week</div>
+            </div>
+            <div class="metric-card" onclick="animateValue(this)">
+                <div class="metric-label">Active Builders</div>
+                <div class="metric-value" data-value="2">2</div>
+                <div class="metric-detail">Current builders</div>
+            </div>
+            <div class="metric-card" onclick="animateValue(this)">
+                <div class="metric-label">Active Users</div>
+                <div class="metric-value" data-value="0">0</div>
+                <div class="metric-detail">Opportunity for growth</div>
+            </div>
+        </div>
+
+        <!-- Charts Section -->
+        <div class="chart-container">
+            <div class="tab-container">
+                <button class="tab active" onclick="switchTab('capability')">Capability Distribution</button>
+                <button class="tab" onclick="switchTab('weekly')">Weekly Trends</button>
+                <button class="tab" onclick="switchTab('adoption')">Adoption Overview</button>
+            </div>
+            
+            <div id="capability" class="tab-content active">
+                <canvas id="capabilityChart"></canvas>
+            </div>
+            <div id="weekly" class="tab-content">
+                <canvas id="weeklyChart"></canvas>
+            </div>
+            <div id="adoption" class="tab-content">
+                <canvas id="adoptionChart"></canvas>
+            </div>
+        </div>
+
+        <!-- Key Findings -->
+        <div class="insights-section">
+            <div class="section-title">Krafton Usage Patterns</div>
+            
+            <div class="insight-card">
+                <div class="insight-headline">📊 API and iPaaS Dominance</div>
+                <div class="insight-metric">29 API and 24 iPaaS active recipes; no ETL/ELT, AI, Workbot deployed.</div>
+                <div class="insight-action">→ Highlight API/iPaaS success, explore new capabilities.</div>
+            </div>
+            
+            <div class="insight-card">
+                <div class="insight-headline">👥 Builder and User Concentration</div>
+                <div class="insight-metric">Only 2 active builders and 0 active users reported.</div>
+                <div class="insight-action">→ Identify new user champions for growth.</div>
+            </div>
+            
+            <div class="insight-card">
+                <div class="insight-headline">📈 Consistent Job and Task Volume</div>
+                <div class="insight-metric">Avg. 25K tasks and 5K jobs per week, last 3 months.</div>
+                <div class="insight-action">→ Monitor for spikes and optimize workflows.</div>
+            </div>
+        </div>
+
+        <!-- Why These Matter -->
+        <div class="insights-section">
+            <div class="section-title">Why These Matter</div>
+            
+            <div class="rationale-card">
+                <div class="rationale-headline">🚀 Expand Capability Adoption</div>
+                <div class="rationale-detail">Broaden use beyond API/iPaaS for value.</div>
+            </div>
+            
+            <div class="rationale-card">
+                <div class="rationale-headline">💡 Increase User Engagement</div>
+                <div class="rationale-detail">More builders boost innovation and scale.</div>
+            </div>
+            
+            <div class="rationale-card">
+                <div class="rationale-headline">⚡ Sustain Automation Momentum</div>
+                <div class="rationale-detail">Stable execution signals reliability and trust.</div>
+            </div>
+        </div>
+
+        <!-- Follow-up Questions -->
+        <div class="follow-up-section">
+            <div class="section-title">Keep Asking</div>
+            <div class="follow-up-questions">
+                <div class="question-card">
+                    ❓ What features could Krafton benefit from next?
+                </div>
+                <div class="question-card">
+                    ❓ Are there similar customers with broader adoption?
+                </div>
+                <div class="question-card">
+                    ❓ Is Krafton ready to expand to new departments?
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Initialize Charts
+        const chartColors = {
+            primary: 'rgba(102, 126, 234, 0.8)',
+            secondary: 'rgba(118, 75, 162, 0.8)',
+            tertiary: 'rgba(237, 100, 166, 0.8)',
+            quaternary: 'rgba(144, 205, 244, 0.8)',
+            quinary: 'rgba(250, 182, 182, 0.8)'
+        };
+
+        // Capability Distribution Chart
+        const capabilityCtx = document.getElementById('capabilityChart').getContext('2d');
+        const capabilityChart = new Chart(capabilityCtx, {
+            type: 'doughnut',
+            data: {
+                labels: ['API Recipes', 'iPaaS Recipes', 'ETL/ELT', 'AI', 'Workbot'],
+                datasets: [{
+                    data: [29, 24, 0, 0, 0],
+                    backgroundColor: [
+                        chartColors.primary,
+                        chartColors.secondary,
+                        chartColors.tertiary,
+                        chartColors.quaternary,
+                        chartColors.quinary
+                    ],
+                    borderWidth: 0
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'right',
+                        labels: {
+                            padding: 15,
+                            font: {
+                                size: 14
+                            }
+                        }
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                let label = context.label || '';
+                                if (label) {
+                                    label += ': ';
+                                }
+                                label += context.parsed + ' recipes';
+                                return label;
+                            }
+                        }
+                    }
+                }
+            }
+        });
+
+        // Weekly Trends Chart
+        const weeklyCtx = document.getElementById('weeklyChart').getContext('2d');
+        const weeklyChart = new Chart(weeklyCtx, {
+            type: 'line',
+            data: {
+                labels: ['Week 1', 'Week 2', 'Week 3', 'Week 4', 'Week 5', 'Week 6', 
+                        'Week 7', 'Week 8', 'Week 9', 'Week 10', 'Week 11', 'Week 12'],
+                datasets: [{
+                    label: 'Tasks (thousands)',
+                    data: [24, 25, 24.5, 25.5, 25, 24.8, 25.2, 25.1, 24.9, 25.3, 25, 25.1],
+                    borderColor: chartColors.primary,
+                    backgroundColor: 'rgba(102, 126, 234, 0.1)',
+                    tension: 0.4,
+                    fill: true,
+                    yAxisID: 'y'
+                }, {
+                    label: 'Jobs (thousands)',
+                    data: [4.8, 5, 5.1, 4.9, 5.2, 5, 4.9, 5.1, 5, 5.1, 4.9, 5],
+                    borderColor: chartColors.secondary,
+                    backgroundColor: 'rgba(118, 75, 162, 0.1)',
+                    tension: 0.4,
+                    fill: true,
+                    yAxisID: 'y1'
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                interaction: {
+                    mode: 'index',
+                    intersect: false
+                },
+                scales: {
+                    y: {
+                        type: 'linear',
+                        display: true,
+                        position: 'left',
+                        title: {
+                            display: true,
+                            text: 'Tasks (K)'
+                        }
+                    },
+                    y1: {
+                        type: 'linear',
+                        display: true,
+                        position: 'right',
+                        title: {
+                            display: true,
+                            text: 'Jobs (K)'
+                        },
+                        grid: {
+                            drawOnChartArea: false
+                        }
+                    }
+                },
+                plugins: {
+                    legend: {
+                        position: 'top',
+                        labels: {
+                            padding: 15,
+                            font: {
+                                size: 14
+                            }
+                        }
+                    }
+                }
+            }
+        });
+
+        // Adoption Overview Chart
+        const adoptionCtx = document.getElementById('adoptionChart').getContext('2d');
+        const adoptionChart = new Chart(adoptionCtx, {
+            type: 'bar',
+            data: {
+                labels: ['Active Builders', 'Active Users', 'Total Recipes', 'Capabilities Used'],
+                datasets: [{
+                    label: 'Current',
+                    data: [2, 0, 53, 2],
+                    backgroundColor: chartColors.primary
+                }, {
+                    label: 'Potential',
+                    data: [10, 50, 100, 5],
+                    backgroundColor: 'rgba(102, 126, 234, 0.3)'
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        title: {
+                            display: true,
+                            text: 'Count'
+                        }
+                    }
+                },
+                plugins: {
+                    legend: {
+                        position: 'top',
+                        labels: {
+                            padding: 15,
+                            font: {
+                                size: 14
+                            }
+                        }
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                let label = context.dataset.label || '';
+                                if (label) {
+                                    label += ': ';
+                                }
+                                label += context.parsed.y;
+                                return label;
+                            }
+                        }
+                    }
+                }
+            }
+        });
+
+        // Set chart container heights
+        document.getElementById('capabilityChart').style.height = '300px';
+        document.getElementById('weeklyChart').style.height = '300px';
+        document.getElementById('adoptionChart').style.height = '300px';
+
+        // Tab switching function
+        function switchTab(tabName) {
+            // Hide all tab contents
+            const tabContents = document.querySelectorAll('.tab-content');
+            tabContents.forEach(content => {
+                content.classList.remove('active');
+            });
+            
+            // Remove active class from all tabs
+            const tabs = document.querySelectorAll('.tab');
+            tabs.forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            // Show selected tab content
+            document.getElementById(tabName).classList.add('active');
+            
+            // Add active class to clicked tab
+            event.target.classList.add('active');
+            
+            // Update chart on tab switch to ensure proper rendering
+            if (tabName === 'capability') {
+                capabilityChart.update();
+            } else if (tabName === 'weekly') {
+                weeklyChart.update();
+            } else if (tabName === 'adoption') {
+                adoptionChart.update();
+            }
+        }
+
+        // Animate metric values
+        function animateValue(card) {
+            const valueElement = card.querySelector('.metric-value');
+            const endValue = parseInt(valueElement.dataset.value);
+            const duration = 1000;
+            const startTime = performance.now();
+            const startValue = 0;
+            
+            function updateValue(currentTime) {
+                const elapsed = currentTime - startTime;
+                const progress = Math.min(elapsed / duration, 1);
+                const currentValue = Math.floor(startValue + (endValue - startValue) * progress);
+                
+                if (endValue >= 1000) {
+                    valueElement.textContent = (currentValue / 1000).toFixed(0) + 'K';
+                } else {
+                    valueElement.textContent = currentValue;
+                }
+                
+                if (progress < 1) {
+                    requestAnimationFrame(updateValue);
+                }
+            }
+            
+            requestAnimationFrame(updateValue);
+        }
+
+        // Add interactive hover effects to question cards
+        document.querySelectorAll('.question-card').forEach(card => {
+            card.addEventListener('click', function() {
+                this.style.background = '#e6fffa';
+                setTimeout(() => {
+                    this.style.background = '#f7fafc';
+                }, 500);
+            });
+        });
+
+        // Initialize animations on page load
+        window.addEventListener('load', () => {
+            document.querySelectorAll('.metric-card').forEach((card, index) => {
+                setTimeout(() => {
+                    card.style.transform = 'translateY(0)';
+                    card.style.opacity = '1';
+                }, index * 100);
+            });
+        });
+    </script>
+</body>
+</html>

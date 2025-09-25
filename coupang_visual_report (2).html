@@ -1,0 +1,533 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Coupang Training Insights</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: #000000;
+            color: #ffffff;
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+        
+        .grid-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: 
+                linear-gradient(rgba(255, 255, 255, 0.1) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255, 255, 255, 0.1) 1px, transparent 1px);
+            background-size: 20px 20px;
+            pointer-events: none;
+            z-index: 0;
+        }
+        
+        .watermark {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 0.9rem;
+            z-index: 1000;
+        }
+        
+        .logo-section {
+            position: fixed;
+            bottom: 30px;
+            left: 30px;
+            z-index: 1000;
+        }
+        
+        .pk-logo {
+            width: 80px;
+            height: 40px;
+            background: #ffffff;
+            border-radius: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #000000;
+            font-weight: 800;
+            font-size: 1.2rem;
+        }
+        
+        .level-up {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            z-index: 1000;
+        }
+        
+        .level-up-text {
+            color: #5ce1e6;
+            font-size: 1.5rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            font-family: 'Arial Black', sans-serif;
+        }
+        
+        .level-up-subtext {
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 0.9rem;
+            margin-top: 2px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 60px;
+            position: relative;
+            z-index: 10;
+        }
+        
+        .slide {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            padding: 80px 0;
+        }
+        
+        /* Title Slide */
+        .title-slide {
+            text-align: center;
+            position: relative;
+        }
+        
+        .main-title {
+            font-size: 6rem;
+            font-weight: 900;
+            color: #5ce1e6;
+            text-transform: uppercase;
+            letter-spacing: 4px;
+            margin-bottom: 30px;
+            text-shadow: 0 0 30px rgba(92, 225, 230, 0.5);
+        }
+        
+        .subtitle {
+            font-size: 1.8rem;
+            color: #ffffff;
+            max-width: 800px;
+            margin: 0 auto;
+            line-height: 1.4;
+        }
+        
+        .teal-box {
+            position: absolute;
+            top: -50px;
+            right: 100px;
+            width: 200px;
+            height: 80px;
+            border: 3px solid #5ce1e6;
+            border-radius: 10px;
+        }
+        
+        /* Content Slides */
+        .content-slide {
+            padding: 100px 0;
+        }
+        
+        .slide-number {
+            font-size: 8rem;
+            font-weight: 900;
+            color: #ffffff;
+            opacity: 0.1;
+            position: absolute;
+            top: 50px;
+            left: 60px;
+        }
+        
+        .section-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 60px;
+        }
+        
+        .section-icon {
+            width: 120px;
+            height: 120px;
+            background: rgba(92, 225, 230, 0.1);
+            border: 2px solid #5ce1e6;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3rem;
+            margin-right: 40px;
+        }
+        
+        .section-title {
+            font-size: 3rem;
+            font-weight: 700;
+            color: #ffffff;
+        }
+        
+        /* Stats Grid */
+        .stats-container {
+            background: rgba(92, 225, 230, 0.05);
+            border: 1px solid #5ce1e6;
+            border-radius: 15px;
+            padding: 60px;
+            margin: 60px 0;
+            text-align: center;
+        }
+        
+        .stats-title {
+            font-size: 2rem;
+            color: #5ce1e6;
+            margin-bottom: 40px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 40px;
+        }
+        
+        .stat-item {
+            padding: 30px 20px;
+        }
+        
+        .stat-number {
+            font-size: 4rem;
+            font-weight: 900;
+            color: #5ce1e6;
+            display: block;
+            margin-bottom: 10px;
+        }
+        
+        .stat-label {
+            font-size: 1rem;
+            color: rgba(255, 255, 255, 0.8);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        /* Insights Cards */
+        .insights-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 40px;
+            margin-top: 60px;
+        }
+        
+        .insight-card {
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(92, 225, 230, 0.3);
+            border-radius: 15px;
+            padding: 40px;
+            position: relative;
+            transition: all 0.3s ease;
+        }
+        
+        .insight-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: #5ce1e6;
+            border-radius: 15px 15px 0 0;
+        }
+        
+        .insight-card:hover {
+            border-color: #5ce1e6;
+            box-shadow: 0 20px 40px rgba(92, 225, 230, 0.1);
+        }
+        
+        .insight-tag {
+            display: inline-block;
+            background: rgba(92, 225, 230, 0.2);
+            color: #5ce1e6;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            margin-bottom: 20px;
+        }
+        
+        .insight-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #ffffff;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .insight-icon {
+            font-size: 2rem;
+        }
+        
+        .insight-text {
+            color: rgba(255, 255, 255, 0.8);
+            line-height: 1.6;
+            margin-bottom: 25px;
+        }
+        
+        .action-button {
+            background: rgba(92, 225, 230, 0.1);
+            border: 1px solid #5ce1e6;
+            color: #5ce1e6;
+            padding: 12px 24px;
+            border-radius: 25px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .action-button:hover {
+            background: #5ce1e6;
+            color: #000000;
+        }
+        
+        /* Next Steps */
+        .next-steps-section {
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(92, 225, 230, 0.3);
+            border-radius: 15px;
+            padding: 60px;
+            margin-top: 80px;
+        }
+        
+        .next-steps-title {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: #5ce1e6;
+            text-align: center;
+            margin-bottom: 50px;
+            text-transform: uppercase;
+        }
+        
+        .questions-list {
+            display: grid;
+            gap: 25px;
+        }
+        
+        .question-item {
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(92, 225, 230, 0.2);
+            border-left: 4px solid #5ce1e6;
+            border-radius: 8px;
+            padding: 25px 30px;
+            transition: all 0.3s ease;
+        }
+        
+        .question-item:hover {
+            border-color: #5ce1e6;
+            background: rgba(92, 225, 230, 0.02);
+        }
+        
+        .question-text {
+            font-size: 1.1rem;
+            color: rgba(255, 255, 255, 0.9);
+            display: flex;
+            align-items: flex-start;
+            gap: 15px;
+        }
+        
+        .question-icon {
+            color: #5ce1e6;
+            font-size: 1.3rem;
+            margin-top: 2px;
+        }
+        
+        @media (max-width: 768px) {
+            .main-title {
+                font-size: 3rem;
+            }
+            
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 20px;
+            }
+            
+            .insights-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .container {
+                padding: 0 30px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="grid-bg"></div>
+    
+    <!-- Watermark -->
+    <div class="watermark">Workato Proprietary and Confidential</div>
+    
+    <!-- Logo -->
+    <div class="logo-section">
+        <div class="pk-logo">PK⚬</div>
+    </div>
+    
+    <!-- Level-up -->
+    <div class="level-up">
+        <div class="level-up-text">LEVEL-UP</div>
+        <div class="level-up-subtext">Workato Proprietary and Confidential</div>
+    </div>
+    
+    <!-- Title Slide -->
+    <div class="slide title-slide">
+        <div class="container">
+            <div class="teal-box"></div>
+            <h1 class="main-title">Coupang Training Insights</h1>
+            <p class="subtitle">Strategic enablement opportunities to unlock AI and advanced automation potential</p>
+        </div>
+    </div>
+    
+    <!-- Executive Summary -->
+    <div class="slide content-slide">
+        <div class="container">
+            <div class="slide-number">01</div>
+            <div class="section-header">
+                <div class="section-icon">📊</div>
+                <h2 class="section-title">Executive Summary</h2>
+            </div>
+            
+            <div class="stats-container">
+                <h3 class="stats-title">Coupang Platform Health</h3>
+                <div class="stats-grid">
+                    <div class="stat-item">
+                        <span class="stat-number">95</span>
+                        <span class="stat-label">Recent Recipes</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-number">18</span>
+                        <span class="stat-label">Active Builders</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-number">3/6</span>
+                        <span class="stat-label">Capabilities Used</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-number">0</span>
+                        <span class="stat-label">AI Adoption</span>
+                    </div>
+                </div>
+            </div>
+            
+            <p style="font-size: 1.4rem; text-align: center; color: rgba(255,255,255,0.9); margin-top: 40px;">
+                Coupang shows <span style="color: #5ce1e6; font-weight: bold;">strong automation momentum</span> with 95 recipes created recently, but has significant untapped potential in AI and data integration capabilities.
+            </p>
+        </div>
+    </div>
+    
+    <!-- Training Opportunities -->
+    <div class="slide content-slide">
+        <div class="container">
+            <div class="slide-number">02</div>
+            <div class="section-header">
+                <div class="section-icon">🎯</div>
+                <h2 class="section-title">Training Opportunities</h2>
+            </div>
+            
+            <div class="insights-grid">
+                <div class="insight-card">
+                    <div class="insight-tag">High Impact</div>
+                    <h3 class="insight-title">
+                        <span class="insight-icon">🤖</span>
+                        Activate AI & Data Integration
+                    </h3>
+                    <p class="insight-text">
+                        Coupang hasn't adopted AI or data orchestration capabilities yet, leaving advanced automation potential untapped. With their high recipe velocity, they're ready for sophisticated workflows.
+                    </p>
+                    <button class="action-button">Run AI Automation Workshops</button>
+                </div>
+                
+                <div class="insight-card">
+                    <div class="insight-tag">Quick Win</div>
+                    <h3 class="insight-title">
+                        <span class="insight-icon">🔗</span>
+                        Optimize Unused Connections
+                    </h3>
+                    <p class="insight-text">
+                        Amazon S3 and GitHub are connected but inactive in recipes, indicating setup intent without execution. This suggests a knowledge gap in implementation.
+                    </p>
+                    <button class="action-button">Provide Integration Training</button>
+                </div>
+                
+                <div class="insight-card">
+                    <div class="insight-tag">Scale Growth</div>
+                    <h3 class="insight-title">
+                        <span class="insight-icon">👥</span>
+                        Scale Builder Capabilities
+                    </h3>
+                    <p class="insight-text">
+                        Team growth from 13 to 18 builders shows expanding interest, but there's opportunity to develop more advanced automation skills and increase workflow complexity.
+                    </p>
+                    <button class="action-button">Advanced Certification Programs</button>
+                </div>
+                
+                <div class="insight-card">
+                    <div class="insight-tag">Expansion</div>
+                    <h3 class="insight-title">
+                        <span class="insight-icon">🚀</span>
+                        Expand Beyond Customer Service
+                    </h3>
+                    <p class="insight-text">
+                        Strong automation foundation in CS workflows can be leveraged as case studies to drive adoption in other business areas like sales operations or HR processes.
+                    </p>
+                    <button class="action-button">Cross-Department Strategy</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Next Steps -->
+    <div class="slide content-slide">
+        <div class="container">
+            <div class="slide-number">03</div>
+            <div class="section-header">
+                <div class="section-icon">💡</div>
+                <h2 class="section-title">Next Steps</h2>
+            </div>
+            
+            <div class="next-steps-section">
+                <h3 class="next-steps-title">Strategic Questions</h3>
+                <div class="questions-list">
+                    <div class="question-item">
+                        <p class="question-text">
+                            <span class="question-icon">→</span>
+                            What specific AI use cases would add the most value to Coupang's current customer service workflows?
+                        </p>
+                    </div>
+                    <div class="question-item">
+                        <p class="question-text">
+                            <span class="question-icon">→</span>
+                            Which departments beyond customer service are showing interest in automation but haven't started building yet?
+                        </p>
+                    </div>
+                    <div class="question-item">
+                        <p class="question-text">
+                            <span class="question-icon">→</span>
+                            How can we help Coupang's builders progress from operational automations to strategic, cross-system integrations?
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+</body>
+</html>

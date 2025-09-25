@@ -1,0 +1,505 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Coupa Usage Dashboard</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #FCFDFD 0%, #f0fffe 100%);
+            color: #3C574B;
+            width: 100%;
+            overflow-x: hidden;
+        }
+        
+        .dashboard {
+            width: 100%;
+            padding: 30px;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #67eadd 0%, #4fd4c7 100%);
+            color: #FCFDFD;
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(103, 234, 221, 0.3);
+            margin-bottom: 30px;
+            width: 100%;
+        }
+        
+        .header h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+        
+        .header p {
+            font-size: 1.1rem;
+            opacity: 0.95;
+        }
+        
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
+            margin-bottom: 30px;
+            width: 100%;
+        }
+        
+        .metric-card {
+            background: #FCFDFD;
+            border: 2px solid #67eadd;
+            border-radius: 12px;
+            padding: 25px;
+            box-shadow: 0 5px 15px rgba(103, 234, 221, 0.1);
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        
+        .metric-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(103, 234, 221, 0.2);
+        }
+        
+        .metric-value {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: #67eadd;
+            margin-bottom: 10px;
+        }
+        
+        .metric-label {
+            font-size: 1rem;
+            color: #3C574B;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .metric-sublabel {
+            font-size: 0.9rem;
+            color: #B6B9B5;
+            margin-top: 5px;
+        }
+        
+        .chart-section {
+            background: #FCFDFD;
+            border: 2px solid #67eadd;
+            border-radius: 12px;
+            padding: 30px;
+            margin-bottom: 30px;
+            width: 100%;
+            box-shadow: 0 5px 15px rgba(103, 234, 221, 0.1);
+        }
+        
+        .chart-title {
+            font-size: 1.5rem;
+            color: #3C574B;
+            margin-bottom: 25px;
+            font-weight: 600;
+            border-bottom: 2px solid #67eadd;
+            padding-bottom: 10px;
+        }
+        
+        .recipe-trends {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+            margin-top: 20px;
+        }
+        
+        .month-block {
+            background: linear-gradient(135deg, #f8fffe 0%, #FCFDFD 100%);
+            border: 1px solid #67eadd;
+            border-radius: 10px;
+            padding: 20px;
+            text-align: center;
+        }
+        
+        .month-name {
+            font-size: 1.2rem;
+            color: #3C574B;
+            font-weight: 600;
+            margin-bottom: 15px;
+        }
+        
+        .capability-list {
+            margin-top: 10px;
+        }
+        
+        .capability-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px;
+            margin: 5px 0;
+            background: #FCFDFD;
+            border-radius: 6px;
+            border: 1px solid #B6B9B5;
+        }
+        
+        .capability-name {
+            color: #3C574B;
+            font-weight: 500;
+        }
+        
+        .capability-count {
+            background: #67eadd;
+            color: #FCFDFD;
+            padding: 3px 10px;
+            border-radius: 15px;
+            font-weight: 600;
+        }
+        
+        .connections-chart {
+            margin-top: 20px;
+        }
+        
+        .tier-bar {
+            display: flex;
+            align-items: center;
+            margin: 15px 0;
+        }
+        
+        .tier-label {
+            width: 120px;
+            color: #3C574B;
+            font-weight: 500;
+        }
+        
+        .tier-progress {
+            flex: 1;
+            height: 35px;
+            background: #f0f0f0;
+            border-radius: 20px;
+            overflow: hidden;
+            position: relative;
+        }
+        
+        .tier-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #67eadd 0%, #4fd4c7 100%);
+            display: flex;
+            align-items: center;
+            padding-left: 15px;
+            color: #FCFDFD;
+            font-weight: 600;
+            transition: width 1s ease-in-out;
+        }
+        
+        .insights-section {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 25px;
+            margin-top: 30px;
+            width: 100%;
+        }
+        
+        .insight-card {
+            background: #FCFDFD;
+            border-left: 5px solid #67eadd;
+            border-radius: 10px;
+            padding: 25px;
+            box-shadow: 0 5px 15px rgba(103, 234, 221, 0.1);
+        }
+        
+        .insight-icon {
+            font-size: 2rem;
+            margin-bottom: 10px;
+        }
+        
+        .insight-title {
+            font-size: 1.2rem;
+            color: #3C574B;
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+        
+        .insight-text {
+            color: #B6B9B5;
+            line-height: 1.6;
+        }
+        
+        .pulse {
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0% {
+                box-shadow: 0 0 0 0 rgba(103, 234, 221, 0.4);
+            }
+            70% {
+                box-shadow: 0 0 0 10px rgba(103, 234, 221, 0);
+            }
+            100% {
+                box-shadow: 0 0 0 0 rgba(103, 234, 221, 0);
+            }
+        }
+        
+        .tab-container {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        
+        .tab {
+            padding: 10px 20px;
+            background: #B6B9B5;
+            color: #FCFDFD;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .tab.active {
+            background: #67eadd;
+        }
+        
+        .tab-content {
+            display: none;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <div class="dashboard">
+        <div class="header">
+            <h1>🔧 Coupa Usage Summary</h1>
+            <p>Real-time analytics and insights for the last 3 months</p>
+        </div>
+        
+        <div class="metrics-grid">
+            <div class="metric-card pulse">
+                <div class="metric-value">3.2M+</div>
+                <div class="metric-label">Successful Jobs</div>
+                <div class="metric-sublabel">Non-test executions in 90 days</div>
+            </div>
+            
+            <div class="metric-card">
+                <div class="metric-value">941</div>
+                <div class="metric-label">Total Connections</div>
+                <div class="metric-sublabel">Across all application tiers</div>
+            </div>
+            
+            <div class="metric-card">
+                <div class="metric-value">395</div>
+                <div class="metric-label">iPaaS Recipes</div>
+                <div class="metric-sublabel">Average per month: 335</div>
+            </div>
+        </div>
+        
+        <div class="chart-section">
+            <h2 class="chart-title">📊 Recipe Distribution Trends</h2>
+            <div class="tab-container">
+                <div class="tab active" onclick="switchTab('trends')">Monthly Trends</div>
+                <div class="tab" onclick="switchTab('breakdown')">Capability Breakdown</div>
+            </div>
+            
+            <div id="trends" class="tab-content active">
+                <div class="recipe-trends">
+                    <div class="month-block">
+                        <div class="month-name">June 2025</div>
+                        <div class="capability-list">
+                            <div class="capability-item">
+                                <span class="capability-name">iPaaS</span>
+                                <span class="capability-count">328</span>
+                            </div>
+                            <div class="capability-item">
+                                <span class="capability-name">ETL/ELT</span>
+                                <span class="capability-count">39</span>
+                            </div>
+                            <div class="capability-item">
+                                <span class="capability-name">API</span>
+                                <span class="capability-count">1</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="month-block">
+                        <div class="month-name">July 2025</div>
+                        <div class="capability-list">
+                            <div class="capability-item">
+                                <span class="capability-name">iPaaS</span>
+                                <span class="capability-count">327</span>
+                            </div>
+                            <div class="capability-item">
+                                <span class="capability-name">ETL/ELT</span>
+                                <span class="capability-count">39</span>
+                            </div>
+                            <div class="capability-item">
+                                <span class="capability-name">API</span>
+                                <span class="capability-count">1</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="month-block">
+                        <div class="month-name">August 2025</div>
+                        <div class="capability-list">
+                            <div class="capability-item">
+                                <span class="capability-name">iPaaS</span>
+                                <span class="capability-count">351</span>
+                            </div>
+                            <div class="capability-item">
+                                <span class="capability-name">ETL/ELT</span>
+                                <span class="capability-count">43</span>
+                            </div>
+                            <div class="capability-item">
+                                <span class="capability-name">API</span>
+                                <span class="capability-count">1</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div id="breakdown" class="tab-content">
+                <div class="connections-chart">
+                    <div class="tier-bar">
+                        <div class="tier-label">Tier 2</div>
+                        <div class="tier-progress">
+                            <div class="tier-fill" style="width: 75%;">254 connections</div>
+                        </div>
+                    </div>
+                    <div class="tier-bar">
+                        <div class="tier-label">Unspecified</div>
+                        <div class="tier-progress">
+                            <div class="tier-fill" style="width: 52%;">177 connections</div>
+                        </div>
+                    </div>
+                    <div class="tier-bar">
+                        <div class="tier-label">Tier 4</div>
+                        <div class="tier-progress">
+                            <div class="tier-fill" style="width: 50%;">170 connections</div>
+                        </div>
+                    </div>
+                    <div class="tier-bar">
+                        <div class="tier-label">Tier 3</div>
+                        <div class="tier-progress">
+                            <div class="tier-fill" style="width: 47%;">160 connections</div>
+                        </div>
+                    </div>
+                    <div class="tier-bar">
+                        <div class="tier-label">Tier 1</div>
+                        <div class="tier-progress">
+                            <div class="tier-fill" style="width: 27%;">91 connections</div>
+                        </div>
+                    </div>
+                    <div class="tier-bar">
+                        <div class="tier-label">Tier 5</div>
+                        <div class="tier-progress">
+                            <div class="tier-fill" style="width: 26%;">89 connections</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="insights-section">
+            <div class="insight-card">
+                <div class="insight-icon">🚀</div>
+                <div class="insight-title">Strong iPaaS Adoption</div>
+                <div class="insight-text">
+                    iPaaS dominates with 88% of all recipes, showing 7% growth in August. This indicates strong integration focus with increasing momentum.
+                </div>
+            </div>
+            
+            <div class="insight-card">
+                <div class="insight-icon">📈</div>
+                <div class="insight-title">Growing ETL Usage</div>
+                <div class="insight-text">
+                    ETL/ELT capabilities show 10% growth from June to August, suggesting expanding data transformation needs and maturity.
+                </div>
+            </div>
+            
+            <div class="insight-card">
+                <div class="insight-icon">🎯</div>
+                <div class="insight-title">Tier 2 Dominance</div>
+                <div class="insight-text">
+                    27% of connections are Tier 2 applications, indicating focus on mid-complexity integrations with established enterprise systems.
+                </div>
+            </div>
+            
+            <div class="insight-card">
+                <div class="insight-icon">⚡</div>
+                <div class="insight-title">High Reliability</div>
+                <div class="insight-text">
+                    3.2M+ successful jobs demonstrate exceptional platform reliability and active usage, averaging 35,600+ jobs per day.
+                </div>
+            </div>
+            
+            <div class="insight-card">
+                <div class="insight-icon">🔍</div>
+                <div class="insight-title">API Opportunity</div>
+                <div class="insight-text">
+                    API management remains underutilized with only 1 recipe per month, presenting significant growth opportunity for custom integrations.
+                </div>
+            </div>
+            
+            <div class="insight-card">
+                <div class="insight-icon">📊</div>
+                <div class="insight-title">Connection Distribution</div>
+                <div class="insight-text">
+                    19% of connections lack tier classification. Proper categorization could improve resource allocation and optimization strategies.
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        function switchTab(tabName) {
+            const tabs = document.querySelectorAll('.tab');
+            const contents = document.querySelectorAll('.tab-content');
+            
+            tabs.forEach(tab => {
+                tab.classList.remove('active');
+                if(tab.textContent.includes(tabName === 'trends' ? 'Monthly' : 'Capability')) {
+                    tab.classList.add('active');
+                }
+            });
+            
+            contents.forEach(content => {
+                content.classList.remove('active');
+            });
+            document.getElementById(tabName).classList.add('active');
+        }
+        
+        // Animate numbers on load
+        window.addEventListener('load', () => {
+            const animateValue = (element, start, end, duration) => {
+                let startTimestamp = null;
+                const step = (timestamp) => {
+                    if (!startTimestamp) startTimestamp = timestamp;
+                    const progress = Math.min((timestamp - startTimestamp) / duration, 1);
+                    const value = Math.floor(progress * (end - start) + start);
+                    element.textContent = value.toLocaleString();
+                    if (progress < 1) {
+                        window.requestAnimationFrame(step);
+                    }
+                };
+                window.requestAnimationFrame(step);
+            };
+            
+            const cards = document.querySelectorAll('.metric-card');
+            cards.forEach(card => {
+                card.addEventListener('mouseenter', () => {
+                    card.classList.add('pulse');
+                });
+                card.addEventListener('mouseleave', () => {
+                    card.classList.remove('pulse');
+                });
+            });
+        });
+    </script>
+</body>
+</html>

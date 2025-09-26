@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>OpenAI Workato Usage Dashboard</title>
+<style>
+  :root { 
+    --bg:#000; 
+    --text:#FCFDFD; 
+    --teal:#67eadd; 
+    --card:#0a0a0a;
+    --dark-green:#3C574B;
+    --gray:#B6B9B5;
+    --radius:12px; 
+  }
+  * { box-sizing: border-box; }
+  html,body { margin:0; background:var(--bg); color:var(--text); font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Ubuntu,sans-serif; }
+  .wrap { width:100%; max-width:1400px; margin:0 auto; padding:20px; }
+  h1,h2,h3 { margin:0 0 12px; color:var(--teal); }
+  .sub { opacity:.9; margin-bottom:24px; color:var(--gray); }
+
+  .grid { display:grid; gap:16px; }
+  .kpis { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+  .charts { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  @media (max-width:900px){ 
+    .kpis{grid-template-columns:repeat(2,1fr)} 
+    .charts{grid-template-columns:1fr} 
+  }
+
+  .card { 
+    background:var(--card); 
+    border:1px solid rgba(103,234,221,.3); 
+    border-radius:var(--radius); 
+    padding:20px;
+    position:relative;
+  }
+  .kpi .num { font-size:2.5rem; font-weight:800; color:var(--teal); line-height:1; margin-bottom:8px; }
+  .kpi .lab { opacity:.85; font-size:.95rem; color:var(--gray); }
+  .kpi .delta { font-size:0.9rem; color:var(--dark-green); margin-top:4px; }
+
+  .chart-container { position:relative; height:300px; }
+  .section { margin-top:32px; }
+  
+  .insight-list { 
+    list-style:none; 
+    padding:0; 
+    margin:16px 0 0; 
+  }
+  .insight-list li { 
+    padding:8px 0; 
+    border-left:3px solid var(--teal); 
+    padding-left:12px; 
+    margin-bottom:8px;
+    color:var(--gray);
+  }
+  .insight-list li strong { color:var(--text); }
+
+  .tag { 
+    display:inline-block; 
+    font-size:.75rem; 
+    font-weight:700; 
+    color:#000; 
+    background:var(--teal); 
+    padding:3px 10px; 
+    border-radius:999px; 
+    margin-bottom:12px; 
+  }
+</style>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <h1>OpenAI Workato Usage Dashboard</h1>
+      <div class="sub">Automation Platform Performance & Adoption Metrics</div>
+    </header>
+
+    <section class="section">
+      <h2>Executive Summary</h2>
+      <div class="grid kpis">
+        <div class="card kpi">
+          <div class="num">8</div>
+          <div class="lab">Active Recipes</div>
+          <div class="delta">iPaaS capability only</div>
+        </div>
+        <div class="card kpi">
+          <div class="num">3</div>
+          <div class="lab">Departments</div>
+          <div class="delta">Finance, HR, Other</div>
+        </div>
+        <div class="card kpi">
+          <div class="num">+80%</div>
+          <div class="lab">Job Growth</div>
+          <div class="delta">5→9 daily jobs (3mo)</div>
+        </div>
+        <div class="card kpi">
+          <div class="num">100%</div>
+          <div class="lab">Success Rate</div>
+          <div class="delta">All jobs successful</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="grid charts">
+        <div class="card">
+          <h3>Job Execution Trend (Last 3 Months)</h3>
+          <div class="chart-container">
+            <canvas id="executionChart"></canvas>
+          </div>
+          <ul class="insight-list">
+            <li><strong>Steady growth:</strong> Daily successful jobs increased from 5 to 9</li>
+            <li><strong>Peak activity:</strong> Reached 9 jobs/day in late August</li>
+            <li><strong>100% reliability:</strong> No failed jobs in 3-month period</li>
+          </ul>
+        </div>
+
+        <div class="card">
+          <h3>Department Distribution</h3>
+          <div class="chart-container">
+            <canvas id="deptChart"></canvas>
+          </div>
+          <ul class="insight-list">
+            <li><strong>Finance dominates:</strong> 50% of recipes (4 recipes)</li>
+            <li><strong>HR adoption:</strong> Single recipe deployed</li>
+            <li><strong>37.5% unclear:</strong> 3 recipes need classification</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="card">
+        <div class="tag">Key Findings</div>
+        <h3>Platform Utilization Analysis</h3>
+        <div class="grid" style="grid-template-columns: repeat(3, 1fr); margin-top:20px;">
+          <div>
+            <h4 style="color:var(--teal); margin-bottom:8px;">✓ Strengths</h4>
+            <ul style="color:var(--gray); padding-left:20px;">
+              <li>Perfect success rate</li>
+              <li>Consistent daily usage</li>
+              <li>80% growth trajectory</li>
+              <li>Finance well-automated</li>
+            </ul>
+          </div>
+          <div>
+            <h4 style="color:var(--teal); margin-bottom:8px;">⚠ Opportunities</h4>
+            <ul style="color:var(--gray); padding-left:20px;">
+              <li>No AI capabilities used</li>
+              <li>No ETL/ELT workflows</li>
+              <li>No bot automation</li>
+              <li>Limited HR adoption</li>
+            </ul>
+          </div>
+          <div>
+            <h4 style="color:var(--teal); margin-bottom:8px;">→ Recommendations</h4>
+            <ul style="color:var(--gray); padding-left:20px;">
+              <li>Explore AI integrations</li>
+              <li>Expand to more departments</li>
+              <li>Classify unclear recipes</li>
+              <li>Scale successful patterns</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <script>
+    // Execution trend data
+    const executionData = [
+      {date: '2025-05-25', jobs: 5}, {date: '2025-05-26', jobs: 5}, {date: '2025-05-27', jobs: 5},
+      {date: '2025-05-28', jobs: 5}, {date: '2025-05-29', jobs: 5}, {date: '2025-05-30', jobs: 5},
+      {date: '2025-05-31', jobs: 5}, {date: '2025-06-01', jobs: 6}, {date: '2025-06-02', jobs: 6},
+      {date: '2025-06-03', jobs: 6}, {date: '2025-06-04', jobs: 6}, {date: '2025-06-05', jobs: 6},
+      {date: '2025-06-06', jobs: 6}, {date: '2025-06-07', jobs: 6}, {date: '2025-06-08', jobs: 6},
+      {date: '2025-06-09', jobs: 6}, {date: '2025-06-10', jobs: 6}, {date: '2025-06-11', jobs: 6},
+      {date: '2025-06-12', jobs: 6}, {date: '2025-06-13', jobs: 6}, {date: '2025-06-14', jobs: 6},
+      {date: '2025-06-15', jobs: 7}, {date: '2025-06-16', jobs: 7}, {date: '2025-06-17', jobs: 7},
+      {date: '2025-06-18', jobs: 7}, {date: '2025-06-19', jobs: 7}, {date: '2025-06-20', jobs: 7},
+      {date: '2025-06-21', jobs: 7}, {date: '2025-06-22', jobs: 7}, {date: '2025-06-23', jobs: 7},
+      {date: '2025-06-24', jobs: 7}, {date: '2025-06-25', jobs: 7}, {date: '2025-06-26', jobs: 7},
+      {date: '2025-06-27', jobs: 7}, {date: '2025-06-28', jobs: 7}, {date: '2025-06-29', jobs: 7},
+      {date: '2025-06-30', jobs: 7}, {date: '2025-07-01', jobs: 7}, {date: '2025-07-02', jobs: 7},
+      {date: '2025-07-03', jobs: 7}, {date: '2025-07-04', jobs: 7}, {date: '2025-07-05', jobs: 7},
+      {date: '2025-07-06', jobs: 7}, {date: '2025-07-07', jobs: 7}, {date: '2025-07-08', jobs: 7},
+      {date: '2025-07-09', jobs: 7}, {date: '2025-07-10', jobs: 8}, {date: '2025-07-11', jobs: 8},
+      {date: '2025-07-12', jobs: 8}, {date: '2025-07-13', jobs: 8}, {date: '2025-07-14', jobs: 8},
+      {date: '2025-07-15', jobs: 8}, {date: '2025-07-16', jobs: 8}, {date: '2025-07-17', jobs: 8},
+      {date: '2025-07-18', jobs: 8}, {date: '2025-07-19', jobs: 8}, {date: '2025-07-20', jobs: 8},
+      {date: '2025-07-21', jobs: 8}, {date: '2025-07-22', jobs: 8}, {date: '2025-07-23', jobs: 8},
+      {date: '2025-07-24', jobs: 8}, {date: '2025-07-25', jobs: 8}, {date: '2025-07-26', jobs: 8},
+      {date: '2025-07-27', jobs: 8}, {date: '2025-07-28', jobs: 8}, {date: '2025-07-29', jobs: 8},
+      {date: '2025-07-30', jobs: 8}, {date: '2025-07-31', jobs: 8}, {date: '2025-08-01', jobs: 8},
+      {date: '2025-08-02', jobs: 8}, {date: '2025-08-03', jobs: 8}, {date: '2025-08-04', jobs: 8},
+      {date: '2025-08-05', jobs: 8}, {date: '2025-08-06', jobs: 8}, {date: '2025-08-07', jobs: 8},
+      {date: '2025-08-08', jobs: 8}, {date: '2025-08-09', jobs: 8}, {date: '2025-08-10', jobs: 8},
+      {date: '2025-08-11', jobs: 8}, {date: '2025-08-12', jobs: 9}, {date: '2025-08-13', jobs: 9},
+      {date: '2025-08-14', jobs: 9}, {date: '2025-08-15', jobs: 9}, {date: '2025-08-16', jobs: 9},
+      {date: '2025-08-17', jobs: 9}, {date: '2025-08-18', jobs: 9}, {date: '2025-08-19', jobs: 9},
+      {date: '2025-08-20', jobs: 9}, {date: '2025-08-21', jobs: 9}, {date: '2025-08-22', jobs: 9},
+      {date: '2025-08-23', jobs: 9}, {date: '2025-08-24', jobs: 9}, {date: '2025-08-25', jobs: 9}
+    ];
+
+    // Execution trend chart
+    new Chart(document.getElementById('executionChart'), {
+      type: 'line',
+      data: {
+        labels: executionData.map(d => d.date),
+        datasets: [{
+          label: 'Successful Jobs',
+          data: executionData.map(d => d.jobs),
+          borderColor: '#67eadd',
+          backgroundColor: 'rgba(103, 234, 221, 0.1)',
+          tension: 0.3,
+          fill: true
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: { display: false },
+          tooltip: {
+            backgroundColor: 'rgba(0,0,0,0.8)',
+            titleColor: '#67eadd'
+          }
+        },
+        scales: {
+          x: {
+            display: true,
+            grid: { color: 'rgba(182, 185, 181, 0.1)' },
+            ticks: { 
+              color: '#B6B9B5',
+              maxTicksLimit: 6
+            }
+          },
+          y: {
+            display: true,
+            grid: { color: 'rgba(182, 185, 181, 0.1)' },
+            ticks: { color: '#B6B9B5' },
+            beginAtZero: true
+          }
+        }
+      }
+    });
+
+    // Department chart
+    new Chart(document.getElementById('deptChart'), {
+      type: 'doughnut',
+      data: {
+        labels: ['Finance & Accounting', 'Not Conclusive', 'Human Resources'],
+        datasets: [{
+          data: [4, 3, 1],
+          backgroundColor: ['#67eadd', '#B6B9B5', '#3C574B'],
+          borderColor: '#000',
+          borderWidth: 2
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: {
+            position: 'bottom',
+            labels: { color: '#FCFDFD', padding: 20 }
+          },
+          tooltip: {
+            backgroundColor: 'rgba(0,0,0,0.8)',
+            callbacks: {
+              label: function(context) {
+                return context.label + ': ' + context.parsed + ' recipes';
+              }
+            }
+          }
+        }
+      }
+    });
+  </script>
+</body>
+</html>

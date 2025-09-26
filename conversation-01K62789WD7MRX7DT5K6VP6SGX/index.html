@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>User Activity Dashboard</title>
+<style>
+  :root { --bg:#000; --text:#FCFDFD; --teal:#67eadd; --card:#111; --radius:12px; --dark-green:#3C574B; --gray:#B6B9B5; }
+  * { box-sizing: border-box; }
+  html,body { margin:0; background:var(--bg); color:var(--text); font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Ubuntu,sans-serif; }
+  .wrap { width:100%; max-width:1200px; margin:0 auto; padding:20px; }
+  h1,h2 { margin:0 0 12px; color:var(--teal); }
+  .sub { opacity:.9; margin-bottom:24px; color:var(--gray); }
+
+  .grid { display:grid; gap:20px; }
+  .kpis { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+  .charts { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  @media (max-width:800px){ .kpis{grid-template-columns:repeat(2,1fr)} .charts{grid-template-columns:1fr} }
+
+  .card { background:var(--card); border:1px solid rgba(103,234,221,.3); border-radius:var(--radius); padding:20px; }
+  .kpi .num { font-size:2.5rem; font-weight:800; color:var(--teal); line-height:1; }
+  .kpi .lab { opacity:.85; font-size:.95rem; margin-top:8px; }
+  .kpi .delta { font-size:0.9rem; color:var(--gray); margin-top:4px; }
+
+  .section { margin-top:32px; }
+  .chart-container { position:relative; height:300px; }
+  canvas { max-width:100%; }
+  
+  .insights { margin-top:16px; padding-top:16px; border-top:1px solid rgba(103,234,221,.2); }
+  .insights h3 { font-size:1rem; color:var(--teal); margin-bottom:8px; }
+  .insights ul { margin:0; padding-left:20px; color:var(--gray); font-size:0.9rem; }
+  .insights li { margin-bottom:4px; }
+</style>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <h1>User Activity & Builder Analytics</h1>
+      <div class="sub">Platform-wide user engagement and builder activity breakdown</div>
+    </header>
+
+    <section class="section">
+      <h2>Executive Summary</h2>
+      <div class="grid kpis">
+        <div class="card kpi">
+          <div class="num">80,781</div>
+          <div class="lab">Total Users</div>
+          <div class="delta">Across all customers</div>
+        </div>
+        <div class="card kpi">
+          <div class="num">4.5%</div>
+          <div class="lab">Active User Rate</div>
+          <div class="delta">3,625 active users</div>
+        </div>
+        <div class="card kpi">
+          <div class="num">2.0%</div>
+          <div class="lab">Power Builder Rate</div>
+          <div class="delta">1,656 power builders</div>
+        </div>
+        <div class="card kpi">
+          <div class="num">45.7%</div>
+          <div class="lab">Builder-to-Active Ratio</div>
+          <div class="delta">Power builders as % of active</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>User Activity Breakdown</h2>
+      <div class="grid charts">
+        <div class="card">
+          <h3 style="color:#67eadd; margin-bottom:20px;">Active User Distribution</h3>
+          <div class="chart-container">
+            <canvas id="activeChart"></canvas>
+          </div>
+          <div class="insights">
+            <h3>Key Insights</h3>
+            <ul>
+              <li>95.5% of users are currently inactive (77,156 users)</li>
+              <li>Only 3,625 users (4.5%) are flagged as active</li>
+              <li>Significant opportunity to increase engagement</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="card">
+          <h3 style="color:#67eadd; margin-bottom:20px;">Power Builder Distribution</h3>
+          <div class="chart-container">
+            <canvas id="builderChart"></canvas>
+          </div>
+          <div class="insights">
+            <h3>Key Insights</h3>
+            <ul>
+              <li>98% of users are not power builders (79,125 users)</li>
+              <li>1,656 power builders represent 2% of total user base</li>
+              <li>Nearly half of active users are power builders</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>Combined Activity Analysis</h2>
+      <div class="card">
+        <div class="chart-container" style="height:400px;">
+          <canvas id="combinedChart"></canvas>
+        </div>
+        <div class="insights">
+          <h3>Platform Health Indicators</h3>
+          <ul>
+            <li>Strong correlation between active users and power builders - 45.7% of active users are power builders</li>
+            <li>Large inactive user base (95.5%) suggests potential for growth through targeted activation strategies</li>
+            <li>Power builders represent a highly engaged minority that could help drive broader adoption</li>
+            <li>Consider programs to convert active users into power builders and inactive users into active participants</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <script>
+    const teal = '#67eadd';
+    const darkGreen = '#3C574B';
+    const gray = '#B6B9B5';
+    const nearWhite = '#FCFDFD';
+
+    // Active Users Chart
+    new Chart(document.getElementById('activeChart'), {
+      type: 'doughnut',
+      data: {
+        labels: ['Active Users', 'Inactive Users'],
+        datasets: [{
+          data: [3625, 77156],
+          backgroundColor: [teal, darkGreen],
+          borderColor: teal,
+          borderWidth: 1
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: {
+            position: 'bottom',
+            labels: { color: nearWhite, padding: 15 }
+          },
+          tooltip: {
+            callbacks: {
+              label: function(context) {
+                const total = 80781;
+                const percent = ((context.parsed / total) * 100).toFixed(1);
+                return context.label + ': ' + context.parsed.toLocaleString() + ' (' + percent + '%)';
+              }
+            }
+          }
+        }
+      }
+    });
+
+    // Power Builders Chart
+    new Chart(document.getElementById('builderChart'), {
+      type: 'doughnut',
+      data: {
+        labels: ['Power Builders', 'Regular Users'],
+        datasets: [{
+          data: [1656, 79125],
+          backgroundColor: [teal, darkGreen],
+          borderColor: teal,
+          borderWidth: 1
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: {
+            position: 'bottom',
+            labels: { color: nearWhite, padding: 15 }
+          },
+          tooltip: {
+            callbacks: {
+              label: function(context) {
+                const total = 80781;
+                const percent = ((context.parsed / total) * 100).toFixed(1);
+                return context.label + ': ' + context.parsed.toLocaleString() + ' (' + percent + '%)';
+              }
+            }
+          }
+        }
+      }
+    });
+
+    // Combined Chart
+    new Chart(document.getElementById('combinedChart'), {
+      type: 'bar',
+      data: {
+        labels: ['Active Users', 'Power Builders', 'Total Users'],
+        datasets: [{
+          label: 'User Count',
+          data: [3625, 1656, 80781],
+          backgroundColor: [teal, darkGreen, gray],
+          borderColor: teal,
+          borderWidth: 1
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        scales: {
+          y: {
+            beginAtZero: true,
+            ticks: { color: nearWhite },
+            grid: { color: 'rgba(103,234,221,0.1)' }
+          },
+          x: {
+            ticks: { color: nearWhite },
+            grid: { display: false }
+          }
+        },
+        plugins: {
+          legend: {
+            display: false
+          },
+          tooltip: {
+            callbacks: {
+              label: function(context) {
+                const value = context.parsed.y;
+                const percent = ((value / 80781) * 100).toFixed(1);
+                return 'Count: ' + value.toLocaleString() + ' (' + percent + '% of total)';
+              }
+            }
+          }
+        }
+      }
+    });
+  </script>
+</body>
+</html>

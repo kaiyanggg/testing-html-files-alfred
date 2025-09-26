@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Coupa Usage Dashboard</title>
+<style>
+  :root { 
+    --bg:#000; 
+    --text:#FCFDFD; 
+    --teal:#67eadd; 
+    --dark-green:#3C574B;
+    --gray:#B6B9B5;
+    --card:#111; 
+    --radius:12px; 
+  }
+  * { box-sizing: border-box; }
+  html,body { margin:0; background:var(--bg); color:var(--text); font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Ubuntu,sans-serif; }
+  .wrap { width:100%; max-width:1400px; margin:0 auto; padding:20px; }
+  h1,h2,h3 { margin:0 0 12px; color:var(--teal); }
+  .sub { color:var(--gray); margin-bottom:24px; }
+
+  .grid { display:grid; gap:16px; }
+  .kpis { grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); }
+  .charts { grid-template-columns: repeat(2, 1fr); }
+  @media (max-width:900px){ .charts{grid-template-columns:1fr} }
+
+  .card { 
+    background:var(--card); 
+    border:1px solid rgba(103,234,221,.3); 
+    border-radius:var(--radius); 
+    padding:20px; 
+  }
+  .kpi .num { font-size:2.5rem; font-weight:800; color:var(--teal); line-height:1; }
+  .kpi .lab { color:var(--gray); font-size:.9rem; margin-top:4px; }
+  .kpi .trend { font-size:.8rem; color:#67eadd; margin-top:4px; }
+
+  .section { margin-top:32px; }
+  
+  .chart-container { position:relative; height:300px; }
+  
+  .insight { 
+    background:rgba(103,234,221,.1); 
+    border-left:3px solid var(--teal); 
+    padding:8px 12px; 
+    margin-top:12px;
+    font-size:.9rem;
+  }
+  
+  .tag { 
+    display:inline-block; 
+    font-size:.7rem; 
+    font-weight:700; 
+    color:#000; 
+    background:var(--teal); 
+    padding:2px 8px; 
+    border-radius:999px; 
+    margin-right:8px;
+  }
+</style>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <h1>Coupa Workato Usage Analytics</h1>
+      <div class="sub">Platform utilization metrics from May - September 2025</div>
+    </header>
+
+    <section class="section">
+      <h2>Key Performance Indicators</h2>
+      <div class="grid kpis">
+        <div class="card kpi">
+          <div class="num">349</div>
+          <div class="lab">Total Active Recipes</div>
+          <div class="trend">↑ iPaaS dominant (97%)</div>
+        </div>
+        <div class="card kpi">
+          <div class="num">88.5K</div>
+          <div class="lab">Peak Daily Jobs</div>
+          <div class="trend">↑ 3.3x growth from May</div>
+        </div>
+        <div class="card kpi">
+          <div class="num">98.5%</div>
+          <div class="lab">Success Rate</div>
+          <div class="trend">Failed: 39-1,286/day</div>
+        </div>
+        <div class="card kpi">
+          <div class="num">5</div>
+          <div class="lab">Active Departments</div>
+          <div class="trend">IT leads with 27 use cases</div>
+        </div>
+        <div class="card kpi">
+          <div class="num">17</div>
+          <div class="lab">New Recipes (Sept)</div>
+          <div class="trend">↑ 240% vs June</div>
+        </div>
+        <div class="card kpi">
+          <div class="num">0</div>
+          <div class="lab">AI/Workbot Adoption</div>
+          <div class="trend">Opportunity area</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>Platform Analytics</h2>
+      <div class="grid charts">
+        <div class="card">
+          <h3>Recipe Distribution by Capability</h3>
+          <div class="chart-container">
+            <canvas id="capabilityChart"></canvas>
+          </div>
+          <div class="insight">
+            <span class="tag">KEY INSIGHT</span>
+            iPaaS dominates with 337-349 recipes (97%), while AI and Workbot remain unutilized
+          </div>
+        </div>
+
+        <div class="card">
+          <h3>Department Usage Distribution</h3>
+          <div class="chart-container">
+            <canvas id="deptChart"></canvas>
+          </div>
+          <div class="insight">
+            <span class="tag">KEY INSIGHT</span>
+            IT department leads adoption with 27 use cases (43% of total)
+          </div>
+        </div>
+
+        <div class="card">
+          <h3>Job Execution Trend (3 Months)</h3>
+          <div class="chart-container">
+            <canvas id="jobTrendChart"></canvas>
+          </div>
+          <div class="insight">
+            <span class="tag">KEY INSIGHT</span>
+            Daily successful jobs grew from 27K to 88.5K (3.3x increase)
+          </div>
+        </div>
+
+        <div class="card">
+          <h3>Recipe Creation Momentum</h3>
+          <div class="chart-container">
+            <canvas id="recipeCreationChart"></canvas>
+          </div>
+          <div class="insight">
+            <span class="tag">KEY INSIGHT</span>
+            Recipe creation accelerating: 5→17 monthly (240% growth)
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>Growth Opportunities</h2>
+      <div class="grid">
+        <div class="card">
+          <h3>🚀 Untapped Capabilities</h3>
+          <p style="color:var(--gray)">AI and Workbot capabilities show 0 adoption despite 349 active recipes. Consider pilot programs to explore automation potential.</p>
+        </div>
+        <div class="card">
+          <h3>📈 Department Expansion</h3>
+          <p style="color:var(--gray)">While IT leads with 27 use cases, HR (7-9) and RevOps (1-3) show room for growth. Cross-department knowledge sharing could accelerate adoption.</p>
+        </div>
+        <div class="card">
+          <h3>⚡ Performance Optimization</h3>
+          <p style="color:var(--gray)">With 39-1,286 daily failures against 88K+ successful jobs, focus on reducing error rates in high-volume workflows.</p>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <script>
+    Chart.defaults.color = '#B6B9B5';
+    Chart.defaults.borderColor = 'rgba(103,234,221,0.2)';
+    
+    // Capability Distribution
+    new Chart(document.getElementById('capabilityChart'), {
+      type: 'doughnut',
+      data: {
+        labels: ['iPaaS', 'ETL/ELT', 'WFA', 'API', 'AI', 'Workbot'],
+        datasets: [{
+          data: [349, 32, 2, 1, 0, 0],
+          backgroundColor: ['#67eadd', '#3C574B', '#B6B9B5', '#FCFDFD', '#444', '#333'],
+          borderWidth: 0
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: {
+            position: 'right',
+            labels: { padding: 10 }
+          }
+        }
+      }
+    });
+
+    // Department Usage
+    new Chart(document.getElementById('deptChart'), {
+      type: 'bar',
+      data: {
+        labels: ['IT', 'Finance & Accounting', 'Data Ops & Product', 'HR', 'RevOps & CS Ops'],
+        datasets: [{
+          label: 'Use Cases',
+          data: [27, 13, 13, 9, 3],
+          backgroundColor: '#67eadd',
+          borderWidth: 0
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        indexAxis: 'y',
+        plugins: {
+          legend: { display: false }
+        },
+        scales: {
+          x: { grid: { color: 'rgba(103,234,221,0.1)' } },
+          y: { grid: { display: false } }
+        }
+      }
+    });
+
+    // Job Execution Trend
+    new Chart(document.getElementById('jobTrendChart'), {
+      type: 'line',
+      data: {
+        labels: ['May 25', 'Jun 8', 'Jun 22', 'Jul 6', 'Jul 20', 'Aug 3', 'Aug 17', 'Aug 25'],
+        datasets: [{
+          label: 'Successful Jobs',
+          data: [27000, 35000, 42000, 55000, 68000, 75000, 82000, 88590],
+          borderColor: '#67eadd',
+          backgroundColor: 'rgba(103,234,221,0.1)',
+          tension: 0.4,
+          fill: true
+        }, {
+          label: 'Failed Jobs',
+          data: [39, 150, 380, 520, 680, 890, 1050, 1286],
+          borderColor: '#B6B9B5',
+          backgroundColor: 'rgba(182,185,181,0.1)',
+          tension: 0.4,
+          fill: true
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: { position: 'top' }
+        },
+        scales: {
+          y: {
+            grid: { color: 'rgba(103,234,221,0.1)' },
+            ticks: {
+              callback: function(value) {
+                return value >= 1000 ? (value/1000) + 'K' : value;
+              }
+            }
+          },
+          x: { grid: { display: false } }
+        }
+      }
+    });
+
+    // Recipe Creation
+    new Chart(document.getElementById('recipeCreationChart'), {
+      type: 'bar',
+      data: {
+        labels: ['June', 'July', 'August', 'September'],
+        datasets: [{
+          label: 'New Recipes',
+          data: [5, 8, 12, 17],
+          backgroundColor: ['#3C574B', '#3C574B', '#67eadd', '#67eadd'],
+          borderWidth: 0
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: { display: false }
+        },
+        scales: {
+          y: {
+            beginAtZero: true,
+            grid: { color: 'rgba(103,234,221,0.1)' }
+          },
+          x: { grid: { display: false } }
+        }
+      }
+    });
+  </script>
+</body>
+</html>

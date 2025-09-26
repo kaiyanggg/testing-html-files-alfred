@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Krafton Usage Summary Dashboard</title>
+<style>
+  :root { --bg:#000; --text:#FCFDFD; --teal:#67eadd; --card:#111; --dark-green:#3C574B; --gray:#B6B9B5; --radius:12px; }
+  * { box-sizing: border-box; }
+  html,body { margin:0; background:var(--bg); color:var(--text); font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Ubuntu,sans-serif; }
+  .wrap { width:100%; max-width:1200px; margin:0 auto; padding:20px; }
+  h1,h2 { margin:0 0 12px; color:var(--teal); }
+  .sub { opacity:.9; margin-bottom:24px; color:var(--gray); }
+
+  .grid { display:grid; gap:16px; }
+  .kpis { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .charts { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  @media (max-width:800px){ .kpis{grid-template-columns:1fr} .charts{grid-template-columns:1fr} }
+
+  .card { background:var(--card); border:1px solid rgba(103,234,221,.3); border-radius:var(--radius); padding:20px; }
+  .kpi .num { font-size:2.5rem; font-weight:800; color:var(--teal); line-height:1; }
+  .kpi .lab { opacity:.85; font-size:.95rem; margin-top:8px; }
+  .kpi .trend { font-size:.85rem; color:var(--gray); margin-top:4px; }
+
+  .section { margin-top:32px; }
+  .chart-container { position:relative; height:300px; }
+  
+  .insight { background:rgba(103,234,221,.1); border-left:3px solid var(--teal); padding:12px; margin-top:12px; border-radius:6px; font-size:.9rem; }
+  
+  .progress-bar { width:100%; height:30px; background:var(--card); border-radius:15px; overflow:hidden; position:relative; border:1px solid rgba(103,234,221,.3); }
+  .progress-fill { height:100%; background:linear-gradient(90deg, var(--dark-green), var(--teal)); transition:width 0.5s ease; }
+  .progress-text { position:absolute; top:50%; left:50%; transform:translate(-50%, -50%); font-weight:600; color:var(--text); }
+
+  .status-badge { display:inline-block; padding:4px 12px; border-radius:999px; font-size:.75rem; font-weight:600; }
+  .status-low { background:rgba(255,100,100,.2); color:#ff6464; border:1px solid #ff6464; }
+  .status-growing { background:rgba(103,234,221,.2); color:var(--teal); border:1px solid var(--teal); }
+</style>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <h1>Krafton Automation Usage Summary</h1>
+      <div class="sub">Performance metrics and automation adoption as of September 22, 2025</div>
+    </header>
+
+    <section class="section">
+      <h2>Key Performance Indicators</h2>
+      <div class="grid kpis">
+        <div class="card kpi">
+          <div class="num">163</div>
+          <div class="lab">Active Recipes</div>
+          <div class="trend">↑ 94% growth from May (84 recipes)</div>
+        </div>
+        <div class="card kpi">
+          <div class="num">0.02</div>
+          <div class="lab">Automation Maturity Index</div>
+          <div class="trend">Still in early stage (0.01 → 0.02)</div>
+        </div>
+        <div class="card kpi">
+          <div class="num">1/5</div>
+          <div class="lab">Departments Automated</div>
+          <div class="trend">Started in September 2025</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>Automation Progress</h2>
+      <div class="grid charts">
+        <div class="card">
+          <h3 style="color:var(--teal); margin-bottom:16px;">Recipe Growth Trajectory</h3>
+          <div class="chart-container">
+            <canvas id="recipeChart"></canvas>
+          </div>
+          <div class="insight">
+            <strong>Key Insight:</strong> Recipe count has nearly doubled in 4 months, showing accelerating adoption with 94% growth from 84 to 163 active recipes.
+          </div>
+        </div>
+        
+        <div class="card">
+          <h3 style="color:var(--teal); margin-bottom:16px;">Department Coverage</h3>
+          <div style="margin:20px 0;">
+            <div class="progress-bar">
+              <div class="progress-fill" style="width:20%"></div>
+              <div class="progress-text">20% (1 of 5 departments)</div>
+            </div>
+          </div>
+          <div style="margin-top:30px;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin:12px 0;">
+              <span>Department 1</span>
+              <span class="status-badge status-growing">Automated</span>
+            </div>
+            <div style="display:flex; justify-content:space-between; align-items:center; margin:12px 0;">
+              <span>Departments 2-5</span>
+              <span class="status-badge status-low">Not Started</span>
+            </div>
+          </div>
+          <div class="insight">
+            <strong>Key Insight:</strong> Department automation just began in September 2025. Significant opportunity exists with 80% of departments yet to adopt automation.
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>Maturity Analysis</h2>
+      <div class="card">
+        <h3 style="color:var(--teal); margin-bottom:16px;">Automation Maturity Index Trend</h3>
+        <div class="chart-container" style="height:250px;">
+          <canvas id="maturityChart"></canvas>
+        </div>
+        <div class="insight">
+          <strong>Key Insights:</strong>
+          <ul style="margin:8px 0; padding-left:20px;">
+            <li>Maturity index remains low at 0.02, indicating early-stage automation adoption</li>
+            <li>Gradual improvement from 0.01 to 0.02 suggests foundational work is underway</li>
+            <li>Current index level indicates substantial room for scaling automation capabilities</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>Growth Opportunities</h2>
+      <div class="card">
+        <h3 style="color:var(--teal); margin-bottom:16px;">Recommendations for Scaling</h3>
+        <ul style="line-height:1.8;">
+          <li><strong>Department Expansion:</strong> With only 1 of 5 departments automated, prioritize rolling out to remaining 4 departments</li>
+          <li><strong>Recipe Optimization:</strong> Continue momentum of 94% growth while focusing on recipe quality and reusability</li>
+          <li><strong>Maturity Acceleration:</strong> Target increasing automation index from 0.02 to 0.10+ through strategic initiatives</li>
+          <li><strong>Cross-Department Collaboration:</strong> Leverage learnings from first automated department to accelerate adoption in others</li>
+        </ul>
+      </div>
+    </section>
+  </div>
+
+  <script>
+    // Recipe Growth Chart
+    const ctx1 = document.getElementById('recipeChart').getContext('2d');
+    new Chart(ctx1, {
+      type: 'line',
+      data: {
+        labels: ['May 26', 'Jun', 'Jul', 'Aug', 'Sep 22'],
+        datasets: [{
+          label: 'Active Recipes',
+          data: [84, 105, 125, 145, 163],
+          borderColor: '#67eadd',
+          backgroundColor: 'rgba(103, 234, 221, 0.1)',
+          borderWidth: 3,
+          tension: 0.4,
+          fill: true,
+          pointRadius: 5,
+          pointBackgroundColor: '#67eadd',
+          pointBorderColor: '#000',
+          pointBorderWidth: 2
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: { display: false },
+          tooltip: {
+            backgroundColor: 'rgba(0,0,0,0.8)',
+            titleColor: '#67eadd',
+            bodyColor: '#FCFDFD',
+            borderColor: '#67eadd',
+            borderWidth: 1
+          }
+        },
+        scales: {
+          y: {
+            beginAtZero: false,
+            min: 50,
+            grid: { color: 'rgba(103, 234, 221, 0.1)' },
+            ticks: { color: '#B6B9B5' }
+          },
+          x: {
+            grid: { display: false },
+            ticks: { color: '#B6B9B5' }
+          }
+        }
+      }
+    });
+
+    // Maturity Index Chart
+    const ctx2 = document.getElementById('maturityChart').getContext('2d');
+    new Chart(ctx2, {
+      type: 'bar',
+      data: {
+        labels: ['Initial', 'Current', 'Target (Q1 2026)', 'Industry Avg'],
+        datasets: [{
+          label: 'Automation Maturity Index',
+          data: [0.01, 0.02, 0.10, 0.15],
+          backgroundColor: ['#3C574B', '#67eadd', 'rgba(103, 234, 221, 0.3)', '#B6B9B5'],
+          borderColor: ['#3C574B', '#67eadd', '#67eadd', '#B6B9B5'],
+          borderWidth: 1
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: { display: false },
+          tooltip: {
+            backgroundColor: 'rgba(0,0,0,0.8)',
+            titleColor: '#67eadd',
+            bodyColor: '#FCFDFD',
+            borderColor: '#67eadd',
+            borderWidth: 1
+          }
+        },
+        scales: {
+          y: {
+            beginAtZero: true,
+            max: 0.20,
+            grid: { color: 'rgba(103, 234, 221, 0.1)' },
+            ticks: { 
+              color: '#B6B9B5',
+              callback: function(value) { return value.toFixed(2); }
+            }
+          },
+          x: {
+            grid: { display: false },
+            ticks: { color: '#B6B9B5' }
+          }
+        }
+      }
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Coupa Usage Dashboard</title>
+<style>
+  :root { 
+    --bg:#000; 
+    --text:#FCFDFD; 
+    --teal:#67eadd; 
+    --card:#111; 
+    --dark-green:#3C574B;
+    --gray:#B6B9B5;
+    --radius:12px; 
+  }
+  * { box-sizing: border-box; }
+  html,body { margin:0; background:var(--bg); color:var(--text); font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Ubuntu,sans-serif; }
+  .wrap { width:100%; padding:20px; }
+  h1,h2,h3 { margin:0 0 12px; color:var(--teal); }
+  .sub { color:var(--gray); margin-bottom:24px; font-size:0.95rem; }
+
+  .grid { display:grid; gap:16px; }
+  .kpis { grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); }
+  .charts { grid-template-columns: repeat(auto-fit, minmax(400px, 1fr)); }
+  @media (max-width:800px){ .charts{grid-template-columns:1fr} }
+
+  .card { background:var(--card); border:1px solid rgba(103,234,221,.3); border-radius:var(--radius); padding:20px; }
+  .kpi .num { font-size:2.5rem; font-weight:800; color:var(--teal); line-height:1; }
+  .kpi .lab { color:var(--gray); font-size:.9rem; margin-top:4px; }
+  .kpi .delta { font-size:0.8rem; color:var(--dark-green); margin-top:4px; }
+
+  .section { margin-top:32px; }
+  
+  .chart-container { position:relative; height:300px; }
+  .donut-container { height:280px; }
+  
+  .insight { background:rgba(103,234,221,.1); border-left:3px solid var(--teal); padding:12px; margin-top:12px; border-radius:6px; }
+  .insight-title { font-weight:600; color:var(--teal); margin-bottom:4px; }
+  .insight-text { font-size:0.9rem; color:var(--text); }
+  
+  .badge { display:inline-block; padding:4px 12px; border-radius:999px; font-size:0.75rem; font-weight:600; margin-right:8px; margin-bottom:8px; }
+  .badge-active { background:var(--teal); color:#000; }
+  .badge-adopted { background:var(--dark-green); color:var(--text); }
+  .badge-inactive { background:var(--gray); color:#000; opacity:0.5; }
+  
+  .progress-bar { background:rgba(103,234,221,.1); border-radius:8px; height:8px; margin-top:8px; overflow:hidden; }
+  .progress-fill { background:var(--teal); height:100%; border-radius:8px; transition:width 0.3s ease; }
+</style>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>Coupa Usage Analytics</h1>
+    <div class="sub">Customer Health Snapshot • Last Updated: September 22, 2025</div>
+  </header>
+
+  <section>
+    <h2>Key Performance Metrics</h2>
+    <div class="grid kpis">
+      <div class="card kpi">
+        <div class="num">527</div>
+        <div class="lab">Active Recipes</div>
+        <div class="delta">337 iPaaS, 30 ETL/ELT, 1 API</div>
+      </div>
+      <div class="card kpi">
+        <div class="num">59.96M</div>
+        <div class="lab">Tasks Consumed</div>
+        <div class="delta">30% utilization rate</div>
+      </div>
+      <div class="card kpi">
+        <div class="num">22</div>
+        <div class="lab">Active Builders</div>
+        <div class="delta">3 Power Builders (14%)</div>
+      </div>
+      <div class="card kpi">
+        <div class="num">3/6</div>
+        <div class="lab">Capabilities Used</div>
+        <div class="delta">iPaaS, ETL/ELT, API active</div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <h2>Capability Adoption & Usage</h2>
+    <div class="grid charts">
+      <div class="card">
+        <h3>Recipe Distribution by Type</h3>
+        <div class="donut-container">
+          <canvas id="recipeChart"></canvas>
+        </div>
+        <div class="insight">
+          <div class="insight-title">Primary Focus: iPaaS Integration</div>
+          <div class="insight-text">64% of recipes are iPaaS-based (337), with ETL/ELT at 5.7% (30 recipes). Minimal API usage (1 recipe) indicates potential for API-driven automation expansion.</div>
+        </div>
+      </div>
+      
+      <div class="card">
+        <h3>Capability Adoption Status</h3>
+        <div style="margin-top:20px;">
+          <div style="margin-bottom:16px;">
+            <div style="display:flex;justify-content:space-between;align-items:center;">
+              <span>iPaaS</span>
+              <div>
+                <span class="badge badge-active">Used</span>
+                <span class="badge badge-adopted">Adopted</span>
+              </div>
+            </div>
+            <div class="progress-bar"><div class="progress-fill" style="width:100%"></div></div>
+          </div>
+          
+          <div style="margin-bottom:16px;">
+            <div style="display:flex;justify-content:space-between;align-items:center;">
+              <span>ETL/ELT</span>
+              <div>
+                <span class="badge badge-active">Used</span>
+                <span class="badge badge-adopted">Adopted</span>
+              </div>
+            </div>
+            <div class="progress-bar"><div class="progress-fill" style="width:100%"></div></div>
+          </div>
+          
+          <div style="margin-bottom:16px;">
+            <div style="display:flex;justify-content:space-between;align-items:center;">
+              <span>API Management</span>
+              <div>
+                <span class="badge badge-inactive">Not Used</span>
+                <span class="badge badge-adopted">Adopted</span>
+              </div>
+            </div>
+            <div class="progress-bar"><div class="progress-fill" style="width:50%"></div></div>
+          </div>
+          
+          <div style="margin-bottom:16px;">
+            <div style="display:flex;justify-content:space-between;align-items:center;">
+              <span>Workflow Automation (WFA)</span>
+              <div>
+                <span class="badge badge-inactive">Not Used</span>
+                <span class="badge badge-adopted">2 Adopted</span>
+              </div>
+            </div>
+            <div class="progress-bar"><div class="progress-fill" style="width:50%"></div></div>
+          </div>
+          
+          <div style="margin-bottom:16px;">
+            <div style="display:flex;justify-content:space-between;align-items:center;">
+              <span>Workbot</span>
+              <div><span class="badge badge-inactive">Not Adopted</span></div>
+            </div>
+            <div class="progress-bar"><div class="progress-fill" style="width:0%"></div></div>
+          </div>
+          
+          <div style="margin-bottom:16px;">
+            <div style="display:flex;justify-content:space-between;align-items:center;">
+              <span>AI</span>
+              <div><span class="badge badge-inactive">Not Adopted</span></div>
+            </div>
+            <div class="progress-bar"><div class="progress-fill" style="width:0%"></div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <h2>Usage Analysis</h2>
+    <div class="grid charts">
+      <div class="card">
+        <h3>Task Utilization Breakdown</h3>
+        <canvas id="taskChart" style="height:250px"></canvas>
+        <div class="insight">
+          <div class="insight-title">Moderate Utilization</div>
+          <div class="insight-text">Task utilization at 30% suggests room for scaling. With 60M tasks consumed, there's capacity to expand automation initiatives without additional resource constraints.</div>
+        </div>
+      </div>
+      
+      <div class="card">
+        <h3>Builder Activity Distribution</h3>
+        <canvas id="builderChart" style="height:250px"></canvas>
+        <div class="insight">
+          <div class="insight-title">Concentrated Expertise</div>
+          <div class="insight-text">14% of builders (3 of 22) are Power Builders, suggesting expertise concentration. Opportunity to upskill regular builders for broader automation capability.</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <h2>Growth Opportunities</h2>
+    <div class="card">
+      <h3>Recommended Actions</h3>
+      <ul style="line-height:1.8;">
+        <li><strong>Activate AI Capabilities:</strong> No AI recipes currently deployed. Consider AI-powered data extraction and decision automation for high-volume processes.</li>
+        <li><strong>Expand API Usage:</strong> Only 1 API recipe active despite adoption. Leverage API management for external integrations and partner connectivity.</li>
+        <li><strong>Deploy Workbot:</strong> Zero bot adoption presents opportunity for conversational interfaces in Slack/Teams for approval workflows.</li>
+        <li><strong>Scale Power Builders:</strong> With only 14% power builders, invest in advanced training to distribute expertise across the 22-person builder team.</li>
+        <li><strong>Maximize WFA:</strong> 2 WFA capabilities adopted but unused - activate for complex multi-step business processes.</li>
+      </ul>
+    </div>
+  </section>
+</div>
+
+<script>
+// Recipe Distribution Chart
+const recipeCtx = document.getElementById('recipeChart').getContext('2d');
+new Chart(recipeCtx, {
+  type: 'doughnut',
+  data: {
+    labels: ['iPaaS', 'ETL/ELT', 'API', 'Other'],
+    datasets: [{
+      data: [337, 30, 1, 159],
+      backgroundColor: ['#67eadd', '#3C574B', '#B6B9B5', '#222'],
+      borderColor: '#000',
+      borderWidth: 2
+    }]
+  },
+  options: {
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: {
+      legend: {
+        position: 'bottom',
+        labels: { color: '#FCFDFD', padding: 15 }
+      },
+      tooltip: {
+        callbacks: {
+          label: function(context) {
+            const total = 527;
+            const value = context.raw;
+            const percentage = ((value / total) * 100).toFixed(1);
+            return context.label + ': ' + value + ' (' + percentage + '%)';
+          }
+        }
+      }
+    }
+  }
+});
+
+// Task Utilization Chart
+const taskCtx = document.getElementById('taskChart').getContext('2d');
+new Chart(taskCtx, {
+  type: 'bar',
+  data: {
+    labels: ['Tasks Consumed', 'Available Capacity'],
+    datasets: [{
+      label: 'Tasks (Millions)',
+      data: [59.96, 140.04],
+      backgroundColor: ['#67eadd', '#3C574B'],
+      borderColor: '#000',
+      borderWidth: 1
+    }]
+  },
+  options: {
+    responsive: true,
+    maintainAspectRatio: false,
+    scales: {
+      y: {
+        beginAtZero: true,
+        grid: { color: 'rgba(255,255,255,0.1)' },
+        ticks: { color: '#B6B9B5' }
+      },
+      x: {
+        grid: { display: false },
+        ticks: { color: '#B6B9B5' }
+      }
+    },
+    plugins: {
+      legend: { display: false },
+      tooltip: {
+        callbacks: {
+          label: function(context) {
+            return context.raw + 'M tasks';
+          }
+        }
+      }
+    }
+  }
+});
+
+// Builder Distribution Chart
+const builderCtx = document.getElementById('builderChart').getContext('2d');
+new Chart(builderCtx, {
+  type: 'pie',
+  data: {
+    labels: ['Power Builders', 'Regular Builders'],
+    datasets: [{
+      data: [3, 19],
+      backgroundColor: ['#67eadd', '#3C574B'],
+      borderColor: '#000',
+      borderWidth: 2
+    }]
+  },
+  options: {
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: {
+      legend: {
+        position: 'bottom',
+        labels: { color: '#FCFDFD', padding: 15 }
+      },
+      tooltip: {
+        callbacks: {
+          label: function(context) {
+            const percentage = ((context.raw / 22) * 100).toFixed(1);
+            return context.label + ': ' + context.raw + ' (' + percentage + '%)';
+          }
+        }
+      }
+    }
+  }
+});
+</script>
+</body>
+</html>

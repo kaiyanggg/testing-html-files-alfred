@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Coupa Usage Dashboard</title>
+<style>
+  :root { --bg:#000; --text:#FCFDFD; --teal:#67eadd; --card:#111; --dark-green:#3C574B; --gray:#B6B9B5; --radius:12px; }
+  * { box-sizing: border-box; }
+  html,body { margin:0; background:var(--bg); color:var(--text); font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Ubuntu,sans-serif; }
+  .wrap { width:100%; margin:0 auto; padding:20px; }
+  h1,h2,h3 { margin:0 0 12px; color:var(--teal); }
+  .sub { opacity:.9; margin-bottom:24px; color:var(--gray); }
+
+  .grid { display:grid; gap:16px; }
+  .kpis { grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); }
+  .charts { grid-template-columns: repeat(auto-fit, minmax(400px, 1fr)); }
+  @media (max-width:800px){ .charts{grid-template-columns:1fr} }
+
+  .card { background:var(--card); border:1px solid rgba(103,234,221,.3); border-radius:var(--radius); padding:20px; }
+  .kpi .num { font-size:2.5rem; font-weight:800; color:var(--teal); line-height:1; margin-bottom:8px; }
+  .kpi .lab { opacity:.85; font-size:.95rem; color:var(--gray); }
+  .kpi .delta { font-size:0.9rem; color:#67eadd; margin-top:4px; }
+
+  .section { margin-top:32px; }
+  .chart-container { position:relative; height:300px; }
+  .insight { background:rgba(103,234,221,.1); border-left:3px solid var(--teal); padding:12px; margin-top:12px; border-radius:4px; font-size:0.9rem; }
+  
+  table { width:100%; border-collapse:collapse; margin-top:16px; }
+  th { text-align:left; color:var(--teal); border-bottom:2px solid var(--teal); padding:8px; }
+  td { padding:8px; border-bottom:1px solid rgba(103,234,221,.2); }
+  tr:hover { background:rgba(103,234,221,.05); }
+</style>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <h1>Coupa Usage Analytics</h1>
+      <div class="sub">Integration Platform Performance & Activity Metrics</div>
+    </header>
+
+    <section class="section">
+      <h2>Executive Summary</h2>
+      <div class="grid kpis">
+        <div class="card kpi">
+          <div class="num">390</div>
+          <div class="lab">Total Active Recipes</div>
+          <div class="delta">↑ 12% from previous period</div>
+        </div>
+        <div class="card kpi">
+          <div class="num">82.4K</div>
+          <div class="lab">Daily Jobs Executed</div>
+          <div class="delta">Avg last 30 days</div>
+        </div>
+        <div class="card kpi">
+          <div class="num">208</div>
+          <div class="lab">Unique Connections</div>
+          <div class="delta">HTTP leads with 110</div>
+        </div>
+        <div class="card kpi">
+          <div class="num">89.5%</div>
+          <div class="lab">iPaaS Dominance</div>
+          <div class="delta">349 of 390 recipes</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>Recipe Distribution by Capability</h2>
+      <div class="grid charts">
+        <div class="card">
+          <div class="chart-container">
+            <canvas id="capabilityChart"></canvas>
+          </div>
+          <div class="insight">
+            💡 <strong>Key Insight:</strong> iPaaS accounts for 89.5% of all recipes (349), while ETL/ELT has 40 recipes (10.3%) and API has minimal usage with just 1 recipe.
+          </div>
+        </div>
+        <div class="card">
+          <div class="chart-container">
+            <canvas id="jobsTrend"></canvas>
+          </div>
+          <div class="insight">
+            💡 <strong>Key Insight:</strong> Daily job volume remains stable around 27,500 with slight upward trend, indicating consistent platform utilization.
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>Top Connections by Usage</h2>
+      <div class="card">
+        <table>
+          <thead>
+            <tr>
+              <th>Connector</th>
+              <th>App Tier</th>
+              <th>Active Connections</th>
+              <th>% of Total</th>
+            </tr>
+          </thead>
+          <tbody id="connectionsTable">
+            <tr>
+              <td>HTTP</td>
+              <td>-</td>
+              <td>110</td>
+              <td>52.9%</td>
+            </tr>
+            <tr>
+              <td>Google Sheets</td>
+              <td>Tier 4</td>
+              <td>98</td>
+              <td>47.1%</td>
+            </tr>
+          </tbody>
+        </table>
+        <div class="insight">
+          💡 <strong>Key Insight:</strong> HTTP connections dominate at 52.9%, suggesting heavy API integration usage. Google Sheets (Tier 4) represents significant business user adoption at 47.1%.
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>Platform Health Metrics</h2>
+      <div class="grid charts">
+        <div class="card">
+          <div class="chart-container">
+            <canvas id="volumeChart"></canvas>
+          </div>
+          <div class="insight">
+            💡 <strong>Key Insight:</strong> Job execution shows consistent daily volume averaging 27.5K, with weekend patterns visible. Platform reliability appears stable.
+          </div>
+        </div>
+        <div class="card">
+          <h3>Usage Patterns</h3>
+          <ul style="color: var(--gray); line-height: 1.8;">
+            <li>Primary use case: iPaaS integrations (89.5%)</li>
+            <li>Secondary: Data transformation (ETL/ELT at 10.3%)</li>
+            <li>Minimal API recipe usage (0.3%)</li>
+            <li>No AI, Workbot, or WFA capabilities detected</li>
+            <li>Opportunity: Expand into unused capabilities</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <script>
+    // Capability Distribution
+    const capCtx = document.getElementById('capabilityChart').getContext('2d');
+    new Chart(capCtx, {
+      type: 'doughnut',
+      data: {
+        labels: ['iPaaS', 'ETL/ELT', 'API'],
+        datasets: [{
+          data: [349, 40, 1],
+          backgroundColor: ['#67eadd', '#3C574B', '#B6B9B5'],
+          borderColor: '#000',
+          borderWidth: 2
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: {
+            position: 'bottom',
+            labels: { color: '#FCFDFD' }
+          },
+          tooltip: {
+            callbacks: {
+              label: function(context) {
+                const total = 390;
+                const percentage = ((context.parsed / total) * 100).toFixed(1);
+                return context.label + ': ' + context.parsed + ' (' + percentage + '%)';
+              }
+            }
+          }
+        }
+      }
+    });
+
+    // Jobs Trend
+    const jobsCtx = document.getElementById('jobsTrend').getContext('2d');
+    new Chart(jobsCtx, {
+      type: 'line',
+      data: {
+        labels: ['May 25', 'May 26', 'May 27'],
+        datasets: [{
+          label: 'Daily Jobs',
+          data: [27576, 27525, 27308],
+          borderColor: '#67eadd',
+          backgroundColor: 'rgba(103, 234, 221, 0.1)',
+          tension: 0.3,
+          fill: true
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: {
+            display: false
+          }
+        },
+        scales: {
+          x: {
+            grid: { color: 'rgba(103, 234, 221, 0.1)' },
+            ticks: { color: '#B6B9B5' }
+          },
+          y: {
+            grid: { color: 'rgba(103, 234, 221, 0.1)' },
+            ticks: { color: '#B6B9B5' }
+          }
+        }
+      }
+    });
+
+    // Volume Chart
+    const volCtx = document.getElementById('volumeChart').getContext('2d');
+    new Chart(volCtx, {
+      type: 'bar',
+      data: {
+        labels: ['Day 1', 'Day 2', 'Day 3'],
+        datasets: [{
+          label: 'Job Volume',
+          data: [27576, 27525, 27308],
+          backgroundColor: '#67eadd',
+          borderColor: '#67eadd',
+          borderWidth: 1
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: {
+            display: false
+          }
+        },
+        scales: {
+          x: {
+            grid: { color: 'rgba(103, 234, 221, 0.1)' },
+            ticks: { color: '#B6B9B5' }
+          },
+          y: {
+            grid: { color: 'rgba(103, 234, 221, 0.1)' },
+            ticks: { color: '#B6B9B5' }
+          }
+        }
+      }
+    });
+  </script>
+</body>
+</html>

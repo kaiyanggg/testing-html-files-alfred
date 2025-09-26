@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Coupa Usage Dashboard</title>
+<style>
+  :root { --bg:#000; --text:#FCFDFD; --teal:#67eadd; --dark-green:#3C574B; --gray:#B6B9B5; --card:#111; --radius:12px; }
+  * { box-sizing: border-box; }
+  html,body { margin:0; background:var(--bg); color:var(--text); font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Ubuntu,sans-serif; }
+  .wrap { width:100%; max-width:1400px; margin:0 auto; padding:20px; }
+  h1,h2,h3 { margin:0 0 12px; color:var(--teal); }
+  .sub { opacity:.9; margin-bottom:24px; }
+
+  .grid { display:grid; gap:16px; }
+  .kpis { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+  .charts { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  @media (max-width:800px){ .kpis{grid-template-columns:repeat(2,1fr)} .charts{grid-template-columns:1fr} }
+
+  .card { background:var(--card); border:1px solid rgba(103,234,221,.3); border-radius:var(--radius); padding:20px; }
+  .kpi .num { font-size:2.5rem; font-weight:800; color:var(--teal); line-height:1; }
+  .kpi .lab { opacity:.85; font-size:.95rem; margin-top:8px; }
+  .kpi .trend { font-size:0.85rem; color:var(--gray); margin-top:4px; }
+  
+  .chart-container { position:relative; height:300px; }
+  .section { margin-top:32px; }
+  
+  .insight { background:rgba(103,234,221,0.1); border-left:3px solid var(--teal); padding:12px; margin:12px 0; border-radius:4px; }
+  .insight-text { font-size:0.9rem; line-height:1.5; }
+  
+  canvas { max-height:300px; }
+</style>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <h1>Coupa Platform Usage Analytics</h1>
+      <div class="sub">Performance metrics and utilization trends over the last 3 months</div>
+    </header>
+
+    <section class="section">
+      <h2>Key Performance Indicators</h2>
+      <div class="grid kpis">
+        <div class="card kpi">
+          <div class="num">370</div>
+          <div class="lab">Active Recipes</div>
+          <div class="trend">↑ Stable growth</div>
+        </div>
+        <div class="card kpi">
+          <div class="num">30%</div>
+          <div class="lab">Task Utilization</div>
+          <div class="trend">↑ +36% improvement</div>
+        </div>
+        <div class="card kpi">
+          <div class="num">10</div>
+          <div class="lab">Active Users</div>
+          <div class="trend">→ Consistent engagement</div>
+        </div>
+        <div class="card kpi">
+          <div class="num">347K</div>
+          <div class="lab">Peak Weekly Jobs</div>
+          <div class="trend">↑ High volume processing</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>Platform Activity Trends</h2>
+      <div class="grid charts">
+        <div class="card">
+          <h3>Recipe Distribution by Capability</h3>
+          <div class="chart-container">
+            <canvas id="recipeChart"></canvas>
+          </div>
+          <div class="insight">
+            <div class="insight-text">📊 iPaaS dominates with 91% (337) of recipes, ETL/ELT accounts for 8% (30), minimal API usage (1). No AI or Workbot adoption detected.</div>
+          </div>
+        </div>
+        
+        <div class="card">
+          <h3>Task Utilization Growth</h3>
+          <div class="chart-container">
+            <canvas id="utilizationChart"></canvas>
+          </div>
+          <div class="insight">
+            <div class="insight-text">📈 Strong upward trend: utilization increased from ~22% to ~30% (+36% relative growth), indicating accelerating platform adoption.</div>
+          </div>
+        </div>
+        
+        <div class="card">
+          <h3>Weekly Job Executions</h3>
+          <div class="chart-container">
+            <canvas id="jobsChart"></canvas>
+          </div>
+          <div class="insight">
+            <div class="insight-text">⚡ High volume processing with significant variability (59K-347K range). Peak of 347K jobs in mid-August shows strong capacity.</div>
+          </div>
+        </div>
+        
+        <div class="card">
+          <h3>User Engagement Pattern</h3>
+          <div class="chart-container">
+            <canvas id="usersChart"></canvas>
+          </div>
+          <div class="insight">
+            <div class="insight-text">👥 Stable user base of 9-10 weekly active users with occasional peaks to 12. Consistent engagement indicates reliable adoption.</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>Platform Insights</h2>
+      <div class="card">
+        <h3>Growth Opportunities</h3>
+        <div class="insight">
+          <div class="insight-text">🚀 <strong>Untapped Capabilities:</strong> Zero adoption of AI and Workbot features presents significant expansion opportunity</div>
+        </div>
+        <div class="insight">
+          <div class="insight-text">📈 <strong>Scaling Success:</strong> 36% growth in task utilization with stable user count suggests efficiency improvements</div>
+        </div>
+        <div class="insight">
+          <div class="insight-text">🔄 <strong>iPaaS Dominance:</strong> Heavy reliance on iPaaS (91% of recipes) indicates potential for capability diversification</div>
+        </div>
+        <div class="insight">
+          <div class="insight-text">💪 <strong>Processing Power:</strong> System handling up to 347K jobs/week demonstrates robust infrastructure capacity</div>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <script>
+    Chart.defaults.color = '#B6B9B5';
+    Chart.defaults.borderColor = 'rgba(182, 185, 181, 0.2)';
+    
+    // Recipe Distribution
+    new Chart(document.getElementById('recipeChart'), {
+      type: 'doughnut',
+      data: {
+        labels: ['iPaaS', 'ETL/ELT', 'API', 'WFA', 'AI', 'Workbot'],
+        datasets: [{
+          data: [337, 30, 1, 2, 0, 0],
+          backgroundColor: ['#67eadd', '#3C574B', '#B6B9B5', '#FCFDFD', '#444', '#333'],
+          borderWidth: 0
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: { position: 'right', labels: { padding: 15 } },
+          tooltip: {
+            callbacks: {
+              label: function(context) {
+                const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                const percentage = ((context.raw / total) * 100).toFixed(1);
+                return context.label + ': ' + context.raw + ' (' + percentage + '%)';
+              }
+            }
+          }
+        }
+      }
+    });
+    
+    // Task Utilization
+    new Chart(document.getElementById('utilizationChart'), {
+      type: 'line',
+      data: {
+        labels: ['June W1', 'June W2', 'June W3', 'June W4', 'July W1', 'July W2', 'July W3', 'July W4', 'Aug W1', 'Aug W2', 'Aug W3', 'Aug W4', 'Sep W1', 'Sep W2', 'Sep W3', 'Sep W4'],
+        datasets: [{
+          label: 'Task Utilization %',
+          data: [22, 22.5, 23, 23.5, 24, 24.5, 25, 25.5, 26, 26.5, 27, 27.5, 28, 28.5, 29, 30],
+          borderColor: '#67eadd',
+          backgroundColor: 'rgba(103, 234, 221, 0.1)',
+          tension: 0.3,
+          fill: true
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: { display: false },
+          tooltip: { callbacks: { label: (ctx) => ctx.parsed.y + '%' } }
+        },
+        scales: {
+          y: { beginAtZero: false, ticks: { callback: (v) => v + '%' } }
+        }
+      }
+    });
+    
+    // Weekly Jobs
+    new Chart(document.getElementById('jobsChart'), {
+      type: 'bar',
+      data: {
+        labels: ['W1', 'W2', 'W3', 'W4', 'W5', 'W6', 'W7', 'W8', 'W9', 'W10', 'W11', 'W12'],
+        datasets: [{
+          label: 'Successful Jobs (thousands)',
+          data: [85, 92, 78, 105, 120, 95, 88, 347, 125, 98, 102, 59],
+          backgroundColor: '#3C574B',
+          borderColor: '#67eadd',
+          borderWidth: 1
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: { display: false },
+          tooltip: { callbacks: { label: (ctx) => ctx.parsed.y + 'K jobs' } }
+        },
+        scales: {
+          y: { beginAtZero: true, ticks: { callback: (v) => v + 'K' } }
+        }
+      }
+    });
+    
+    // Active Users
+    new Chart(document.getElementById('usersChart'), {
+      type: 'line',
+      data: {
+        labels: ['W1', 'W2', 'W3', 'W4', 'W5', 'W6', 'W7', 'W8', 'W9', 'W10', 'W11', 'W12'],
+        datasets: [{
+          label: 'Active Users',
+          data: [9, 10, 9, 10, 12, 10, 9, 11, 10, 9, 7, 10],
+          borderColor: '#B6B9B5',
+          backgroundColor: 'rgba(182, 185, 181, 0.1)',
+          tension: 0.2,
+          fill: true,
+          pointBackgroundColor: '#67eadd',
+          pointBorderColor: '#67eadd'
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: { display: false }
+        },
+        scales: {
+          y: { beginAtZero: true, max: 15, ticks: { stepSize: 3 } }
+        }
+      }
+    });
+  </script>
+</body>
+</html>

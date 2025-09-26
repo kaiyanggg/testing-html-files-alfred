@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>OpenAI Usage Dashboard</title>
+<style>
+  :root { --bg:#000; --text:#FCFDFD; --teal:#67eadd; --card:#111; --darkgreen:#3C574B; --gray:#B6B9B5; --radius:12px; }
+  * { box-sizing: border-box; }
+  html,body { margin:0; background:var(--bg); color:var(--text); font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Ubuntu,sans-serif; }
+  .wrap { width:100%; max-width:1400px; margin:0 auto; padding:20px; }
+  h1,h2 { margin:0 0 12px; color:var(--teal); }
+  .sub { opacity:.9; margin-bottom:24px; color:var(--gray); }
+
+  .grid { display:grid; gap:16px; }
+  .kpis { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+  .charts { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  @media (max-width:800px){ .kpis{grid-template-columns:repeat(2,1fr)} .charts{grid-template-columns:1fr} }
+
+  .card { background:var(--card); border:1px solid rgba(103,234,221,.3); border-radius:var(--radius); padding:20px; }
+  .kpi .num { font-size:2.5rem; font-weight:800; color:var(--teal); line-height:1; margin-bottom:8px; }
+  .kpi .lab { opacity:.85; font-size:1rem; color:var(--gray); }
+  .kpi .delta { font-size:0.9rem; margin-top:8px; }
+  .positive { color:#67eadd; }
+  .trend { color:var(--gray); font-size:0.85rem; margin-top:4px; }
+
+  .section { margin-top:32px; }
+  .chart-container { position:relative; height:300px; margin-top:16px; }
+  canvas { max-height:300px; }
+  
+  .insight-list { margin:16px 0 0; padding:0; list-style:none; }
+  .insight-list li { padding:12px; background:rgba(103,234,221,.05); border-left:3px solid var(--teal); margin-bottom:8px; border-radius:4px; }
+  .insight-list li strong { color:var(--teal); }
+  
+  .metric-badge { display:inline-block; background:var(--darkgreen); color:var(--text); padding:4px 12px; border-radius:999px; font-size:0.85rem; font-weight:600; margin-left:8px; }
+</style>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <h1>OpenAI Usage Analytics</h1>
+      <div class="sub">AI Capability Adoption in Recipe Creation • Q3 2024</div>
+    </header>
+
+    <section class="section">
+      <h2>Key Metrics</h2>
+      <div class="grid kpis">
+        <div class="card kpi">
+          <div class="num">3,511</div>
+          <div class="lab">Total AI Recipes (Q3)</div>
+          <div class="delta positive">+33.1% quarter growth</div>
+        </div>
+        <div class="card kpi">
+          <div class="num">1,338</div>
+          <div class="lab">September Recipes</div>
+          <div class="delta positive">+14.5% vs August</div>
+        </div>
+        <div class="card kpi">
+          <div class="num">1,170</div>
+          <div class="lab">Average Monthly</div>
+          <div class="trend">Steady acceleration</div>
+        </div>
+        <div class="card kpi">
+          <div class="num">+333</div>
+          <div class="lab">Net Growth (Jul→Sep)</div>
+          <div class="delta positive">+167/month avg increase</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="grid charts">
+        <div class="card">
+          <h2>AI Recipe Growth Trend</h2>
+          <div class="chart-container">
+            <canvas id="trendChart"></canvas>
+          </div>
+          <ul class="insight-list">
+            <li><strong>33.1% growth</strong> from July to September (1,005 → 1,338 recipes)</li>
+            <li><strong>Consistent acceleration:</strong> +16.2% Aug/Jul, +14.5% Sep/Aug</li>
+          </ul>
+        </div>
+        
+        <div class="card">
+          <h2>Monthly Composition</h2>
+          <div class="chart-container">
+            <canvas id="barChart"></canvas>
+          </div>
+          <ul class="insight-list">
+            <li><strong>September peak:</strong> 38.1% of Q3 total<span class="metric-badge">1,338 recipes</span></li>
+            <li><strong>Progressive adoption:</strong> Each month exceeds the previous</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="card">
+        <h2>Growth Analysis</h2>
+        <div class="chart-container" style="height:200px;">
+          <canvas id="growthChart"></canvas>
+        </div>
+        <ul class="insight-list">
+          <li><strong>Month-over-month growth rate:</strong> Averaging +15.4% monthly expansion</li>
+          <li><strong>Velocity increase:</strong> +163 recipes added in August, +170 in September</li>
+          <li><strong>Projected Q4:</strong> At current growth rate, expect ~1,530 recipes by October</li>
+        </ul>
+      </div>
+    </section>
+  </div>
+
+  <script>
+    Chart.defaults.color = '#B6B9B5';
+    Chart.defaults.borderColor = 'rgba(103,234,221,0.2)';
+    Chart.defaults.font.family = '-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Ubuntu,sans-serif';
+    
+    const months = ['July', 'August', 'September'];
+    const values = [1005, 1168, 1338];
+    
+    // Trend Line Chart
+    new Chart(document.getElementById('trendChart'), {
+      type: 'line',
+      data: {
+        labels: months,
+        datasets: [{
+          label: 'AI-Enabled Recipes',
+          data: values,
+          borderColor: '#67eadd',
+          backgroundColor: 'rgba(103,234,221,0.1)',
+          borderWidth: 3,
+          tension: 0.3,
+          fill: true,
+          pointRadius: 6,
+          pointBackgroundColor: '#67eadd',
+          pointBorderColor: '#000',
+          pointBorderWidth: 2
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: { display: false },
+          tooltip: {
+            backgroundColor: 'rgba(0,0,0,0.9)',
+            titleColor: '#67eadd',
+            bodyColor: '#FCFDFD',
+            borderColor: '#67eadd',
+            borderWidth: 1,
+            padding: 12,
+            displayColors: false
+          }
+        },
+        scales: {
+          y: {
+            beginAtZero: false,
+            min: 900,
+            grid: { color: 'rgba(103,234,221,0.1)' },
+            ticks: { color: '#B6B9B5' }
+          },
+          x: {
+            grid: { display: false },
+            ticks: { color: '#B6B9B5' }
+          }
+        }
+      }
+    });
+    
+    // Bar Chart
+    new Chart(document.getElementById('barChart'), {
+      type: 'bar',
+      data: {
+        labels: months,
+        datasets: [{
+          label: 'Eligible Recipes',
+          data: values,
+          backgroundColor: ['#3C574B', '#67eadd', '#B6B9B5'],
+          borderColor: '#67eadd',
+          borderWidth: 1
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: { display: false },
+          tooltip: {
+            backgroundColor: 'rgba(0,0,0,0.9)',
+            titleColor: '#67eadd',
+            bodyColor: '#FCFDFD',
+            borderColor: '#67eadd',
+            borderWidth: 1,
+            padding: 12
+          }
+        },
+        scales: {
+          y: {
+            beginAtZero: true,
+            grid: { color: 'rgba(103,234,221,0.1)' },
+            ticks: { color: '#B6B9B5' }
+          },
+          x: {
+            grid: { display: false },
+            ticks: { color: '#B6B9B5' }
+          }
+        }
+      }
+    });
+    
+    // Growth Rate Chart
+    new Chart(document.getElementById('growthChart'), {
+      type: 'line',
+      data: {
+        labels: ['Aug vs Jul', 'Sep vs Aug'],
+        datasets: [{
+          label: 'Month-over-Month Growth %',
+          data: [16.2, 14.5],
+          borderColor: '#67eadd',
+          backgroundColor: 'rgba(103,234,221,0.2)',
+          borderWidth: 2,
+          fill: true,
+          pointRadius: 5,
+          pointBackgroundColor: '#67eadd'
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: { display: false },
+          tooltip: {
+            backgroundColor: 'rgba(0,0,0,0.9)',
+            titleColor: '#67eadd',
+            bodyColor: '#FCFDFD',
+            borderColor: '#67eadd',
+            borderWidth: 1,
+            padding: 12,
+            callbacks: {
+              label: function(context) {
+                return context.parsed.y.toFixed(1) + '% growth';
+              }
+            }
+          }
+        },
+        scales: {
+          y: {
+            beginAtZero: true,
+            grid: { color: 'rgba(103,234,221,0.1)' },
+            ticks: { 
+              color: '#B6B9B5',
+              callback: function(value) {
+                return value + '%';
+              }
+            }
+          },
+          x: {
+            grid: { display: false },
+            ticks: { color: '#B6B9B5' }
+          }
+        }
+      }
+    });
+  </script>
+</body>
+</html>

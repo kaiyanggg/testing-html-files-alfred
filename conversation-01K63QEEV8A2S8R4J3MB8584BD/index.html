@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Coupa Usage Dashboard</title>
+<style>
+  :root { --bg:#000; --text:#FCFDFD; --teal:#67eadd; --card:#111; --radius:12px; --dark-green:#3C574B; --gray:#B6B9B5; }
+  * { box-sizing: border-box; }
+  html,body { margin:0; background:var(--bg); color:var(--text); font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Ubuntu,sans-serif; }
+  .wrap { width:100%; max-width:1200px; margin:0 auto; padding:20px; }
+  h1,h2 { margin:0 0 12px; color:var(--teal); }
+  .sub { opacity:.9; margin-bottom:24px; color:var(--gray); }
+
+  .grid { display:grid; gap:16px; }
+  .kpis { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+  .insights { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  @media (max-width:800px){ .kpis{grid-template-columns:repeat(2,1fr)} .insights{grid-template-columns:1fr} }
+
+  .card { background:var(--card); border:1px solid rgba(103,234,221,.3); border-radius:var(--radius); padding:20px; transition: all 0.3s ease; }
+  .card:hover { border-color:var(--teal); }
+  .kpi .num { font-size:2.5rem; font-weight:800; color:var(--teal); line-height:1; margin-bottom:8px; }
+  .kpi .lab { opacity:.85; font-size:.95rem; color:var(--gray); }
+  .kpi .delta { font-size:0.85rem; color:var(--dark-green); margin-top:4px; }
+
+  .tag { display:inline-block; font-size:.75rem; font-weight:700; color:#003b36; background:var(--teal); padding:3px 10px; border-radius:999px; margin-bottom:12px; }
+  
+  .section { margin-top:32px; }
+  
+  .app-list { display:flex; flex-wrap:wrap; gap:8px; margin-top:12px; }
+  .app-pill { background:var(--dark-green); color:var(--text); padding:6px 12px; border-radius:999px; font-size:0.85rem; border:1px solid var(--gray); opacity:0.9; }
+  
+  .capability-bar { background:var(--dark-green); height:40px; border-radius:8px; display:flex; align-items:center; padding:0 16px; margin-top:12px; }
+  .capability-bar span { color:var(--teal); font-weight:600; }
+  
+  .chart-container { position:relative; height:300px; margin-top:16px; }
+  
+  ul { margin:12px 0; padding-left:20px; color:var(--gray); }
+  li { margin:8px 0; }
+  
+  .highlight { color:var(--teal); font-weight:600; }
+  .metric-detail { font-size:0.9rem; color:var(--gray); margin-top:8px; }
+  
+  .status-indicator { width:12px; height:12px; background:var(--teal); border-radius:50%; display:inline-block; margin-right:8px; animation: pulse 2s infinite; }
+  @keyframes pulse { 0%{opacity:1} 50%{opacity:0.5} 100%{opacity:1} }
+</style>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <h1>Coupa Integration Dashboard</h1>
+      <div class="sub">Last 3 months performance overview • Real-time monitoring</div>
+    </header>
+
+    <section class="section">
+      <h2>Key Metrics</h2>
+      <div class="grid kpis">
+        <div class="card kpi">
+          <div class="num">1</div>
+          <div class="lab">Active Recipe</div>
+          <div class="delta"><span class="status-indicator"></span>Currently Running</div>
+        </div>
+        <div class="card kpi">
+          <div class="num">513</div>
+          <div class="lab">Successful Jobs</div>
+          <div class="delta">100% Success Rate</div>
+        </div>
+        <div class="card kpi">
+          <div class="num">10</div>
+          <div class="lab">Connected Apps</div>
+          <div class="delta">Multi-system Integration</div>
+        </div>
+        <div class="card kpi">
+          <div class="num">iPaaS</div>
+          <div class="lab">Primary Capability</div>
+          <div class="delta">Integration Platform</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>Integration Ecosystem</h2>
+      <div class="grid insights">
+        <div class="card">
+          <div class="tag">Connected Systems</div>
+          <h3>Apps Working with Coupa</h3>
+          <div class="app-list">
+            <div class="app-pill">Salesforce</div>
+            <div class="app-pill">Google Sheets</div>
+            <div class="app-pill">Email by Workato</div>
+            <div class="app-pill">CSV by Workato</div>
+            <div class="app-pill">Files by Workato</div>
+            <div class="app-pill">Lists by Workato</div>
+            <div class="app-pill">Lookup tables</div>
+            <div class="app-pill">Variables by Workato</div>
+            <div class="app-pill">Scheduler by Workato</div>
+          </div>
+          <div class="metric-detail">Strong ecosystem connectivity with enterprise and utility apps</div>
+        </div>
+        
+        <div class="card">
+          <div class="tag">Performance</div>
+          <h3>Job Execution Analysis</h3>
+          <canvas id="jobChart"></canvas>
+          <div class="metric-detail">Consistent execution with <span class="highlight">171 jobs/month average</span></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>Usage Insights</h2>
+      <div class="card">
+        <h3>Current State Analysis</h3>
+        <ul>
+          <li><span class="highlight">Single active recipe</span> processing procurement workflows with high reliability</li>
+          <li><span class="highlight">513 successful jobs</span> executed without failures indicates stable integration</li>
+          <li><span class="highlight">iPaaS capability</span> leveraged for seamless data flow between Coupa and 9 other systems</li>
+          <li><span class="highlight">Salesforce integration</span> suggests CRM-procurement data synchronization</li>
+          <li><span class="highlight">Scheduler usage</span> indicates automated batch processing implementation</li>
+        </ul>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>Platform Capability</h2>
+      <div class="card">
+        <div class="capability-bar">
+          <span>iPaaS - Integration Platform as a Service</span>
+        </div>
+        <div class="metric-detail">Utilizing integration platform capabilities for automated procurement workflows</div>
+      </div>
+    </section>
+  </div>
+  
+  <script>
+    const ctx = document.getElementById('jobChart').getContext('2d');
+    new Chart(ctx, {
+      type: 'bar',
+      data: {
+        labels: ['Month 1', 'Month 2', 'Month 3'],
+        datasets: [{
+          label: 'Successful Jobs',
+          data: [171, 171, 171],
+          backgroundColor: '#67eadd',
+          borderColor: '#67eadd',
+          borderWidth: 1
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: { display: false },
+          tooltip: {
+            callbacks: {
+              label: function(context) {
+                return 'Jobs: ' + context.parsed.y;
+              }
+            }
+          }
+        },
+        scales: {
+          y: {
+            beginAtZero: true,
+            ticks: { color: '#B6B9B5' },
+            grid: { color: 'rgba(182, 185, 181, 0.1)' }
+          },
+          x: {
+            ticks: { color: '#B6B9B5' },
+            grid: { display: false }
+          }
+        }
+      }
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,374 @@
+Looking at the data, I need to create a dashboard showing Zendesk customer usage patterns over 6 months, including job execution trends, recipe capabilities, connection usage, and task consumption.
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Zendesk Customer Usage Dashboard</title>
+<style>
+  :root { 
+    --bg:#FCFDFD; 
+    --text:#3C574B; 
+    --teal:#67eadd; 
+    --dark-green:#3C574B;
+    --gray:#B6B9B5;
+    --card:#fff; 
+    --radius:12px; 
+  }
+  * { box-sizing: border-box; }
+  html,body { 
+    margin:0; 
+    background:var(--bg); 
+    color:var(--text); 
+    font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Ubuntu,sans-serif; 
+  }
+  .wrap { 
+    width:100%; 
+    padding:20px; 
+  }
+  h1,h2 { 
+    margin:0 0 12px; 
+    color:var(--dark-green); 
+  }
+  h1 { font-size:2rem; }
+  .sub { 
+    opacity:.8; 
+    margin-bottom:24px; 
+    color:var(--gray);
+  }
+
+  .grid { 
+    display:grid; 
+    gap:16px; 
+    margin-bottom:24px;
+  }
+  .kpis { 
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); 
+  }
+  .charts { 
+    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); 
+  }
+
+  .card { 
+    background:var(--card); 
+    border:2px solid var(--teal); 
+    border-radius:var(--radius); 
+    padding:20px; 
+    box-shadow: 0 2px 8px rgba(103,234,221,0.1);
+  }
+  .kpi .num { 
+    font-size:2.5rem; 
+    font-weight:800; 
+    color:var(--teal); 
+    line-height:1; 
+  }
+  .kpi .lab { 
+    opacity:.85; 
+    font-size:1rem; 
+    color:var(--dark-green);
+    margin-top:8px;
+  }
+  .kpi .delta { 
+    font-size:0.9rem; 
+    color:var(--gray); 
+    margin-top:4px;
+  }
+
+  .chart-container {
+    position: relative;
+    height: 300px;
+    margin-top: 20px;
+  }
+
+  .insight {
+    margin-top:16px;
+    padding:12px;
+    background: linear-gradient(135deg, rgba(103,234,221,0.1), rgba(103,234,221,0.05));
+    border-left:3px solid var(--teal);
+    border-radius:4px;
+    font-size:0.9rem;
+  }
+
+  .section { 
+    margin-top:32px; 
+  }
+
+  canvas {
+    max-height: 300px;
+  }
+</style>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <h1>Zendesk Customer Usage Analytics</h1>
+      <div class="sub">Platform utilization and performance metrics over the past 6 months</div>
+    </header>
+
+    <section class="section">
+      <h2>Executive Summary</h2>
+      <div class="grid kpis">
+        <div class="card kpi">
+          <div class="num">414</div>
+          <div class="lab">Active Recipes</div>
+          <div class="delta">Across 5 capability types</div>
+        </div>
+        <div class="card kpi">
+          <div class="num">749</div>
+          <div class="lab">Total Connections</div>
+          <div class="delta">Across all app tiers</div>
+        </div>
+        <div class="card kpi">
+          <div class="num">2.03M</div>
+          <div class="lab">Avg Weekly Tasks</div>
+          <div class="delta">↓ 74% last week (partial)</div>
+        </div>
+        <div class="card kpi">
+          <div class="num">410K</div>
+          <div class="lab">Avg Weekly Jobs</div>
+          <div class="delta">Stable execution pattern</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>Usage Trends</h2>
+      <div class="grid charts">
+        <div class="card">
+          <h3>Weekly Job Execution</h3>
+          <div class="chart-container">
+            <canvas id="jobsChart"></canvas>
+          </div>
+          <div class="insight">
+            <strong>Key Insight:</strong> Job execution shows volatility with peaks in April (524K) and July (445K). The sharp drop in the last week (109K) indicates partial data collection.
+          </div>
+        </div>
+
+        <div class="card">
+          <h3>Weekly Task Consumption</h3>
+          <div class="chart-container">
+            <canvas id="tasksChart"></canvas>
+          </div>
+          <div class="insight">
+            <strong>Key Insight:</strong> Task consumption peaked at 2.7M in late June, with an average of 2M tasks per week. Strong correlation with job execution patterns.
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>Platform Utilization</h2>
+      <div class="grid charts">
+        <div class="card">
+          <h3>Recipe Distribution by Capability</h3>
+          <div class="chart-container">
+            <canvas id="capabilityChart"></canvas>
+          </div>
+          <div class="insight">
+            <strong>Key Insight:</strong> iPaaS dominates with 310 recipes (75%), while AI adoption remains low at only 10 recipes (2.4%). Opportunity for AI expansion.
+          </div>
+        </div>
+
+        <div class="card">
+          <h3>Connections by App Tier</h3>
+          <div class="chart-container">
+            <canvas id="tierChart"></canvas>
+          </div>
+          <div class="insight">
+            <strong>Key Insight:</strong> Tier 2 apps lead with 253 connections (34%), followed by untiered apps (204). Higher tier apps (4-5) have lower adoption.
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <script>
+    Chart.defaults.color = '#3C574B';
+    Chart.defaults.borderColor = '#B6B9B5';
+    
+    const jobsData = [
+      {date: '2025-02-23', value: 466695},
+      {date: '2025-03-02', value: 414434},
+      {date: '2025-03-09', value: 392194},
+      {date: '2025-03-16', value: 406846},
+      {date: '2025-03-23', value: 425192},
+      {date: '2025-03-30', value: 443910},
+      {date: '2025-04-06', value: 368712},
+      {date: '2025-04-13', value: 524477},
+      {date: '2025-04-20', value: 371280},
+      {date: '2025-04-27', value: 467418},
+      {date: '2025-05-04', value: 392780},
+      {date: '2025-05-11', value: 433630},
+      {date: '2025-05-18', value: 406408},
+      {date: '2025-05-25', value: 400328},
+      {date: '2025-06-01', value: 408370},
+      {date: '2025-06-08', value: 498525},
+      {date: '2025-06-15', value: 370993},
+      {date: '2025-06-22', value: 406000},
+      {date: '2025-06-29', value: 470835},
+      {date: '2025-07-06', value: 349894},
+      {date: '2025-07-13', value: 337015},
+      {date: '2025-07-20', value: 377209},
+      {date: '2025-07-27', value: 445480},
+      {date: '2025-08-03', value: 340691},
+      {date: '2025-08-10', value: 367024},
+      {date: '2025-08-17', value: 407739},
+      {date: '2025-08-24', value: 109332}
+    ];
+
+    new Chart(document.getElementById('jobsChart'), {
+      type: 'line',
+      data: {
+        labels: jobsData.map(d => {
+          const date = new Date(d.date);
+          return date.toLocaleDateString('en-US', {month: 'short', day: 'numeric'});
+        }),
+        datasets: [{
+          label: 'Jobs Executed',
+          data: jobsData.map(d => d.value),
+          borderColor: '#67eadd',
+          backgroundColor: 'rgba(103, 234, 221, 0.1)',
+          fill: true,
+          tension: 0.4
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: { display: false }
+        },
+        scales: {
+          y: {
+            beginAtZero: true,
+            ticks: {
+              callback: function(value) {
+                return (value/1000).toFixed(0) + 'K';
+              }
+            }
+          }
+        }
+      }
+    });
+
+    const tasksData = [
+      {date: '2025-02-23', value: 2294574},
+      {date: '2025-03-02', value: 2076933},
+      {date: '2025-03-09', value: 1781400},
+      {date: '2025-03-16', value: 2121160},
+      {date: '2025-03-23', value: 2234171},
+      {date: '2025-03-30', value: 2400755},
+      {date: '2025-04-06', value: 2118555},
+      {date: '2025-04-13', value: 2262345},
+      {date: '2025-04-20', value: 1638906},
+      {date: '2025-04-27', value: 2199724},
+      {date: '2025-05-04', value: 1782053},
+      {date: '2025-05-11', value: 1930741},
+      {date: '2025-05-18', value: 1911490},
+      {date: '2025-05-25', value: 1999878},
+      {date: '2025-06-01', value: 2172202},
+      {date: '2025-06-08', value: 2403201},
+      {date: '2025-06-15', value: 1870147},
+      {date: '2025-06-22', value: 2093573},
+      {date: '2025-06-29', value: 2731043},
+      {date: '2025-07-06', value: 2268702},
+      {date: '2025-07-13', value: 2054021},
+      {date: '2025-07-20', value: 2006198},
+      {date: '2025-07-27', value: 2341643},
+      {date: '2025-08-03', value: 1543597},
+      {date: '2025-08-10', value: 1820167},
+      {date: '2025-08-17', value: 1976589},
+      {date: '2025-08-24', value: 574455}
+    ];
+
+    new Chart(document.getElementById('tasksChart'), {
+      type: 'line',
+      data: {
+        labels: tasksData.map(d => {
+          const date = new Date(d.date);
+          return date.toLocaleDateString('en-US', {month: 'short', day: 'numeric'});
+        }),
+        datasets: [{
+          label: 'Tasks Consumed',
+          data: tasksData.map(d => d.value),
+          borderColor: '#3C574B',
+          backgroundColor: 'rgba(60, 87, 75, 0.1)',
+          fill: true,
+          tension: 0.4
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: { display: false }
+        },
+        scales: {
+          y: {
+            beginAtZero: true,
+            ticks: {
+              callback: function(value) {
+                return (value/1000000).toFixed(1) + 'M';
+              }
+            }
+          }
+        }
+      }
+    });
+
+    new Chart(document.getElementById('capabilityChart'), {
+      type: 'doughnut',
+      data: {
+        labels: ['iPaaS', 'ETL/ELT', 'API', 'Bot', 'AI'],
+        datasets: [{
+          data: [310, 42, 37, 15, 10],
+          backgroundColor: [
+            '#67eadd',
+            '#3C574B',
+            '#B6B9B5',
+            'rgba(103, 234, 221, 0.5)',
+            'rgba(60, 87, 75, 0.5)'
+          ]
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: {
+            position: 'bottom'
+          }
+        }
+      }
+    });
+
+    new Chart(document.getElementById('tierChart'), {
+      type: 'bar',
+      data: {
+        labels: ['Tier 2', 'Untiered', 'Tier 4', 'Tier 3', 'Tier 1', 'Tier 5'],
+        datasets: [{
+          label: 'Connections',
+          data: [253, 204, 137, 118, 29, 8],
+          backgroundColor: '#67eadd',
+          borderColor: '#3C574B',
+          borderWidth: 1
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: { display: false }
+        },
+        scales: {
+          y: {
+            beginAtZero: true
+          }
+        }
+      }
+    });
+  </script>
+</body>
+</html>

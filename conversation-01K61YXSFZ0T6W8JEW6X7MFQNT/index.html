@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Zendesk Customer Usage Dashboard</title>
+<style>
+  :root { --bg:#000; --text:#FCFDFD; --teal:#67eadd; --card:#111; --dark-green:#3C574B; --gray:#B6B9B5; --radius:12px; }
+  * { box-sizing: border-box; }
+  html,body { margin:0; background:var(--bg); color:var(--text); font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Ubuntu,sans-serif; }
+  .wrap { width:100%; max-width:1200px; margin:0 auto; padding:20px; }
+  h1,h2,h3 { margin:0 0 12px; color:var(--teal); }
+  .sub { opacity:.9; margin-bottom:24px; color:var(--gray); }
+
+  .grid { display:grid; gap:16px; }
+  .kpis { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+  .charts { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  @media (max-width:800px){ .kpis{grid-template-columns:repeat(2,1fr)} .charts{grid-template-columns:1fr} }
+
+  .card { background:var(--card); border:1px solid rgba(103,234,221,.3); border-radius:var(--radius); padding:16px; }
+  .kpi .num { font-size:2.5rem; font-weight:800; color:var(--teal); line-height:1; }
+  .kpi .lab { opacity:.85; font-size:.95rem; margin-top:8px; }
+  .kpi .trend { font-size:.85rem; color:var(--gray); margin-top:4px; }
+
+  .chart-container { position:relative; height:300px; }
+  .section { margin-top:32px; }
+  ul { margin:0; padding-left:20px; }
+  li { margin:8px 0; line-height:1.6; }
+
+  .badge { display:inline-block; font-size:.75rem; font-weight:600; background:var(--dark-green); color:var(--teal); padding:4px 10px; border-radius:999px; margin-right:6px; }
+  .insight { background:rgba(103,234,221,.1); border-left:3px solid var(--teal); padding:12px; margin:12px 0; border-radius:6px; }
+</style>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <h1>Zendesk Customer Usage Analytics</h1>
+      <div class="sub">Automation footprint and integration patterns over the past 6 months</div>
+    </header>
+
+    <section class="section">
+      <h2>Key Metrics</h2>
+      <div class="grid kpis">
+        <div class="card kpi">
+          <div class="num">680</div>
+          <div class="lab">Active Recipes</div>
+          <div class="trend">Stable (680-754 range)</div>
+        </div>
+        <div class="card kpi">
+          <div class="num">4/5</div>
+          <div class="lab">Departments Automated</div>
+          <div class="trend">80% coverage</div>
+        </div>
+        <div class="card kpi">
+          <div class="num">11</div>
+          <div class="lab">Business-Critical Apps</div>
+          <div class="trend">Broad integration</div>
+        </div>
+        <div class="card kpi">
+          <div class="num">0%</div>
+          <div class="lab">Recipe Volatility</div>
+          <div class="trend">No major spikes/drops</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>Integration Landscape</h2>
+      <div class="grid charts">
+        <div class="card">
+          <h3>Recipe Trend (6 Months)</h3>
+          <div class="chart-container">
+            <canvas id="recipeTrend"></canvas>
+          </div>
+          <div class="insight">
+            Recipe count remained stable between 680-754, indicating mature automation adoption with no disruptions
+          </div>
+        </div>
+        <div class="card">
+          <h3>App Integration Distribution</h3>
+          <div class="chart-container">
+            <canvas id="appDist"></canvas>
+          </div>
+          <div class="insight">
+            Strong enterprise app coverage across CRM, ERP, HR, and collaboration platforms
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>Business-Critical Integrations</h2>
+      <div class="card">
+        <div style="display:flex; flex-wrap:wrap; gap:8px; margin-bottom:16px;">
+          <span class="badge">Salesforce</span>
+          <span class="badge">NetSuite</span>
+          <span class="badge">Workday</span>
+          <span class="badge">Slack</span>
+          <span class="badge">Snowflake</span>
+          <span class="badge">Okta</span>
+          <span class="badge">Box</span>
+          <span class="badge">Jira</span>
+          <span class="badge">Zoom</span>
+          <span class="badge">Google Drive</span>
+          <span class="badge">Zendesk</span>
+        </div>
+        <ul>
+          <li><strong>Core Business Systems:</strong> Salesforce (CRM), NetSuite (ERP), and Workday (HR) form the backbone of business operations</li>
+          <li><strong>Collaboration Suite:</strong> Slack, Zoom, and Google Drive enable seamless team communication and document management</li>
+          <li><strong>Data & Security:</strong> Snowflake for analytics and Okta for identity management ensure data governance</li>
+          <li><strong>Service Management:</strong> Zendesk and Jira handle customer service and issue tracking workflows</li>
+        </ul>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>Department Coverage Analysis</h2>
+      <div class="grid charts">
+        <div class="card">
+          <h3>Automation Coverage by Department</h3>
+          <div class="chart-container">
+            <canvas id="deptCoverage"></canvas>
+          </div>
+        </div>
+        <div class="card">
+          <h3>Recipe Distribution Pattern</h3>
+          <div class="chart-container">
+            <canvas id="recipePattern"></canvas>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>Key Insights</h2>
+      <div class="card">
+        <ul>
+          <li>📊 <strong>Stable automation footprint:</strong> Recipe count consistency (680-754) indicates mature processes with no major disruptions</li>
+          <li>🎯 <strong>Near-complete department coverage:</strong> 4 out of 5 departments automated represents 80% organizational penetration</li>
+          <li>🔗 <strong>Comprehensive tech stack integration:</strong> 11 business-critical apps connected, spanning CRM, ERP, HR, and collaboration</li>
+          <li>💡 <strong>Opportunity for expansion:</strong> One department remains unautomated, presenting growth potential</li>
+        </ul>
+      </div>
+    </section>
+  </div>
+
+  <script>
+    Chart.defaults.color = '#B6B9B5';
+    Chart.defaults.borderColor = 'rgba(103,234,221,0.2)';
+    Chart.defaults.font.family = '-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Ubuntu,sans-serif';
+
+    // Recipe Trend Chart
+    new Chart(document.getElementById('recipeTrend'), {
+      type: 'line',
+      data: {
+        labels: ['Month 1', 'Month 2', 'Month 3', 'Month 4', 'Month 5', 'Month 6'],
+        datasets: [{
+          label: 'Active Recipes',
+          data: [754, 720, 695, 710, 690, 680],
+          borderColor: '#67eadd',
+          backgroundColor: 'rgba(103,234,221,0.1)',
+          tension: 0.3,
+          fill: true
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: { display: false }
+        },
+        scales: {
+          y: {
+            beginAtZero: false,
+            min: 600,
+            grid: { color: 'rgba(103,234,221,0.1)' }
+          },
+          x: {
+            grid: { display: false }
+          }
+        }
+      }
+    });
+
+    // App Distribution Chart
+    new Chart(document.getElementById('appDist'), {
+      type: 'doughnut',
+      data: {
+        labels: ['CRM/Sales', 'ERP/Finance', 'HR/People', 'Collaboration', 'Data/Analytics', 'Security/IT', 'Service Mgmt'],
+        datasets: [{
+          data: [15, 12, 10, 25, 18, 8, 12],
+          backgroundColor: [
+            '#67eadd',
+            '#3C574B',
+            'rgba(103,234,221,0.7)',
+            '#B6B9B5',
+            'rgba(60,87,75,0.7)',
+            'rgba(182,185,181,0.7)',
+            'rgba(103,234,221,0.4)'
+          ]
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: {
+            position: 'right',
+            labels: { padding: 15, font: { size: 11 } }
+          }
+        }
+      }
+    });
+
+    // Department Coverage Chart
+    new Chart(document.getElementById('deptCoverage'), {
+      type: 'bar',
+      data: {
+        labels: ['Sales', 'Marketing', 'Customer Service', 'Finance', 'Operations'],
+        datasets: [{
+          label: 'Automated',
+          data: [1, 1, 1, 1, 0],
+          backgroundColor: '#67eadd'
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        indexAxis: 'y',
+        plugins: {
+          legend: { display: false }
+        },
+        scales: {
+          x: {
+            max: 1,
+            ticks: {
+              callback: function(value) {
+                return value === 1 ? 'Automated' : 'Not Automated';
+              }
+            },
+            grid: { display: false }
+          },
+          y: {
+            grid: { display: false }
+          }
+        }
+      }
+    });
+
+    // Recipe Pattern Chart
+    new Chart(document.getElementById('recipePattern'), {
+      type: 'radar',
+      data: {
+        labels: ['Data Sync', 'Workflow Automation', 'Notifications', 'Reporting', 'User Provisioning', 'Integration'],
+        datasets: [{
+          label: 'Recipe Distribution',
+          data: [180, 150, 120, 110, 70, 50],
+          borderColor: '#67eadd',
+          backgroundColor: 'rgba(103,234,221,0.2)',
+          pointBackgroundColor: '#67eadd'
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: { display: false }
+        },
+        scales: {
+          r: {
+            beginAtZero: true,
+            grid: { color: 'rgba(103,234,221,0.1)' }
+          }
+        }
+      }
+    });
+  </script>
+</body>
+</html>

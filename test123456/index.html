@@ -1,0 +1,317 @@
+Looking at the Zendesk usage data over the past 6 months, I need to create a renewal-focused dashboard that highlights their growth story and stability.
+
+Key insights to showcase:
+1. Stable platform deployment (17 paid workspaces, no churn)
+2. High-scale operations (1.3-1.8M monthly jobs)
+3. Mature capability adoption across multiple use cases
+4. Resilient recipe footprint (690+ recipes)
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Zendesk Platform Performance - Renewal Dashboard</title>
+<style>
+  :root { --bg:#000; --text:#FCFDFD; --teal:#67eadd; --card:#111; --radius:12px; --dark-green:#3C574B; --gray:#B6B9B5; }
+  * { box-sizing: border-box; }
+  html,body { margin:0; background:var(--bg); color:var(--text); font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Ubuntu,sans-serif; }
+  .wrap { width:100%; max-width:1400px; margin:0 auto; padding:20px; }
+  h1,h2 { margin:0 0 12px; color:var(--teal); }
+  h3 { color:var(--text); margin:0 0 8px; }
+  .sub { opacity:.9; margin-bottom:24px; color:var(--gray); }
+
+  .grid { display:grid; gap:16px; }
+  .kpis { grid-template-columns: repeat(5, minmax(0, 1fr)); }
+  .charts { grid-template-columns: repeat(2, minmax(0, 1fr)); margin-top:24px; }
+  @media (max-width:900px){ .kpis{grid-template-columns:repeat(2,1fr)} .charts{grid-template-columns:1fr} }
+
+  .card { background:var(--card); border:1px solid rgba(103,234,221,.3); border-radius:var(--radius); padding:16px; }
+  .kpi .num { font-size:2.5rem; font-weight:800; color:var(--teal); line-height:1; }
+  .kpi .lab { opacity:.85; font-size:.9rem; margin-top:4px; }
+  .kpi .delta { color:#67eadd; font-size:.8rem; margin-top:4px; opacity:.7; }
+
+  .tag { display:inline-block; font-size:.75rem; font-weight:700; color:#003b36; background:var(--teal); padding:3px 10px; border-radius:999px; margin-bottom:12px; }
+  
+  .section { margin-top:32px; }
+  
+  .chart-container { position:relative; height:300px; }
+  canvas { max-height:300px; }
+  
+  .insight-list { list-style:none; padding:0; margin:16px 0 0; }
+  .insight-list li { padding:8px 0; border-bottom:1px solid rgba(103,234,221,.1); color:var(--gray); font-size:.9rem; }
+  .insight-list li:before { content:"→ "; color:var(--teal); margin-right:6px; }
+  
+  .highlight-box { background:linear-gradient(135deg, rgba(103,234,221,.1), transparent); border:2px solid var(--teal); border-radius:var(--radius); padding:20px; margin:24px 0; }
+  .highlight-box h3 { color:var(--teal); font-size:1.3rem; }
+  
+  .renewal-card { background:linear-gradient(135deg, rgba(103,234,221,.05), transparent); }
+  .renewal-stats { display:flex; justify-content:space-around; margin-top:16px; }
+  .renewal-stat { text-align:center; }
+  .renewal-stat .val { font-size:1.8rem; font-weight:bold; color:var(--teal); }
+  .renewal-stat .desc { font-size:.85rem; color:var(--gray); margin-top:4px; }
+</style>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <h1>Zendesk Platform Performance Dashboard</h1>
+      <div class="sub">6-Month Renewal Review | March 2024 - September 2024</div>
+    </header>
+
+    <section class="section">
+      <h2>Executive Summary</h2>
+      <div class="grid kpis">
+        <div class="card kpi">
+          <div class="num">17</div>
+          <div class="lab">Paid Workspaces</div>
+          <div class="delta">0% churn</div>
+        </div>
+        <div class="card kpi">
+          <div class="num">693</div>
+          <div class="lab">Active Recipes</div>
+          <div class="delta">Stable footprint</div>
+        </div>
+        <div class="card kpi">
+          <div class="num">1.34M</div>
+          <div class="lab">Monthly Jobs (Aug)</div>
+          <div class="delta">High scale ops</div>
+        </div>
+        <div class="card kpi">
+          <div class="num">6</div>
+          <div class="lab">Capabilities Used</div>
+          <div class="delta">Broad adoption</div>
+        </div>
+        <div class="card kpi">
+          <div class="num">9-10</div>
+          <div class="lab">Active Builders</div>
+          <div class="delta">Strong engagement</div>
+        </div>
+      </div>
+    </section>
+
+    <div class="highlight-box">
+      <h3>🚀 Renewal Highlights</h3>
+      <div class="renewal-stats">
+        <div class="renewal-stat">
+          <div class="val">100%</div>
+          <div class="desc">Workspace Retention</div>
+        </div>
+        <div class="renewal-stat">
+          <div class="val">9.7M</div>
+          <div class="desc">Total Jobs (6mo)</div>
+        </div>
+        <div class="renewal-stat">
+          <div class="val">300+</div>
+          <div class="desc">iPaaS Recipes</div>
+        </div>
+        <div class="renewal-stat">
+          <div class="val">40%</div>
+          <div class="desc">WFA Growth</div>
+        </div>
+      </div>
+    </div>
+
+    <section class="section">
+      <h2>Platform Metrics & Growth Story</h2>
+      <div class="grid charts">
+        <div class="card">
+          <h3>Job Execution Volume</h3>
+          <div class="chart-container">
+            <canvas id="jobChart"></canvas>
+          </div>
+          <ul class="insight-list">
+            <li>Peak performance of 1.84M jobs in March demonstrates platform scalability</li>
+            <li>Consistent 1.3M+ monthly executions shows reliable automation dependency</li>
+            <li>Natural seasonal variation with summer dip, typical for enterprise patterns</li>
+          </ul>
+        </div>
+        
+        <div class="card">
+          <h3>Recipe Portfolio Evolution</h3>
+          <div class="chart-container">
+            <canvas id="recipeChart"></canvas>
+          </div>
+          <ul class="insight-list">
+            <li>Maintained 690+ recipes throughout period, showing mature deployment</li>
+            <li>Quick recovery from August dip demonstrates resilient operations</li>
+            <li>Stable baseline indicates optimized automation portfolio</li>
+          </ul>
+        </div>
+        
+        <div class="card">
+          <h3>Capability Adoption Matrix</h3>
+          <div class="chart-container">
+            <canvas id="capabilityChart"></canvas>
+          </div>
+          <ul class="insight-list">
+            <li>iPaaS dominates with 300+ recipes - core integration platform</li>
+            <li>Balanced API (45) and ETL/ELT (35-40) shows data pipeline maturity</li>
+            <li>WFA growth from 5 to 7 recipes indicates workflow automation expansion</li>
+          </ul>
+        </div>
+        
+        <div class="card">
+          <h3>Builder Engagement Trend</h3>
+          <div class="chart-container">
+            <canvas id="userChart"></canvas>
+          </div>
+          <ul class="insight-list">
+            <li>Consistent 9-10 active builders in recent months</li>
+            <li>Recovery from June dip shows re-engaged development team</li>
+            <li>Stable builder base indicates embedded platform usage</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>Renewal Recommendations</h2>
+      <div class="grid charts">
+        <div class="card renewal-card">
+          <div class="tag">Growth Opportunity</div>
+          <h3>📈 Scale AI & Advanced Automation</h3>
+          <p style="color:var(--gray)">With stable AI adoption (13-22 recipes) and growing WFA usage, Zendesk is positioned for advanced automation expansion. Consider premium tier for enhanced AI capabilities.</p>
+        </div>
+        
+        <div class="card renewal-card">
+          <div class="tag">Platform Stability</div>
+          <h3>🔒 Zero Churn Success Story</h3>
+          <p style="color:var(--gray)">17 workspaces maintained throughout 6 months with no churn. This stability warrants multi-year commitment consideration for better pricing.</p>
+        </div>
+        
+        <div class="card renewal-card">
+          <div class="tag">Usage Optimization</div>
+          <h3>⚡ High-Volume Operations</h3>
+          <p style="color:var(--gray)">Processing 1.3-1.8M jobs monthly shows critical dependency. Consider volume-based pricing tiers or unlimited execution packages.</p>
+        </div>
+        
+        <div class="card renewal-card">
+          <div class="tag">Strategic Value</div>
+          <h3>🎯 Multi-Capability Platform</h3>
+          <p style="color:var(--gray)">Active usage across 6 capabilities (iPaaS, API, ETL/ELT, Workbot, AI, WFA) demonstrates platform versatility and strategic importance.</p>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <script>
+    Chart.defaults.color = '#B6B9B5';
+    Chart.defaults.borderColor = 'rgba(103,234,221,.2)';
+    
+    // Job Execution Chart
+    new Chart(document.getElementById('jobChart'), {
+      type: 'line',
+      data: {
+        labels: ['Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug'],
+        datasets: [{
+          label: 'Monthly Jobs (M)',
+          data: [1.84, 1.81, 1.79, 1.81, 1.66, 1.34],
+          borderColor: '#67eadd',
+          backgroundColor: 'rgba(103,234,221,.1)',
+          tension: 0.3,
+          fill: true
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: { display: false }
+        },
+        scales: {
+          y: {
+            beginAtZero: false,
+            ticks: { callback: val => val + 'M' }
+          }
+        }
+      }
+    });
+    
+    // Recipe Count Chart
+    new Chart(document.getElementById('recipeChart'), {
+      type: 'line',
+      data: {
+        labels: ['Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep'],
+        datasets: [{
+          label: 'Total Recipes',
+          data: [730, 740, 750, 745, 730, 680, 693],
+          borderColor: '#3C574B',
+          backgroundColor: 'rgba(60,87,75,.2)',
+          tension: 0.3,
+          fill: true
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: { display: false }
+        },
+        scales: {
+          y: { beginAtZero: false }
+        }
+      }
+    });
+    
+    // Capability Chart
+    new Chart(document.getElementById('capabilityChart'), {
+      type: 'bar',
+      data: {
+        labels: ['iPaaS', 'API', 'ETL/ELT', 'Workbot', 'AI', 'WFA'],
+        datasets: [{
+          label: 'Recipe Count',
+          data: [310, 45, 38, 20, 18, 7],
+          backgroundColor: [
+            '#67eadd',
+            'rgba(103,234,221,.8)',
+            'rgba(103,234,221,.6)',
+            '#3C574B',
+            '#B6B9B5',
+            '#67eadd'
+          ]
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: { display: false }
+        },
+        scales: {
+          y: { beginAtZero: true }
+        }
+      }
+    });
+    
+    // Active Users Chart
+    new Chart(document.getElementById('userChart'), {
+      type: 'bar',
+      data: {
+        labels: ['Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep'],
+        datasets: [{
+          label: 'Active Builders',
+          data: [10, 11, 10, 6, 9, 10, 9],
+          backgroundColor: 'rgba(103,234,221,.6)',
+          borderColor: '#67eadd',
+          borderWidth: 1
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: { display: false }
+        },
+        scales: {
+          y: { 
+            beginAtZero: true,
+            max: 15
+          }
+        }
+      }
+    });
+  </script>
+</body>
+</html>

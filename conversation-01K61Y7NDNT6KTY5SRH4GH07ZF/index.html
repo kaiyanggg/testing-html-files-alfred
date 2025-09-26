@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Zendesk Usage Dashboard - Past 6 Months</title>
+<style>
+  :root { --bg:#000; --text:#FCFDFD; --teal:#67eadd; --card:#111; --radius:12px; --dark-green:#3C574B; --gray:#B6B9B5; }
+  * { box-sizing: border-box; }
+  html,body { margin:0; background:var(--bg); color:var(--text); font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Ubuntu,sans-serif; }
+  .wrap { width:100%; max-width:1400px; margin:0 auto; padding:20px; }
+  h1,h2,h3 { margin:0 0 12px; color:var(--teal); }
+  .sub { opacity:.9; margin-bottom:24px; color:var(--gray); }
+
+  .grid { display:grid; gap:16px; }
+  .kpis { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+  .charts { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  @media (max-width:900px){ .kpis{grid-template-columns:repeat(2,1fr)} .charts{grid-template-columns:1fr} }
+
+  .card { background:var(--card); border:1px solid rgba(103,234,221,.3); border-radius:var(--radius); padding:20px; }
+  .kpi .num { font-size:2.5rem; font-weight:800; color:var(--teal); line-height:1; }
+  .kpi .lab { opacity:.85; font-size:.95rem; margin-top:8px; }
+  .kpi .delta { font-size:0.9rem; color:var(--teal); margin-top:4px; opacity:0.8; }
+
+  .section { margin-top:32px; }
+  .chart-container { position:relative; height:300px; }
+  canvas { max-width:100%; }
+
+  .insight { background:rgba(103,234,221,.1); border-left:3px solid var(--teal); padding:12px; margin-top:12px; font-size:0.9rem; border-radius:4px; }
+  .tag { display:inline-block; font-size:.75rem; font-weight:700; color:#000; background:var(--teal); padding:2px 8px; border-radius:999px; margin-bottom:8px; }
+</style>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <h1>Zendesk Platform Usage</h1>
+      <div class="sub">Performance metrics and adoption trends over the past 6 months</div>
+    </header>
+
+    <section class="section">
+      <h2>Key Metrics</h2>
+      <div class="grid kpis">
+        <div class="card kpi">
+          <div class="num">1,150</div>
+          <div class="lab">Active Connections</div>
+          <div class="delta">↑ 15% growth</div>
+        </div>
+        <div class="card kpi">
+          <div class="num">3,308</div>
+          <div class="lab">Total Recipes</div>
+          <div class="delta">Across all capabilities</div>
+        </div>
+        <div class="card kpi">
+          <div class="num">1.5M</div>
+          <div class="lab">Avg Daily Jobs</div>
+          <div class="delta">Peak: 2M+</div>
+        </div>
+        <div class="card kpi">
+          <div class="num">87%</div>
+          <div class="lab">iPaaS Dominance</div>
+          <div class="delta">2,886 of 3,308 recipes</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>Growth & Distribution</h2>
+      <div class="grid charts">
+        <div class="card">
+          <h3>Connection Growth Trend</h3>
+          <div class="chart-container">
+            <canvas id="connectionChart"></canvas>
+          </div>
+          <div class="insight">
+            📈 Steady 15% growth from 1,000 to 1,150 connections with no major disruptions
+          </div>
+        </div>
+        <div class="card">
+          <h3>Recipe Distribution by Capability</h3>
+          <div class="chart-container">
+            <canvas id="capabilityChart"></canvas>
+          </div>
+          <div class="insight">
+            🔧 iPaaS capabilities dominate with 87% of recipes, AI adoption still emerging at 1.2%
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>Execution & Adoption</h2>
+      <div class="grid charts">
+        <div class="card">
+          <h3>Daily Job Volume Range</h3>
+          <div class="chart-container">
+            <canvas id="jobChart"></canvas>
+          </div>
+          <div class="insight">
+            ⚡ Consistent high volume with daily executions between 900K-2M jobs
+          </div>
+        </div>
+        <div class="card">
+          <h3>Industry Adoption Leaders</h3>
+          <div class="chart-container">
+            <canvas id="industryChart"></canvas>
+          </div>
+          <div class="insight">
+            🏢 Software & Technology leads adoption across mid-size and large enterprises
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>Platform Health Summary</h2>
+      <div class="card">
+        <div class="tag">Strong Growth</div>
+        <h3>Key Insights</h3>
+        <ul style="margin:12px 0; padding-left:20px; line-height:1.8;">
+          <li>Connection base expanded steadily by 15% with consistent month-over-month growth</li>
+          <li>Job execution remains robust with 1.5M average daily volume, demonstrating platform reliability</li>
+          <li>iPaaS integration patterns dominate (87%), indicating mature automation practices</li>
+          <li>Software & Technology sector drives adoption in enterprises with 501-5,000 employees</li>
+          <li>Opportunity: AI capability adoption at only 1.2% suggests significant growth potential</li>
+        </ul>
+      </div>
+    </section>
+  </div>
+
+  <script>
+    Chart.defaults.color = '#B6B9B5';
+    Chart.defaults.borderColor = 'rgba(103,234,221,0.2)';
+    
+    // Connection Growth
+    new Chart(document.getElementById('connectionChart'), {
+      type: 'line',
+      data: {
+        labels: ['Month 1', 'Month 2', 'Month 3', 'Month 4', 'Month 5', 'Month 6'],
+        datasets: [{
+          label: 'Active Connections',
+          data: [1000, 1030, 1060, 1090, 1120, 1150],
+          borderColor: '#67eadd',
+          backgroundColor: 'rgba(103,234,221,0.1)',
+          tension: 0.4,
+          fill: true
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: { legend: { display: false } },
+        scales: {
+          y: { beginAtZero: false, grid: { color: 'rgba(103,234,221,0.1)' } },
+          x: { grid: { display: false } }
+        }
+      }
+    });
+
+    // Capability Distribution
+    new Chart(document.getElementById('capabilityChart'), {
+      type: 'doughnut',
+      data: {
+        labels: ['iPaaS', 'API', 'ETL/ELT', 'Bot', 'AI'],
+        datasets: [{
+          data: [2886, 192, 117, 74, 39],
+          backgroundColor: ['#67eadd', '#3C574B', '#B6B9B5', 'rgba(103,234,221,0.5)', 'rgba(60,87,75,0.5)']
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: { position: 'right', labels: { padding: 15 } }
+        }
+      }
+    });
+
+    // Job Volume
+    new Chart(document.getElementById('jobChart'), {
+      type: 'bar',
+      data: {
+        labels: ['Minimum', 'Average', 'Peak'],
+        datasets: [{
+          label: 'Daily Jobs',
+          data: [900000, 1500000, 2000000],
+          backgroundColor: ['rgba(103,234,221,0.3)', '#67eadd', 'rgba(103,234,221,0.6)'],
+          borderColor: '#67eadd',
+          borderWidth: 1
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: { legend: { display: false } },
+        scales: {
+          y: { beginAtZero: true, grid: { color: 'rgba(103,234,221,0.1)' }, ticks: {
+            callback: function(value) { return (value/1000000).toFixed(1) + 'M'; }
+          }},
+          x: { grid: { display: false } }
+        }
+      }
+    });
+
+    // Industry Adoption
+    new Chart(document.getElementById('industryChart'), {
+      type: 'horizontalBar',
+      data: {
+        labels: ['Software & Tech (501-1K)', 'Software & Tech (3K-5K)', 'Professional Services', 'Manufacturing', 'Others'],
+        datasets: [{
+          label: 'Adoption Score',
+          data: [95, 88, 72, 65, 45],
+          backgroundColor: '#67eadd',
+          borderColor: '#67eadd',
+          borderWidth: 1
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        indexAxis: 'y',
+        plugins: { legend: { display: false } },
+        scales: {
+          x: { beginAtZero: true, max: 100, grid: { color: 'rgba(103,234,221,0.1)' } },
+          y: { grid: { display: false } }
+        }
+      }
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Coupa Training Recommendations Dashboard</title>
+<style>
+  :root { 
+    --bg:#000; 
+    --text:#FCFDFD; 
+    --teal:#67eadd; 
+    --dark-green:#3C574B;
+    --gray:#B6B9B5;
+    --card:#111; 
+    --radius:12px; 
+  }
+  * { box-sizing: border-box; }
+  html,body { margin:0; background:var(--bg); color:var(--text); font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Ubuntu,sans-serif; }
+  .wrap { width:100%; max-width:1400px; margin:0 auto; padding:20px; }
+  h1,h2,h3 { margin:0 0 12px; color:var(--teal); }
+  h3 { font-size:1.1rem; }
+  .sub { opacity:.9; margin-bottom:24px; color:var(--gray); }
+
+  .grid { display:grid; gap:16px; }
+  .kpis { grid-template-columns: repeat(5, minmax(0, 1fr)); }
+  .insights { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .charts { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  @media (max-width:900px){ 
+    .kpis{grid-template-columns:repeat(2,1fr)} 
+    .insights{grid-template-columns:1fr}
+    .charts{grid-template-columns:1fr}
+  }
+
+  .card { 
+    background:var(--card); 
+    border:1px solid rgba(103,234,221,.3); 
+    border-radius:var(--radius); 
+    padding:16px;
+    transition: border-color 0.3s;
+  }
+  .card:hover { border-color:rgba(103,234,221,.6); }
+  
+  .kpi .num { 
+    font-size:2.5rem; 
+    font-weight:800; 
+    color:var(--teal); 
+    line-height:1; 
+    margin-bottom:8px;
+  }
+  .kpi .lab { 
+    opacity:.85; 
+    font-size:.9rem;
+    color:var(--gray);
+  }
+  .kpi.negative .num { color:#ff6b6b; }
+  .kpi.warning .num { color:#ffd93d; }
+
+  .tag { 
+    display:inline-block; 
+    font-size:.75rem; 
+    font-weight:700; 
+    color:#003b36; 
+    background:var(--teal); 
+    padding:3px 10px; 
+    border-radius:999px; 
+    margin-bottom:12px; 
+  }
+  .tag.critical { background:#ff6b6b; color:#fff; }
+  .tag.warning { background:#ffd93d; color:#333; }
+  
+  .action { 
+    margin-top:12px; 
+    border:1px solid var(--teal); 
+    background:transparent; 
+    color:var(--teal); 
+    border-radius:6px; 
+    padding:10px 16px; 
+    cursor:pointer;
+    font-weight:600;
+    transition: all 0.3s;
+  }
+  .action:hover { 
+    background:var(--teal); 
+    color:#002a27; 
+    transform: translateY(-2px);
+  }
+
+  .section { margin-top:32px; }
+  ul { 
+    margin:8px 0; 
+    padding-left:20px; 
+    line-height:1.8;
+  }
+  li { color:var(--gray); }
+  
+  .chart-container {
+    position: relative;
+    height: 250px;
+    margin-top: 16px;
+  }
+  
+  .progress-bar {
+    background: var(--dark-green);
+    border-radius: 8px;
+    height: 24px;
+    overflow: hidden;
+    margin: 8px 0;
+  }
+  .progress-fill {
+    background: var(--teal);
+    height: 100%;
+    transition: width 0.5s ease;
+  }
+  .progress-label {
+    font-size: 0.85rem;
+    color: var(--gray);
+    margin-bottom: 4px;
+  }
+  
+  .stat-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 8px 0;
+    border-bottom: 1px solid rgba(103,234,221,.1);
+  }
+  .stat-label { color: var(--gray); }
+  .stat-value { 
+    color: var(--teal); 
+    font-weight: 600;
+  }
+  
+  .icon {
+    font-size: 1.5rem;
+    margin-right: 8px;
+    vertical-align: middle;
+  }
+</style>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <h1>🎯 Coupa Training Recommendations</h1>
+      <div class="sub">Personalized training topics based on current usage patterns and adoption metrics</div>
+    </header>
+
+    <section class="section">
+      <h2>Current State Overview</h2>
+      <div class="grid kpis">
+        <div class="card kpi">
+          <div class="num">2/6</div>
+          <div class="lab">Capabilities Active</div>
+        </div>
+        <div class="card kpi warning">
+          <div class="num">0</div>
+          <div class="lab">AI Adoption</div>
+        </div>
+        <div class="card kpi">
+          <div class="num">4/5</div>
+          <div class="lab">Departments Active</div>
+        </div>
+        <div class="card kpi">
+          <div class="num">65</div>
+          <div class="lab">Total Use Cases</div>
+        </div>
+        <div class="card kpi">
+          <div class="num">50%</div>
+          <div class="lab">Capability Utilization</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>📊 Usage Analytics</h2>
+      <div class="grid charts">
+        <div class="card">
+          <h3>Department Distribution</h3>
+          <div class="chart-container">
+            <canvas id="deptChart"></canvas>
+          </div>
+        </div>
+        <div class="card">
+          <h3>Capability Adoption Status</h3>
+          <div style="padding: 20px 0;">
+            <div>
+              <div class="progress-label">iPaaS - Active ✅</div>
+              <div class="progress-bar"><div class="progress-fill" style="width:100%"></div></div>
+            </div>
+            <div>
+              <div class="progress-label">ETL/ELT - Active ✅</div>
+              <div class="progress-bar"><div class="progress-fill" style="width:100%"></div></div>
+            </div>
+            <div>
+              <div class="progress-label">API - Adopted, Not Used ⚠️</div>
+              <div class="progress-bar"><div class="progress-fill" style="width:50%; background:#ffd93d"></div></div>
+            </div>
+            <div>
+              <div class="progress-label">WFA - Adopted, Not Used ⚠️</div>
+              <div class="progress-bar"><div class="progress-fill" style="width:50%; background:#ffd93d"></div></div>
+            </div>
+            <div>
+              <div class="progress-label">Bot - Not Adopted ❌</div>
+              <div class="progress-bar"><div class="progress-fill" style="width:0%; background:#ff6b6b"></div></div>
+            </div>
+            <div>
+              <div class="progress-label">AI - Not Adopted ❌</div>
+              <div class="progress-bar"><div class="progress-fill" style="width:0%; background:#ff6b6b"></div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>🎓 Recommended Training Topics</h2>
+      <div class="grid insights">
+        <article class="card">
+          <div class="tag critical">Critical Priority</div>
+          <h3><span class="icon">🤖</span>AI & Intelligent Automation</h3>
+          <p>Zero AI adoption despite high automation potential. Focus on practical AI use cases for document processing, data extraction, and predictive analytics.</p>
+          <div class="stat-row">
+            <span class="stat-label">Current Adoption:</span>
+            <span class="stat-value">0%</span>
+          </div>
+          <div class="stat-row">
+            <span class="stat-label">Potential Impact:</span>
+            <span class="stat-value">Very High</span>
+          </div>
+          <button class="action">Launch AI Fundamentals Workshop</button>
+        </article>
+
+        <article class="card">
+          <div class="tag warning">High Impact</div>
+          <h3><span class="icon">🔌</span>API & WFA Activation</h3>
+          <p>API and Workflow Automation are adopted but unused. Training on practical implementation and best practices could unlock immediate value.</p>
+          <div class="stat-row">
+            <span class="stat-label">Adopted but Unused:</span>
+            <span class="stat-value">2 capabilities</span>
+          </div>
+          <div class="stat-row">
+            <span class="stat-label">Quick Win Potential:</span>
+            <span class="stat-value">High</span>
+          </div>
+          <button class="action">API Integration Bootcamp</button>
+        </article>
+
+        <article class="card">
+          <div class="tag">Department Focus</div>
+          <h3><span class="icon">💼</span>IT Process Optimization</h3>
+          <p>IT has the highest use case count (27). Advanced training on complex workflows and system integrations could amplify impact.</p>
+          <div class="stat-row">
+            <span class="stat-label">Current Use Cases:</span>
+            <span class="stat-value">27</span>
+          </div>
+          <div class="stat-row">
+            <span class="stat-label">Department Activity:</span>
+            <span class="stat-value">41.5% of total</span>
+          </div>
+          <button class="action">Advanced IT Automation Course</button>
+        </article>
+
+        <article class="card">
+          <div class="tag">Growth Opportunity</div>
+          <h3><span class="icon">🤝</span>HR & RevOps Expansion</h3>
+          <p>HR (9 use cases) and RevOps (3 use cases) show lower adoption. Training on employee onboarding automation and revenue workflows recommended.</p>
+          <div class="stat-row">
+            <span class="stat-label">Combined Use Cases:</span>
+            <span class="stat-value">12</span>
+          </div>
+          <div class="stat-row">
+            <span class="stat-label">Growth Potential:</span>
+            <span class="stat-value">3-5x</span>
+          </div>
+          <button class="action">Cross-Department Workshop</button>
+        </article>
+
+        <article class="card">
+          <div class="tag">Technical Skills</div>
+          <h3><span class="icon">🔄</span>Advanced ETL/iPaaS Patterns</h3>
+          <p>Strong adoption in ETL and iPaaS. Level-up training on error handling, monitoring, and complex data transformations.</p>
+          <div class="stat-row">
+            <span class="stat-label">Current Usage:</span>
+            <span class="stat-value">100% active</span>
+          </div>
+          <div class="stat-row">
+            <span class="stat-label">Skill Level:</span>
+            <span class="stat-value">Intermediate</span>
+          </div>
+          <button class="action">ETL Mastery Program</button>
+        </article>
+
+        <article class="card">
+          <div class="tag">Integration Focus</div>
+          <h3><span class="icon">📧</span>Communication Tools Integration</h3>
+          <p>Based on recipe patterns showing Gmail, SFTP, and messaging tools. Training on unified communication workflows and alerting systems.</p>
+          <div class="stat-row">
+            <span class="stat-label">Common Apps:</span>
+            <span class="stat-value">Gmail, SFTP, HTTP</span>
+          </div>
+          <div class="stat-row">
+            <span class="stat-label">Use Case Type:</span>
+            <span class="stat-value">Employee/Identity</span>
+          </div>
+          <button class="action">Communication Automation Training</button>
+        </article>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>📋 Training Roadmap Priorities</h2>
+      <div class="card">
+        <ul>
+          <li><strong>Week 1-2:</strong> AI Fundamentals & Use Case Discovery Workshop - Address the 0% AI adoption gap</li>
+          <li><strong>Week 3-4:</strong> API & WFA Activation Bootcamp - Convert adopted but unused capabilities to active use</li>
+          <li><strong>Week 5-6:</strong> Department-Specific Deep Dives - IT advanced patterns, HR automation basics</li>
+          <li><strong>Week 7-8:</strong> Bot Development Introduction - Explore RPA opportunities for repetitive tasks</li>
+          <li><strong>Ongoing:</strong> Monthly best practices sharing sessions focused on your top use cases</li>
+        </ul>
+      </div>
+    </section>
+
+  </div>
+
+  <script>
+    // Department Distribution Pie Chart
+    const ctx1 = document.getElementById('deptChart').getContext('2d');
+    new Chart(ctx1, {
+      type: 'doughnut',
+      data: {
+        labels: ['IT', 'Finance & Accounting', 'Data Ops & Product', 'Human Resources', 'RevOps & CS'],
+        datasets: [{
+          data: [27, 13, 13, 9, 3],
+          backgroundColor: ['#67eadd', '#3C574B', '#B6B9B5', '#4a9d95', '#2d4a42'],
+          borderColor: '#000',
+          borderWidth: 2
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: {
+            position: 'bottom',
+            labels: { color: '#FCFDFD', padding: 10 }
+          },
+          tooltip: {
+            callbacks: {
+              label: function(context) {
+                return context.label + ': ' + context.parsed + ' use cases';
+              }
+            }
+          }
+        }
+      }
+    });
+  </script>
+</body>
+</html>

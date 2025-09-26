@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Zendesk Customer Usage Dashboard</title>
+<style>
+  :root { --bg:#000; --text:#FCFDFD; --teal:#67eadd; --card:#111; --radius:12px; --dark-green:#3C574B; --gray:#B6B9B5; }
+  * { box-sizing: border-box; }
+  html,body { margin:0; background:var(--bg); color:var(--text); font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Ubuntu,sans-serif; }
+  .wrap { width:100%; max-width:1400px; margin:0 auto; padding:20px; }
+  h1,h2,h3 { margin:0 0 12px; color:var(--teal); }
+  .sub { opacity:.9; margin-bottom:24px; color:var(--gray); }
+
+  .grid { display:grid; gap:16px; }
+  .kpis { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+  .charts { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  @media (max-width:900px){ .kpis{grid-template-columns:repeat(2,1fr)} .charts{grid-template-columns:1fr} }
+
+  .card { background:var(--card); border:1px solid rgba(103,234,221,.3); border-radius:var(--radius); padding:20px; }
+  .kpi .num { font-size:2.5rem; font-weight:800; color:var(--teal); line-height:1; }
+  .kpi .lab { opacity:.85; font-size:.95rem; margin-top:8px; }
+  .kpi .delta { font-size:.85rem; margin-top:4px; }
+  .positive { color:#67eadd; }
+  .negative { color:#ff6b6b; }
+
+  .section { margin-top:32px; }
+  canvas { max-width:100%; }
+  
+  .trend { display:flex; align-items:center; gap:4px; font-size:.85rem; margin-top:8px; }
+  .trend svg { width:16px; height:16px; }
+  
+  .bullet { margin:12px 0; padding-left:20px; position:relative; font-size:.9rem; color:var(--gray); }
+  .bullet:before { content:"•"; position:absolute; left:0; color:var(--teal); }
+  
+  .timeline { display:flex; justify-content:space-between; margin-top:16px; padding-top:16px; border-top:1px solid rgba(103,234,221,.2); }
+  .timeline-item { text-align:center; flex:1; }
+  .timeline-month { font-size:.75rem; color:var(--gray); }
+  .timeline-value { font-size:1.1rem; font-weight:600; color:var(--text); margin-top:4px; }
+</style>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <h1>Zendesk Customer Usage Analytics</h1>
+      <div class="sub">6-Month Performance Overview (April - September 2024)</div>
+    </header>
+
+    <section class="section">
+      <h2>Key Metrics</h2>
+      <div class="grid kpis">
+        <div class="card kpi">
+          <div class="num">754</div>
+          <div class="lab">Active Recipes</div>
+          <div class="delta positive">↑ 10.9% from 6 months ago</div>
+        </div>
+        <div class="card kpi">
+          <div class="num">4/5</div>
+          <div class="lab">Departments Automated</div>
+          <div class="delta">Consistent coverage</div>
+        </div>
+        <div class="card kpi">
+          <div class="num">12</div>
+          <div class="lab">Active Users</div>
+          <div class="delta positive">↑ 100% from lowest point</div>
+        </div>
+        <div class="card kpi">
+          <div class="num">3</div>
+          <div class="lab">Power Builders</div>
+          <div class="delta negative">↓ 62.5% from peak</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="grid charts">
+        <div class="card">
+          <h3>Recipe Activity Trends</h3>
+          <canvas id="recipeChart"></canvas>
+          <div class="bullet">Recipe creation declined 94.5% (55→3/month)</div>
+          <div class="bullet">Edit activity remains strong at 400+ monthly</div>
+          <div class="bullet">Total active recipes stable between 680-754</div>
+        </div>
+        
+        <div class="card">
+          <h3>User Engagement Levels</h3>
+          <canvas id="userChart"></canvas>
+          <div class="bullet">Builder community stabilized at 15-20 active</div>
+          <div class="bullet">Power builder engagement dropped significantly</div>
+          <div class="bullet">Overall user base recovering to 9-12 active</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>Monthly Recipe Creation Timeline</h2>
+      <div class="card">
+        <div class="timeline">
+          <div class="timeline-item">
+            <div class="timeline-month">April</div>
+            <div class="timeline-value">55</div>
+          </div>
+          <div class="timeline-item">
+            <div class="timeline-month">May</div>
+            <div class="timeline-value">~40</div>
+          </div>
+          <div class="timeline-item">
+            <div class="timeline-month">June</div>
+            <div class="timeline-value">~25</div>
+          </div>
+          <div class="timeline-item">
+            <div class="timeline-month">July</div>
+            <div class="timeline-value">~15</div>
+          </div>
+          <div class="timeline-item">
+            <div class="timeline-month">August</div>
+            <div class="timeline-value">~8</div>
+          </div>
+          <div class="timeline-item">
+            <div class="timeline-month">September</div>
+            <div class="timeline-value">3</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>Key Insights</h2>
+      <div class="grid charts">
+        <div class="card">
+          <h3>📊 Automation Maturity</h3>
+          <div class="bullet">Platform has reached steady-state with 700+ active recipes</div>
+          <div class="bullet">Focus shifted from creation to optimization (high edit rates)</div>
+          <div class="bullet">4 of 5 departments consistently automated</div>
+        </div>
+        <div class="card">
+          <h3>⚠️ Areas of Concern</h3>
+          <div class="bullet">New recipe creation nearly stopped (3/month)</div>
+          <div class="bullet">Power builder engagement dropped 62.5% from peak</div>
+          <div class="bullet">Potential innovation slowdown despite stable usage</div>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <script>
+    Chart.defaults.color = '#B6B9B5';
+    Chart.defaults.borderColor = 'rgba(103,234,221,.2)';
+    
+    const months = ['Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep'];
+    
+    new Chart(document.getElementById('recipeChart'), {
+      type: 'line',
+      data: {
+        labels: months,
+        datasets: [
+          {
+            label: 'Active Recipes',
+            data: [680, 700, 720, 740, 750, 754],
+            borderColor: '#67eadd',
+            backgroundColor: 'rgba(103,234,221,.1)',
+            tension: 0.3,
+            yAxisID: 'y'
+          },
+          {
+            label: 'New Recipes Created',
+            data: [55, 40, 25, 15, 8, 3],
+            borderColor: '#3C574B',
+            backgroundColor: 'rgba(60,87,75,.1)',
+            tension: 0.3,
+            yAxisID: 'y1'
+          },
+          {
+            label: 'Recipe Edits',
+            data: [420, 440, 410, 430, 450, 400],
+            borderColor: '#B6B9B5',
+            backgroundColor: 'rgba(182,185,181,.1)',
+            tension: 0.3,
+            borderDash: [5,5],
+            yAxisID: 'y1'
+          }
+        ]
+      },
+      options: {
+        responsive: true,
+        interaction: { mode: 'index', intersect: false },
+        scales: {
+          y: {
+            type: 'linear',
+            display: true,
+            position: 'left',
+            title: { display: true, text: 'Active Recipes' },
+            grid: { color: 'rgba(103,234,221,.1)' }
+          },
+          y1: {
+            type: 'linear',
+            display: true,
+            position: 'right',
+            title: { display: true, text: 'Activity Count' },
+            grid: { drawOnChartArea: false }
+          },
+          x: { grid: { color: 'rgba(103,234,221,.1)' } }
+        },
+        plugins: {
+          legend: { position: 'top' }
+        }
+      }
+    });
+
+    new Chart(document.getElementById('userChart'), {
+      type: 'bar',
+      data: {
+        labels: months,
+        datasets: [
+          {
+            label: 'Active Users',
+            data: [6, 14, 10, 8, 9, 12],
+            backgroundColor: '#67eadd'
+          },
+          {
+            label: 'Builders',
+            data: [11, 23, 18, 16, 15, 20],
+            backgroundColor: '#3C574B'
+          },
+          {
+            label: 'Power Builders',
+            data: [8, 6, 4, 3, 2, 3],
+            backgroundColor: '#B6B9B5'
+          }
+        ]
+      },
+      options: {
+        responsive: true,
+        scales: {
+          y: {
+            beginAtZero: true,
+            grid: { color: 'rgba(103,234,221,.1)' }
+          },
+          x: { grid: { color: 'rgba(103,234,221,.1)' } }
+        },
+        plugins: {
+          legend: { position: 'top' }
+        }
+      }
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Coupa Usage Dashboard</title>
+<style>
+  :root { --bg:#000; --text:#FCFDFD; --teal:#67eadd; --card:#111; --dark-green:#3C574B; --gray:#B6B9B5; --radius:12px; }
+  * { box-sizing: border-box; }
+  html,body { margin:0; background:var(--bg); color:var(--text); font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Ubuntu,sans-serif; }
+  .wrap { width:100%; max-width:1400px; margin:0 auto; padding:20px; }
+  h1,h2,h3 { margin:0 0 12px; color:var(--teal); }
+  .sub { opacity:.9; margin-bottom:24px; color:var(--gray); }
+
+  .grid { display:grid; gap:16px; }
+  .kpis { grid-template-columns: repeat(5, minmax(0, 1fr)); }
+  .charts { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .insights { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  @media (max-width:1024px){ .kpis{grid-template-columns:repeat(3,1fr)} .charts{grid-template-columns:1fr} .insights{grid-template-columns:1fr} }
+  @media (max-width:640px){ .kpis{grid-template-columns:repeat(2,1fr)} }
+
+  .card { background:var(--card); border:1px solid rgba(103,234,221,.3); border-radius:var(--radius); padding:20px; position:relative; }
+  .kpi .num { font-size:2.5rem; font-weight:800; color:var(--teal); line-height:1; margin-bottom:8px; }
+  .kpi .lab { opacity:.85; font-size:.95rem; color:var(--gray); }
+  .kpi .delta { font-size:.85rem; color:var(--dark-green); margin-top:6px; }
+  
+  .chart-container { position:relative; height:300px; }
+  .section { margin-top:32px; }
+  
+  .insight { background:linear-gradient(135deg, rgba(103,234,221,.1), transparent); padding:16px; border-radius:8px; border-left:3px solid var(--teal); }
+  .insight h4 { color:var(--teal); margin:0 0 8px; font-size:1.1rem; }
+  .insight p { margin:0; font-size:.95rem; color:var(--gray); }
+  
+  .progress-bar { background:rgba(103,234,221,.1); height:8px; border-radius:4px; overflow:hidden; margin-top:8px; }
+  .progress-fill { background:var(--teal); height:100%; border-radius:4px; transition:width .5s ease; }
+  
+  .dept-list { list-style:none; padding:0; margin:0; }
+  .dept-item { display:flex; justify-content:space-between; padding:12px 0; border-bottom:1px solid rgba(103,234,221,.1); }
+  .dept-item:last-child { border-bottom:none; }
+  .dept-name { color:var(--text); }
+  .dept-count { color:var(--teal); font-weight:600; }
+  
+  .user-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:12px; margin-top:16px; }
+  .user-stat { text-align:center; padding:12px; background:rgba(103,234,221,.05); border-radius:8px; }
+  .user-stat .value { font-size:1.8rem; font-weight:700; color:var(--teal); }
+  .user-stat .label { font-size:.85rem; color:var(--gray); margin-top:4px; }
+</style>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <h1>Coupa Automation Usage Dashboard</h1>
+      <div class="sub">Real-time insights into automation adoption, user engagement, and departmental usage</div>
+    </header>
+
+    <section class="section">
+      <h2>Key Metrics</h2>
+      <div class="grid kpis">
+        <div class="card kpi">
+          <div class="num">524</div>
+          <div class="lab">Active Recipes</div>
+          <div class="delta">19% task utilization</div>
+        </div>
+        <div class="card kpi">
+          <div class="num">13%</div>
+          <div class="lab">Automation Index</div>
+        </div>
+        <div class="card kpi">
+          <div class="num">4/5</div>
+          <div class="lab">Departments Automated</div>
+          <div class="delta">80% coverage</div>
+        </div>
+        <div class="card kpi">
+          <div class="num">8</div>
+          <div class="lab">Active Users</div>
+        </div>
+        <div class="card kpi">
+          <div class="num">22</div>
+          <div class="lab">Total Builders</div>
+          <div class="delta">5 power builders</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="grid charts">
+        <div class="card">
+          <h3>Department Use Cases Distribution</h3>
+          <div class="chart-container">
+            <canvas id="deptChart"></canvas>
+          </div>
+        </div>
+        <div class="card">
+          <h3>Capability Adoption</h3>
+          <div style="margin-top:24px;">
+            <div style="margin-bottom:20px;">
+              <div style="display:flex;justify-content:space-between;margin-bottom:8px;">
+                <span>Capabilities Adopted</span>
+                <span style="color:var(--teal);font-weight:600;">4 of 6</span>
+              </div>
+              <div class="progress-bar">
+                <div class="progress-fill" style="width:66.7%;"></div>
+              </div>
+            </div>
+            <div style="margin-bottom:20px;">
+              <div style="display:flex;justify-content:space-between;margin-bottom:8px;">
+                <span>Actively Used</span>
+                <span style="color:var(--teal);font-weight:600;">2 of 4</span>
+              </div>
+              <div class="progress-bar">
+                <div class="progress-fill" style="width:50%;"></div>
+              </div>
+            </div>
+            <div class="user-grid">
+              <div class="user-stat">
+                <div class="value">8</div>
+                <div class="label">Active Users</div>
+              </div>
+              <div class="user-stat">
+                <div class="value">22</div>
+                <div class="label">Builders</div>
+              </div>
+              <div class="user-stat">
+                <div class="value">5</div>
+                <div class="label">Power Builders</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>Key Insights</h2>
+      <div class="grid insights">
+        <div class="insight">
+          <h4>📈 Strong IT Leadership</h4>
+          <p>IT department leads with 27 use cases (43% of total), showing mature automation adoption</p>
+        </div>
+        <div class="insight">
+          <h4>⚡ Low Task Utilization</h4>
+          <p>Only 19% task utilization despite 524 active recipes indicates optimization opportunities</p>
+        </div>
+        <div class="insight">
+          <h4>👥 Builder Concentration</h4>
+          <p>23% of builders (5 of 22) are power builders, suggesting expertise concentration</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="grid charts">
+        <div class="card">
+          <h3>Department Breakdown</h3>
+          <ul class="dept-list">
+            <li class="dept-item">
+              <span class="dept-name">IT</span>
+              <span class="dept-count">27 use cases</span>
+            </li>
+            <li class="dept-item">
+              <span class="dept-name">Finance</span>
+              <span class="dept-count">13 use cases</span>
+            </li>
+            <li class="dept-item">
+              <span class="dept-name">Data/Product</span>
+              <span class="dept-count">13 use cases</span>
+            </li>
+            <li class="dept-item">
+              <span class="dept-name">HR</span>
+              <span class="dept-count">7 use cases</span>
+            </li>
+            <li class="dept-item">
+              <span class="dept-name">RevOps/CS Ops</span>
+              <span class="dept-count">3 use cases</span>
+            </li>
+          </ul>
+        </div>
+        <div class="card">
+          <h3>Usage Efficiency Metrics</h3>
+          <div class="chart-container">
+            <canvas id="efficiencyChart"></canvas>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <script>
+    Chart.defaults.color = '#B6B9B5';
+    Chart.defaults.borderColor = 'rgba(103,234,221,0.1)';
+    
+    const deptCtx = document.getElementById('deptChart').getContext('2d');
+    new Chart(deptCtx, {
+      type: 'doughnut',
+      data: {
+        labels: ['IT', 'Finance', 'Data/Product', 'HR', 'RevOps/CS Ops'],
+        datasets: [{
+          data: [27, 13, 13, 7, 3],
+          backgroundColor: ['#67eadd', '#3C574B', '#B6B9B5', 'rgba(103,234,221,0.5)', 'rgba(60,87,75,0.5)'],
+          borderWidth: 0
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: {
+            position: 'bottom',
+            labels: { padding: 15, font: { size: 11 } }
+          },
+          tooltip: {
+            callbacks: {
+              label: function(context) {
+                const total = 63;
+                const value = context.parsed;
+                const percentage = ((value / total) * 100).toFixed(1);
+                return context.label + ': ' + value + ' (' + percentage + '%)';
+              }
+            }
+          }
+        }
+      }
+    });
+
+    const effCtx = document.getElementById('efficiencyChart').getContext('2d');
+    new Chart(effCtx, {
+      type: 'bar',
+      data: {
+        labels: ['Active Recipes', 'Task Utilization', 'Automation Index', 'Capability Usage'],
+        datasets: [{
+          label: 'Current',
+          data: [100, 19, 13, 50],
+          backgroundColor: '#67eadd',
+          borderRadius: 6
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        scales: {
+          y: {
+            beginAtZero: true,
+            max: 100,
+            ticks: { callback: function(value) { return value + '%'; } },
+            grid: { color: 'rgba(103,234,221,0.1)' }
+          },
+          x: {
+            grid: { display: false }
+          }
+        },
+        plugins: {
+          legend: { display: false },
+          tooltip: {
+            callbacks: {
+              label: function(context) {
+                return context.parsed.y + '%';
+              }
+            }
+          }
+        }
+      }
+    });
+  </script>
+</body>
+</html>

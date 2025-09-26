@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>OpenAI Workato Usage Dashboard</title>
+<style>
+  :root { 
+    --bg:#FCFDFD; 
+    --text:#3C574B; 
+    --teal:#67eadd; 
+    --card:#fff; 
+    --radius:12px;
+    --gray:#B6B9B5;
+    --dark-green:#3C574B;
+  }
+  * { box-sizing: border-box; }
+  html,body { 
+    margin:0; 
+    background:var(--bg); 
+    color:var(--text); 
+    font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Ubuntu,sans-serif; 
+  }
+  .wrap { width:100%; max-width:1400px; margin:0 auto; padding:20px; }
+  h1,h2 { margin:0 0 12px; color:var(--dark-green); }
+  .sub { color:var(--gray); margin-bottom:24px; }
+
+  .grid { display:grid; gap:16px; }
+  .kpis { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+  .charts { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  @media (max-width:800px){ 
+    .kpis{grid-template-columns:repeat(2,1fr)} 
+    .charts{grid-template-columns:1fr} 
+  }
+
+  .card { 
+    background:var(--card); 
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    border-radius:var(--radius); 
+    padding:20px; 
+  }
+  
+  .kpi .num { 
+    font-size:2.5rem; 
+    font-weight:800; 
+    background: linear-gradient(135deg, var(--teal), var(--dark-green));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    line-height:1; 
+  }
+  .kpi .lab { 
+    color:var(--gray); 
+    font-size:.95rem; 
+    margin-top:8px;
+  }
+  .kpi .delta {
+    font-size: 0.85rem;
+    color: var(--dark-green);
+    margin-top: 4px;
+  }
+
+  .section { margin-top:32px; }
+  
+  .chart-container {
+    position: relative;
+    height: 300px;
+    width: 100%;
+  }
+  
+  .insight-box {
+    background: rgba(103,234,221,0.1);
+    border-left: 3px solid var(--teal);
+    padding: 12px;
+    margin-top: 16px;
+    border-radius: 4px;
+  }
+  
+  .insight-box p {
+    margin: 4px 0;
+    font-size: 0.9rem;
+    color: var(--dark-green);
+  }
+  
+  .success-badge {
+    display: inline-block;
+    background: rgba(103,234,221,0.2);
+    color: var(--dark-green);
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    font-weight: 600;
+  }
+  
+  .header-section {
+    background: linear-gradient(135deg, rgba(103,234,221,0.1), rgba(255,255,255,0));
+    padding: 30px;
+    border-radius: var(--radius);
+    margin-bottom: 24px;
+  }
+  
+  h3 {
+    color: var(--dark-green);
+    margin-bottom: 16px;
+  }
+</style>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+  <div class="wrap">
+    <div class="header-section">
+      <h1>OpenAI Workato Usage Dashboard</h1>
+      <div class="sub">Performance metrics and insights for the last 3 months</div>
+    </div>
+
+    <section>
+      <h2>Key Metrics</h2>
+      <div class="grid kpis">
+        <div class="card kpi">
+          <div class="num">8</div>
+          <div class="lab">Total Recipes</div>
+          <div class="delta">All iPaaS capability</div>
+        </div>
+        <div class="card kpi">
+          <div class="num">980</div>
+          <div class="lab">Successful Jobs</div>
+          <div class="delta">Last 3 months</div>
+        </div>
+        <div class="card kpi">
+          <div class="num">78.3%</div>
+          <div class="lab">Success Rate</div>
+          <div class="delta">980 of 1,252 jobs</div>
+        </div>
+        <div class="card kpi">
+          <div class="num">3</div>
+          <div class="lab">Active Departments</div>
+          <div class="delta">HR, Finance, Others</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>Usage Analytics</h2>
+      <div class="grid charts">
+        <div class="card">
+          <h3>Job Performance</h3>
+          <div class="chart-container">
+            <canvas id="jobChart"></canvas>
+          </div>
+          <div class="insight-box">
+            <p><strong>Key Insights:</strong></p>
+            <p>• Strong performance with 78.3% success rate</p>
+            <p>• 272 failed jobs indicate optimization opportunities</p>
+            <p>• Average of 327 jobs per month</p>
+          </div>
+        </div>
+
+        <div class="card">
+          <h3>Department Usage</h3>
+          <div class="chart-container">
+            <canvas id="deptChart"></canvas>
+          </div>
+          <div class="insight-box">
+            <p><strong>Key Insights:</strong></p>
+            <p>• Finance leads with 50% of recipes (4 recipes)</p>
+            <p>• HR has 1 active recipe (12.5%)</p>
+            <p>• 3 recipes need department classification</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="grid charts">
+        <div class="card">
+          <h3>Recipe Distribution</h3>
+          <div class="chart-container">
+            <canvas id="recipeChart"></canvas>
+          </div>
+          <div class="insight-box">
+            <p><strong>Key Insights:</strong></p>
+            <p>• All 8 recipes are iPaaS focused</p>
+            <p>• No AI, API, ETL/ELT, or Bot capabilities utilized</p>
+            <p>• Opportunity to expand capability usage</p>
+          </div>
+        </div>
+
+        <div class="card">
+          <h3>Monthly Job Trend</h3>
+          <div class="chart-container">
+            <canvas id="trendChart"></canvas>
+          </div>
+          <div class="insight-box">
+            <p><strong>Key Insights:</strong></p>
+            <p>• Consistent job execution over 3 months</p>
+            <p>• Approximately 10-11 jobs per recipe per month</p>
+            <p>• Stable automation performance</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>Recommendations</h2>
+      <div class="card">
+        <div style="padding: 12px;">
+          <p style="margin-bottom: 12px;"><span class="success-badge">High Priority</span> <strong>Reduce Failure Rate:</strong> Investigate and optimize the 21.7% job failure rate to improve reliability</p>
+          <p style="margin-bottom: 12px;"><span class="success-badge">Expand</span> <strong>Diversify Capabilities:</strong> Explore AI, API, and ETL/ELT capabilities beyond current iPaaS usage</p>
+          <p style="margin-bottom: 12px;"><span class="success-badge">Classify</span> <strong>Department Attribution:</strong> Properly classify the 3 unattributed recipes for better tracking</p>
+          <p style="margin-bottom: 12px;"><span class="success-badge">Scale</span> <strong>Increase Adoption:</strong> With only 8 recipes, there's significant room for growth across departments</p>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <script>
+    Chart.defaults.color = '#3C574B';
+    Chart.defaults.borderColor = '#B6B9B5';
+    
+    // Job Performance Chart
+    new Chart(document.getElementById('jobChart'), {
+      type: 'doughnut',
+      data: {
+        labels: ['Successful Jobs', 'Failed Jobs'],
+        datasets: [{
+          data: [980, 272],
+          backgroundColor: ['#67eadd', '#B6B9B5'],
+          borderWidth: 0
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: {
+            position: 'bottom'
+          },
+          tooltip: {
+            callbacks: {
+              label: function(context) {
+                let label = context.label || '';
+                let value = context.parsed;
+                let total = context.dataset.data.reduce((a, b) => a + b, 0);
+                let percentage = ((value / total) * 100).toFixed(1);
+                return label + ': ' + value + ' (' + percentage + '%)';
+              }
+            }
+          }
+        }
+      }
+    });
+
+    // Department Chart
+    new Chart(document.getElementById('deptChart'), {
+      type: 'bar',
+      data: {
+        labels: ['Finance & Accounting', 'Not Conclusive', 'Human Resources'],
+        datasets: [{
+          label: 'Number of Recipes',
+          data: [4, 3, 1],
+          backgroundColor: '#67eadd',
+          borderWidth: 0
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        scales: {
+          y: {
+            beginAtZero: true,
+            ticks: {
+              stepSize: 1
+            }
+          }
+        },
+        plugins: {
+          legend: {
+            display: false
+          }
+        }
+      }
+    });
+
+    // Recipe Distribution Chart
+    new Chart(document.getElementById('recipeChart'), {
+      type: 'polarArea',
+      data: {
+        labels: ['iPaaS', 'AI', 'API', 'ETL/ELT', 'Bot'],
+        datasets: [{
+          data: [8, 0, 0, 0, 0],
+          backgroundColor: [
+            '#67eadd',
+            'rgba(182, 185, 181, 0.3)',
+            'rgba(182, 185, 181, 0.3)',
+            'rgba(182, 185, 181, 0.3)',
+            'rgba(182, 185, 181, 0.3)'
+          ],
+          borderWidth: 0
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: {
+            position: 'bottom'
+          }
+        }
+      }
+    });
+
+    // Monthly Trend Chart
+    new Chart(document.getElementById('trendChart'), {
+      type: 'line',
+      data: {
+        labels: ['Month 1', 'Month 2', 'Month 3'],
+        datasets: [{
+          label: 'Successful Jobs',
+          data: [327, 327, 326],
+          borderColor: '#67eadd',
+          backgroundColor: 'rgba(103, 234, 221, 0.1)',
+          fill: true,
+          tension: 0.3
+        },
+        {
+          label: 'Failed Jobs',
+          data: [91, 91, 90],
+          borderColor: '#B6B9B5',
+          backgroundColor: 'rgba(182, 185, 181, 0.1)',
+          fill: true,
+          tension: 0.3
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        scales: {
+          y: {
+            beginAtZero: true
+          }
+        },
+        plugins: {
+          legend: {
+            position: 'bottom'
+          }
+        }
+      }
+    });
+  </script>
+</body>
+</html>

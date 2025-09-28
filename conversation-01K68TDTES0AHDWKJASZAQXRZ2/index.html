@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>OpenAI Workato Usage Dashboard</title>
+<style>
+  :root { --bg:#000; --text:#FCFDFD; --teal:#67eadd; --card:#111; --radius:12px; --dark-green:#3C574B; --gray:#B6B9B5; }
+  * { box-sizing: border-box; }
+  html,body { margin:0; background:var(--bg); color:var(--text); font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Ubuntu,sans-serif; }
+  .wrap { width:100%; max-width:1400px; margin:0 auto; padding:20px; }
+  h1,h2 { margin:0 0 12px; color:var(--teal); }
+  .sub { opacity:.9; margin-bottom:24px; color:var(--gray); }
+
+  .grid { display:grid; gap:16px; }
+  .kpis { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+  .charts { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  @media (max-width:900px){ .kpis{grid-template-columns:repeat(2,1fr)} .charts{grid-template-columns:1fr} }
+
+  .card { background:var(--card); border:1px solid rgba(103,234,221,.3); border-radius:var(--radius); padding:20px; }
+  .kpi .num { font-size:2.5rem; font-weight:800; color:var(--teal); line-height:1; }
+  .kpi .lab { opacity:.85; font-size:.95rem; margin-top:8px; }
+  .kpi .delta { color:var(--dark-green); font-size:0.9rem; margin-top:4px; }
+
+  .chart-container { position:relative; height:300px; }
+  .section { margin-top:32px; }
+  
+  .insight { background:rgba(103,234,221,.1); border-left:3px solid var(--teal); padding:12px 16px; margin:16px 0; border-radius:6px; }
+  .insight li { margin:8px 0; color:var(--text); }
+  
+  .tag { display:inline-block; font-size:.75rem; font-weight:700; color:#003b36; background:var(--teal); padding:3px 10px; border-radius:999px; margin-bottom:12px; }
+  
+  .progress-bar { width:100%; height:24px; background:var(--card); border-radius:12px; overflow:hidden; position:relative; border:1px solid var(--gray); }
+  .progress-fill { height:100%; background:linear-gradient(90deg, var(--teal), var(--dark-green)); transition:width 0.5s; }
+  
+  canvas { max-height:300px; }
+</style>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <h1>OpenAI Workato Usage Analytics</h1>
+      <div class="sub">Platform adoption and performance metrics over the last 3 months</div>
+    </header>
+
+    <section class="section">
+      <h2>Executive Summary</h2>
+      <div class="grid kpis">
+        <div class="card kpi">
+          <div class="num">16</div>
+          <div class="lab">Active Recipes</div>
+          <div class="delta">↑ 128% growth (from 7)</div>
+        </div>
+        <div class="card kpi">
+          <div class="num">1,265</div>
+          <div class="lab">Total Jobs Run</div>
+          <div class="delta">Last 3 months</div>
+        </div>
+        <div class="card kpi">
+          <div class="num">77.5%</div>
+          <div class="lab">Success Rate</div>
+          <div class="delta">980 successful jobs</div>
+        </div>
+        <div class="card kpi">
+          <div class="num">23</div>
+          <div class="lab">Total Connections</div>
+          <div class="delta">6 unique connectors</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>Capability Adoption</h2>
+      <div class="grid charts">
+        <div class="card">
+          <h3 style="color:var(--teal); margin-bottom:20px;">Recipe Distribution by Capability</h3>
+          <div class="chart-container">
+            <canvas id="capabilityChart"></canvas>
+          </div>
+          <div class="insight">
+            <ul style="margin:0; padding-left:20px;">
+              <li>iPaaS dominates with 75%+ of all recipes</li>
+              <li>1 Workbot implementation shows early automation adoption</li>
+              <li>Untapped potential in API, ETL/ELT, AI, and WFA capabilities</li>
+            </ul>
+          </div>
+        </div>
+        
+        <div class="card">
+          <h3 style="color:var(--teal); margin-bottom:20px;">Job Execution Performance</h3>
+          <div class="chart-container">
+            <canvas id="jobChart"></canvas>
+          </div>
+          <div class="insight">
+            <ul style="margin:0; padding-left:20px;">
+              <li>272 failed jobs (21.5%) indicate optimization opportunities</li>
+              <li>13 pending jobs in queue</li>
+              <li>Strong foundation with 77.5% success rate</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>Growth & Connections</h2>
+      <div class="grid charts">
+        <div class="card">
+          <h3 style="color:var(--teal); margin-bottom:20px;">Recipe Growth Trajectory</h3>
+          <div class="chart-container">
+            <canvas id="growthChart"></canvas>
+          </div>
+        </div>
+        
+        <div class="card">
+          <h3 style="color:var(--teal); margin-bottom:20px;">Connection Tier Distribution</h3>
+          <div class="chart-container">
+            <canvas id="tierChart"></canvas>
+          </div>
+          <div class="insight">
+            <ul style="margin:0; padding-left:20px;">
+              <li>48% of connections are business critical (Tier 1)</li>
+              <li>Balanced distribution across tiers 2-4</li>
+              <li>Average of 3.8 connections per connector</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>Key Opportunities</h2>
+      <div class="grid charts">
+        <div class="card">
+          <div class="tag">High Impact</div>
+          <h3 style="color:var(--teal);">🤖 Activate AI Capabilities</h3>
+          <p style="color:var(--gray);">No AI adoption detected yet. OpenAI could benefit from leveraging AI-powered automation to enhance existing iPaaS workflows.</p>
+        </div>
+        
+        <div class="card">
+          <div class="tag">Performance</div>
+          <h3 style="color:var(--teal);">⚡ Reduce Failure Rate</h3>
+          <p style="color:var(--gray);">21.5% failure rate presents an opportunity for error handling improvements and recipe optimization.</p>
+        </div>
+        
+        <div class="card">
+          <div class="tag">Expansion</div>
+          <h3 style="color:var(--teal);">🔗 Diversify Capability Usage</h3>
+          <p style="color:var(--gray);">Explore API management, ETL/ELT, and Workflow Automation to maximize platform value.</p>
+        </div>
+        
+        <div class="card">
+          <div class="tag">Scale</div>
+          <h3 style="color:var(--teal);">📈 Maintain Growth Momentum</h3>
+          <p style="color:var(--gray);">128% recipe growth shows strong adoption. Continue scaling with more business-critical integrations.</p>
+        </div>
+      </div>
+    </section>
+  </div>
+
+<script>
+Chart.defaults.color = '#B6B9B5';
+Chart.defaults.borderColor = 'rgba(103,234,221,0.2)';
+
+// Capability Distribution
+new Chart(document.getElementById('capabilityChart'), {
+  type: 'doughnut',
+  data: {
+    labels: ['iPaaS', 'Workbot', 'API', 'ETL/ELT', 'AI', 'WFA'],
+    datasets: [{
+      data: [12, 1, 0, 0, 0, 0],
+      backgroundColor: ['#67eadd', '#3C574B', '#B6B9B5', '#444', '#333', '#222'],
+      borderColor: '#000',
+      borderWidth: 2
+    }]
+  },
+  options: {
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: {
+      legend: {
+        position: 'bottom',
+        labels: { padding: 15 }
+      },
+      tooltip: {
+        callbacks: {
+          label: function(context) {
+            const total = 13;
+            const value = context.parsed;
+            const percentage = ((value / total) * 100).toFixed(1);
+            return context.label + ': ' + value + ' recipes (' + percentage + '%)';
+          }
+        }
+      }
+    }
+  }
+});
+
+// Job Performance
+new Chart(document.getElementById('jobChart'), {
+  type: 'bar',
+  data: {
+    labels: ['Successful', 'Failed', 'Pending'],
+    datasets: [{
+      label: 'Jobs',
+      data: [980, 272, 13],
+      backgroundColor: ['#67eadd', '#3C574B', '#B6B9B5'],
+      borderColor: '#000',
+      borderWidth: 1
+    }]
+  },
+  options: {
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: {
+      legend: { display: false },
+      tooltip: {
+        callbacks: {
+          label: function(context) {
+            const total = 1265;
+            const percentage = ((context.parsed.y / total) * 100).toFixed(1);
+            return context.parsed.y + ' jobs (' + percentage + '%)';
+          }
+        }
+      }
+    },
+    scales: {
+      y: {
+        beginAtZero: true,
+        grid: { color: 'rgba(103,234,221,0.1)' }
+      },
+      x: {
+        grid: { display: false }
+      }
+    }
+  }
+});
+
+// Growth Chart
+new Chart(document.getElementById('growthChart'), {
+  type: 'line',
+  data: {
+    labels: ['Month 1', 'Month 2', 'Month 3'],
+    datasets: [{
+      label: 'Active Recipes',
+      data: [7, 11, 16],
+      borderColor: '#67eadd',
+      backgroundColor: 'rgba(103,234,221,0.1)',
+      borderWidth: 3,
+      tension: 0.4,
+      fill: true,
+      pointBackgroundColor: '#67eadd',
+      pointBorderColor: '#000',
+      pointBorderWidth: 2,
+      pointRadius: 5
+    }]
+  },
+  options: {
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: {
+      legend: { display: false }
+    },
+    scales: {
+      y: {
+        beginAtZero: true,
+        grid: { color: 'rgba(103,234,221,0.1)' }
+      },
+      x: {
+        grid: { display: false }
+      }
+    }
+  }
+});
+
+// Tier Distribution
+new Chart(document.getElementById('tierChart'), {
+  type: 'polarArea',
+  data: {
+    labels: ['Tier 1 (Critical)', 'Tier 2', 'Tier 3', 'Tier 4'],
+    datasets: [{
+      data: [11, 4, 4, 4],
+      backgroundColor: ['#67eadd', '#3C574B', '#B6B9B5', 'rgba(103,234,221,0.3)'],
+      borderColor: '#000',
+      borderWidth: 2
+    }]
+  },
+  options: {
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: {
+      legend: {
+        position: 'bottom',
+        labels: { padding: 10 }
+      }
+    }
+  }
+});
+</script>
+</body>
+</html>

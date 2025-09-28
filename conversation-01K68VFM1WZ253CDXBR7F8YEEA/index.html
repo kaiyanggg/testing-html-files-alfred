@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Coupa Usage Dashboard</title>
+<style>
+  :root { --bg:#000; --text:#FCFDFD; --teal:#67eadd; --card:#111; --dark-green:#3C574B; --gray:#B6B9B5; --radius:12px; }
+  * { box-sizing: border-box; }
+  html,body { margin:0; background:var(--bg); color:var(--text); font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Ubuntu,sans-serif; }
+  .wrap { width:100%; max-width:1400px; margin:0 auto; padding:20px; }
+  h1,h2 { margin:0 0 12px; color:var(--teal); }
+  .sub { opacity:.9; margin-bottom:24px; }
+
+  .grid { display:grid; gap:16px; }
+  .kpis { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+  .charts { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  @media (max-width:900px){ .kpis{grid-template-columns:repeat(2,1fr)} .charts{grid-template-columns:1fr} }
+
+  .card { background:var(--card); border:1px solid rgba(103,234,221,.3); border-radius:var(--radius); padding:20px; }
+  .kpi .num { font-size:2.5rem; font-weight:800; color:var(--teal); line-height:1; }
+  .kpi .lab { opacity:.85; font-size:.95rem; margin-top:4px; }
+  .kpi .trend { font-size:.85rem; color:var(--gray); margin-top:8px; }
+
+  .section { margin-top:32px; }
+  .chart-container { height:300px; position:relative; }
+  canvas { max-width:100%; }
+
+  .insight { background:rgba(103,234,221,.1); border-left:3px solid var(--teal); padding:12px; margin-top:12px; border-radius:6px; font-size:.9rem; }
+  .process-grid { display:grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap:12px; margin-top:16px; }
+  .process-item { background:rgba(103,234,221,.05); padding:12px; border-radius:8px; border:1px solid rgba(103,234,221,.2); }
+  .process-item .count { font-size:1.5rem; font-weight:700; color:var(--teal); }
+  .process-item .name { font-size:.9rem; color:var(--gray); margin-top:4px; }
+</style>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <h1>Coupa Usage Analytics</h1>
+      <div class="sub">Last 3 Months Performance Overview</div>
+    </header>
+
+    <section class="section">
+      <h2>Key Metrics</h2>
+      <div class="grid kpis">
+        <div class="card kpi">
+          <div class="num">~535</div>
+          <div class="lab">Active Recipes</div>
+          <div class="trend">↑ Slight growth from 511</div>
+        </div>
+        <div class="card kpi">
+          <div class="num">32-35K</div>
+          <div class="lab">Daily Job Executions</div>
+          <div class="trend">Peaks above 88K</div>
+        </div>
+        <div class="card kpi">
+          <div class="num">>98%</div>
+          <div class="lab">Success Rate</div>
+          <div class="trend">Consistently high</div>
+        </div>
+        <div class="card kpi">
+          <div class="num">3</div>
+          <div class="lab">Active Capabilities</div>
+          <div class="trend">API, ETL/ELT, iPaaS</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>Recipe Distribution by Capability</h2>
+      <div class="grid charts">
+        <div class="card">
+          <div class="chart-container">
+            <canvas id="capabilityChart"></canvas>
+          </div>
+          <div class="insight">
+            📈 iPaaS dominates with 349 recipes (87%), showing gradual growth from 326. ETL/ELT stable at 38-42 recipes. API usage minimal at 1 recipe weekly.
+          </div>
+        </div>
+        <div class="card">
+          <div class="chart-container">
+            <canvas id="volumeChart"></canvas>
+          </div>
+          <div class="insight">
+            ⚡ Reliable automation with 32-35K daily executions. Occasional spikes demonstrate platform scalability handling 2.5x peak loads.
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>Business Process Usage</h2>
+      <div class="card">
+        <div class="process-grid">
+          <div class="process-item">
+            <div class="count">86</div>
+            <div class="name">Employee/Workplace IT</div>
+          </div>
+          <div class="process-item">
+            <div class="count">86</div>
+            <div class="name">Service Management</div>
+          </div>
+          <div class="process-item">
+            <div class="count">86</div>
+            <div class="name">Security Operations</div>
+          </div>
+          <div class="process-item">
+            <div class="count">49</div>
+            <div class="name">HR Onboarding/Offboarding</div>
+          </div>
+          <div class="process-item">
+            <div class="count">27</div>
+            <div class="name">Data Operations</div>
+          </div>
+          <div class="process-item">
+            <div class="count"><10</div>
+            <div class="name">Finance/Support/RevOps</div>
+          </div>
+        </div>
+        <div class="insight">
+          🎯 IT automations lead adoption with 258 total recipes (3 areas × 86 each). HR processes show strong automation maturity. Finance and RevOps present growth opportunities.
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>Performance & Reliability</h2>
+      <div class="card">
+        <div class="chart-container">
+          <canvas id="successChart"></canvas>
+        </div>
+        <div class="insight">
+          ✅ Exceptional reliability with >98% success rate maintained consistently. Platform stability supports mission-critical automations.
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>Growth Opportunities</h2>
+      <div class="card">
+        <div class="insight">
+          🚀 <strong>Bot & WFA Capabilities:</strong> Zero usage detected - potential for RPA and workflow automation expansion
+        </div>
+        <div class="insight">
+          💡 <strong>Department Expansion:</strong> Finance and RevOps show minimal adoption compared to IT - opportunity for cross-functional growth
+        </div>
+        <div class="insight">
+          📊 <strong>Volume Scaling:</strong> Current infrastructure handles 2.5x spikes efficiently - ready for increased automation load
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <script>
+    Chart.defaults.color = '#B6B9B5';
+    Chart.defaults.borderColor = 'rgba(103,234,221,0.2)';
+
+    // Capability Distribution
+    new Chart(document.getElementById('capabilityChart'), {
+      type: 'doughnut',
+      data: {
+        labels: ['iPaaS', 'ETL/ELT', 'API'],
+        datasets: [{
+          data: [349, 42, 1],
+          backgroundColor: ['#67eadd', '#3C574B', '#B6B9B5'],
+          borderWidth: 0
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: {
+            position: 'bottom',
+            labels: { padding: 15 }
+          },
+          tooltip: {
+            callbacks: {
+              label: function(context) {
+                const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                const percentage = ((context.raw / total) * 100).toFixed(1);
+                return context.label + ': ' + context.raw + ' (' + percentage + '%)';
+              }
+            }
+          }
+        }
+      }
+    });
+
+    // Volume Trend
+    new Chart(document.getElementById('volumeChart'), {
+      type: 'line',
+      data: {
+        labels: ['Week 1', 'Week 2', 'Week 3', 'Week 4', 'Week 5', 'Week 6', 'Week 7', 'Week 8', 'Week 9', 'Week 10', 'Week 11', 'Week 12'],
+        datasets: [{
+          label: 'Daily Average',
+          data: [32000, 33000, 32500, 88000, 34000, 33500, 35000, 32000, 34500, 88000, 35000, 34000],
+          borderColor: '#67eadd',
+          backgroundColor: 'rgba(103,234,221,0.1)',
+          tension: 0.4,
+          fill: true
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: { display: false }
+        },
+        scales: {
+          y: {
+            beginAtZero: true,
+            ticks: {
+              callback: function(value) {
+                return (value/1000) + 'K';
+              }
+            }
+          }
+        }
+      }
+    });
+
+    // Success Rate
+    new Chart(document.getElementById('successChart'), {
+      type: 'bar',
+      data: {
+        labels: ['Month 1', 'Month 2', 'Month 3'],
+        datasets: [{
+          label: 'Success Rate',
+          data: [98.2, 98.5, 98.3],
+          backgroundColor: '#67eadd',
+          borderWidth: 0
+        }, {
+          label: 'Failure Rate',
+          data: [1.8, 1.5, 1.7],
+          backgroundColor: '#3C574B',
+          borderWidth: 0
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        scales: {
+          x: { stacked: true },
+          y: { 
+            stacked: true,
+            max: 100,
+            ticks: {
+              callback: function(value) {
+                return value + '%';
+              }
+            }
+          }
+        },
+        plugins: {
+          legend: { position: 'bottom' }
+        }
+      }
+    });
+  </script>
+</body>
+</html>

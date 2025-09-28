@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Coupa Usage Dashboard</title>
+<style>
+  :root { 
+    --bg:#000; 
+    --text:#FCFDFD; 
+    --teal:#67eadd; 
+    --dark-green:#3C574B;
+    --gray:#B6B9B5;
+    --card:#111; 
+    --radius:12px; 
+  }
+  * { box-sizing: border-box; }
+  html,body { margin:0; background:var(--bg); color:var(--text); font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Ubuntu,sans-serif; }
+  .wrap { width:100%; padding:20px; }
+  h1,h2,h3 { margin:0 0 12px; color:var(--teal); }
+  .sub { color:var(--gray); margin-bottom:24px; }
+
+  .grid { display:grid; gap:16px; }
+  .kpis { grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); }
+  .charts { grid-template-columns: repeat(auto-fit, minmax(400px, 1fr)); }
+  @media (max-width:800px){ .charts{grid-template-columns:1fr} }
+
+  .card { background:var(--card); border:1px solid rgba(103,234,221,.3); border-radius:var(--radius); padding:20px; }
+  .kpi .num { font-size:2.5rem; font-weight:800; color:var(--teal); line-height:1; }
+  .kpi .lab { color:var(--gray); font-size:.95rem; margin-top:8px; }
+  .kpi .delta { font-size:0.9rem; color:#67eadd; margin-top:4px; }
+
+  .section { margin-top:32px; }
+  .chart-container { position:relative; height:300px; }
+  canvas { max-height:300px; }
+  
+  .insights { background:rgba(103,234,221,.1); border-left:3px solid var(--teal); padding:12px; margin-top:12px; border-radius:4px; }
+  .insights li { color:var(--text); margin:4px 0; }
+  
+  .metric-row { display:flex; justify-content:space-between; align-items:center; padding:8px 0; border-bottom:1px solid rgba(103,234,221,.2); }
+  .metric-row:last-child { border-bottom:none; }
+  .metric-label { color:var(--gray); }
+  .metric-value { color:var(--teal); font-weight:600; }
+</style>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <h1>Coupa Platform Usage Analytics</h1>
+      <div class="sub">Performance metrics and usage patterns over the last 3 months</div>
+    </header>
+
+    <section class="section">
+      <h2>Key Performance Indicators</h2>
+      <div class="grid kpis">
+        <div class="card kpi">
+          <div class="num">397</div>
+          <div class="lab">Active Users</div>
+          <div class="delta">↑ 2.3% from 388</div>
+        </div>
+        <div class="card kpi">
+          <div class="num">99.4%</div>
+          <div class="lab">Job Success Rate</div>
+          <div class="delta">~32k successful/day</div>
+        </div>
+        <div class="card kpi">
+          <div class="num">390</div>
+          <div class="lab">Total Active Recipes</div>
+          <div class="delta">↑ 4.8% growth</div>
+        </div>
+        <div class="card kpi">
+          <div class="num">88</div>
+          <div class="lab">Unique Connectors</div>
+          <div class="delta">8 business critical</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>Recipe Distribution & Job Performance</h2>
+      <div class="grid charts">
+        <div class="card">
+          <h3>Recipe Capability Breakdown</h3>
+          <div class="chart-container">
+            <canvas id="recipeChart"></canvas>
+          </div>
+          <div class="insights">
+            <strong>Key Insights:</strong>
+            <ul>
+              <li>iPaaS dominates with 89.5% of all recipes (349 total)</li>
+              <li>ETL/ELT stable at ~40 recipes (10.3%)</li>
+              <li>Minimal API usage with only 1 active recipe</li>
+              <li>No adoption of AI, Workbot, or WFA capabilities</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="card">
+          <h3>Daily Job Execution Pattern</h3>
+          <div class="chart-container">
+            <canvas id="jobChart"></canvas>
+          </div>
+          <div class="insights">
+            <strong>Key Insights:</strong>
+            <ul>
+              <li>Averaging 32,000 successful jobs daily</li>
+              <li>Only ~190 failures per day (0.6% failure rate)</li>
+              <li>Highly reliable platform with 99.4% success rate</li>
+              <li>Occasional volume spikes handled without degradation</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>Connector Usage & User Growth</h2>
+      <div class="grid charts">
+        <div class="card">
+          <h3>Connector Distribution by App Tier</h3>
+          <div class="chart-container">
+            <canvas id="connectorChart"></canvas>
+          </div>
+          <div class="metric-row">
+            <span class="metric-label">Total Connectors</span>
+            <span class="metric-value">88</span>
+          </div>
+          <div class="metric-row">
+            <span class="metric-label">Business Critical</span>
+            <span class="metric-value">8 (9.1%)</span>
+          </div>
+          <div class="metric-row">
+            <span class="metric-label">Most Used Tiers</span>
+            <span class="metric-value">Tier 2 & 3 (19 each)</span>
+          </div>
+        </div>
+
+        <div class="card">
+          <h3>Active User Growth Trend</h3>
+          <div class="chart-container">
+            <canvas id="userChart"></canvas>
+          </div>
+          <div class="insights">
+            <strong>Growth Summary:</strong>
+            <ul>
+              <li>Steady week-over-week growth trajectory</li>
+              <li>9 new users added in 3 months (2.3% growth)</li>
+              <li>Consistent upward trend from 388 to 397 users</li>
+              <li>No significant drops in user engagement</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <script>
+    Chart.defaults.color = '#B6B9B5';
+    Chart.defaults.borderColor = 'rgba(103,234,221,0.2)';
+    
+    // Recipe Distribution
+    new Chart(document.getElementById('recipeChart'), {
+      type: 'doughnut',
+      data: {
+        labels: ['iPaaS', 'ETL/ELT', 'API'],
+        datasets: [{
+          data: [349, 40, 1],
+          backgroundColor: ['#67eadd', '#3C574B', '#B6B9B5'],
+          borderWidth: 0
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: {
+            position: 'bottom',
+            labels: { padding: 15 }
+          },
+          tooltip: {
+            callbacks: {
+              label: function(context) {
+                const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                const percentage = ((context.parsed / total) * 100).toFixed(1);
+                return context.label + ': ' + context.parsed + ' (' + percentage + '%)';
+              }
+            }
+          }
+        }
+      }
+    });
+
+    // Job Execution
+    new Chart(document.getElementById('jobChart'), {
+      type: 'bar',
+      data: {
+        labels: ['Successful Jobs', 'Failed Jobs'],
+        datasets: [{
+          label: 'Average Daily Jobs',
+          data: [32000, 190],
+          backgroundColor: ['#67eadd', '#B6B9B5']
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        scales: {
+          y: {
+            beginAtZero: true,
+            grid: { color: 'rgba(103,234,221,0.1)' }
+          },
+          x: {
+            grid: { display: false }
+          }
+        },
+        plugins: {
+          legend: { display: false },
+          tooltip: {
+            callbacks: {
+              afterLabel: function(context) {
+                if (context.dataIndex === 0) return '99.4% success rate';
+                return '0.6% failure rate';
+              }
+            }
+          }
+        }
+      }
+    });
+
+    // Connector Tiers
+    new Chart(document.getElementById('connectorChart'), {
+      type: 'bar',
+      data: {
+        labels: ['Business Critical', 'Tier 1', 'Tier 2', 'Tier 3', 'Tier 4', 'Unspecified'],
+        datasets: [{
+          label: 'Number of Connectors',
+          data: [8, 13, 19, 19, 4, 25],
+          backgroundColor: '#67eadd'
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        indexAxis: 'y',
+        scales: {
+          x: {
+            beginAtZero: true,
+            grid: { color: 'rgba(103,234,221,0.1)' }
+          },
+          y: {
+            grid: { display: false }
+          }
+        },
+        plugins: {
+          legend: { display: false }
+        }
+      }
+    });
+
+    // User Growth
+    new Chart(document.getElementById('userChart'), {
+      type: 'line',
+      data: {
+        labels: ['Month 1', 'Week 2', 'Week 3', 'Week 4', 'Month 2', 'Week 6', 'Week 7', 'Week 8', 'Month 3', 'Week 10', 'Week 11', 'Current'],
+        datasets: [{
+          label: 'Active Users',
+          data: [388, 389, 390, 391, 392, 393, 393, 394, 395, 395, 396, 397],
+          borderColor: '#67eadd',
+          backgroundColor: 'rgba(103,234,221,0.1)',
+          tension: 0.3,
+          fill: true
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        scales: {
+          y: {
+            beginAtZero: false,
+            min: 385,
+            grid: { color: 'rgba(103,234,221,0.1)' }
+          },
+          x: {
+            grid: { display: false }
+          }
+        },
+        plugins: {
+          legend: { display: false }
+        }
+      }
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Coupa Usage Dashboard</title>
+<style>
+  :root { 
+    --bg:#000; 
+    --text:#FCFDFD; 
+    --teal:#67eadd; 
+    --dark-green:#3C574B;
+    --gray:#B6B9B5;
+    --card:#111; 
+    --radius:12px; 
+  }
+  * { box-sizing: border-box; }
+  html,body { margin:0; background:var(--bg); color:var(--text); font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Ubuntu,sans-serif; }
+  .wrap { width:100%; padding:20px; }
+  h1,h2 { margin:0 0 12px; color:var(--teal); }
+  .sub { opacity:.9; margin-bottom:24px; color:var(--gray); }
+
+  .grid { display:grid; gap:16px; }
+  .kpis { grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); }
+  .charts { grid-template-columns: repeat(auto-fit, minmax(400px, 1fr)); }
+  @media (max-width:800px){ .charts{grid-template-columns:1fr} }
+
+  .card { 
+    background:var(--card); 
+    border:1px solid rgba(103,234,221,.3); 
+    border-radius:var(--radius); 
+    padding:20px; 
+    position:relative;
+  }
+  
+  .kpi .num { font-size:2.5rem; font-weight:800; color:var(--teal); line-height:1; margin-bottom:8px; }
+  .kpi .lab { opacity:.85; font-size:.95rem; color:var(--gray); }
+  .kpi .delta { font-size:0.9rem; margin-top:8px; }
+  .kpi .delta.positive { color:#67eadd; }
+  .kpi .delta.negative { color:#ff6b6b; }
+  
+  .chart-container { position:relative; height:300px; margin-top:20px; }
+  
+  .status-active { color:#67eadd; font-weight:600; }
+  .status-inactive { color:#ff6b6b; font-weight:600; }
+  
+  .connection-grid { display:grid; grid-template-columns: 2fr 1fr 1fr; gap:12px; margin-top:16px; }
+  .connection-header { font-weight:600; color:var(--gray); padding-bottom:8px; border-bottom:1px solid rgba(103,234,221,.2); }
+  .connection-row { padding:8px 0; }
+  
+  .insight { 
+    background:rgba(103,234,221,.1); 
+    border-left:3px solid var(--teal); 
+    padding:12px; 
+    margin-top:16px; 
+    border-radius:6px;
+    font-size:0.9rem;
+  }
+  
+  .section { margin-top:32px; }
+  
+  canvas { max-width:100%; }
+</style>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <h1>Coupa Integration Dashboard</h1>
+      <div class="sub">Real-time monitoring of Coupa usage patterns and performance metrics</div>
+    </header>
+
+    <section class="section">
+      <h2>Key Metrics</h2>
+      <div class="grid kpis">
+        <div class="card kpi">
+          <div class="num">10</div>
+          <div class="lab">Total Connections</div>
+          <div class="delta positive">80% Active</div>
+        </div>
+        <div class="card kpi">
+          <div class="num">1</div>
+          <div class="lab">Active Production Recipes</div>
+          <div class="delta positive">Stable for 3 months</div>
+        </div>
+        <div class="card kpi">
+          <div class="num">iPaaS</div>
+          <div class="lab">Primary Capability</div>
+          <div class="delta">100% usage</div>
+        </div>
+        <div class="card kpi">
+          <div class="num">514</div>
+          <div class="lab">Total Successful Jobs (3mo)</div>
+          <div class="delta positive">↑ Trending upward</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>Connection Status</h2>
+      <div class="card">
+        <div class="connection-grid">
+          <div class="connection-header">Connector</div>
+          <div class="connection-header">Status</div>
+          <div class="connection-header">Count</div>
+          <div class="connection-row">Coupa</div>
+          <div class="connection-row status-active">Active</div>
+          <div class="connection-row">8</div>
+          <div class="connection-row">Coupa</div>
+          <div class="connection-row status-inactive">Inactive</div>
+          <div class="connection-row">2</div>
+        </div>
+        <div class="insight">
+          ⚠️ <strong>Optimization Opportunity:</strong> 20% of Coupa connections are inactive. Consider reviewing these connections for potential cleanup or reactivation.
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>Performance Trends</h2>
+      <div class="grid charts">
+        <div class="card">
+          <h3 style="color:var(--gray); font-size:1.1rem; margin-bottom:16px;">Daily Successful Jobs (Last 3 Months)</h3>
+          <div class="chart-container">
+            <canvas id="jobsChart"></canvas>
+          </div>
+          <div class="insight">
+            📈 <strong>Growth Pattern:</strong> Jobs increased from 4 to 6 per day, showing 50% growth in operational volume.
+          </div>
+        </div>
+        
+        <div class="card">
+          <h3 style="color:var(--gray); font-size:1.1rem; margin-bottom:16px;">Recipe Activity by Month</h3>
+          <div class="chart-container">
+            <canvas id="recipeChart"></canvas>
+          </div>
+          <div class="insight">
+            ✅ <strong>Consistent Operations:</strong> 1 iPaaS recipe running continuously in production across all 3 months.
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>Usage Summary</h2>
+      <div class="card">
+        <h3 style="color:var(--gray); font-size:1.1rem; margin-bottom:16px;">Key Findings</h3>
+        <ul style="color:var(--gray); line-height:1.8;">
+          <li><strong style="color:var(--text);">Stable Production Environment:</strong> Coupa integration maintains consistent recipe deployment in production</li>
+          <li><strong style="color:var(--text);">iPaaS Focus:</strong> All active recipes utilize iPaaS capability exclusively</li>
+          <li><strong style="color:var(--text);">Growing Throughput:</strong> Daily job volume shows positive trend from May to August</li>
+          <li><strong style="color:var(--text);">Connection Health:</strong> 80% of connections are active, with room for optimization</li>
+        </ul>
+      </div>
+    </section>
+  </div>
+
+  <script>
+    // Jobs trend chart
+    const jobsCtx = document.getElementById('jobsChart').getContext('2d');
+    new Chart(jobsCtx, {
+      type: 'line',
+      data: {
+        labels: ['May 25', 'Jun 1', 'Jun 8', 'Jun 15', 'Jun 22', 'Jun 29', 'Jul 6', 'Jul 13', 'Jul 20', 'Jul 27', 'Aug 3', 'Aug 10', 'Aug 17', 'Aug 25'],
+        datasets: [{
+          label: 'Successful Jobs',
+          data: [4, 4, 4, 5, 5, 5, 5, 5, 6, 6, 6, 6, 6, 6],
+          borderColor: '#67eadd',
+          backgroundColor: 'rgba(103, 234, 221, 0.1)',
+          tension: 0.3,
+          fill: true
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: { display: false },
+          tooltip: {
+            backgroundColor: '#111',
+            borderColor: '#67eadd',
+            borderWidth: 1
+          }
+        },
+        scales: {
+          y: {
+            beginAtZero: true,
+            grid: { color: 'rgba(255,255,255,0.1)' },
+            ticks: { color: '#B6B9B5' }
+          },
+          x: {
+            grid: { display: false },
+            ticks: { color: '#B6B9B5', maxRotation: 45 }
+          }
+        }
+      }
+    });
+
+    // Recipe activity chart
+    const recipeCtx = document.getElementById('recipeChart').getContext('2d');
+    new Chart(recipeCtx, {
+      type: 'bar',
+      data: {
+        labels: ['June 2025', 'July 2025', 'August 2025'],
+        datasets: [{
+          label: 'Active iPaaS Recipes',
+          data: [1, 1, 1],
+          backgroundColor: '#67eadd',
+          borderColor: '#67eadd',
+          borderWidth: 1
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: { display: false },
+          tooltip: {
+            backgroundColor: '#111',
+            borderColor: '#67eadd',
+            borderWidth: 1
+          }
+        },
+        scales: {
+          y: {
+            beginAtZero: true,
+            max: 2,
+            ticks: { 
+              stepSize: 1,
+              color: '#B6B9B5'
+            },
+            grid: { color: 'rgba(255,255,255,0.1)' }
+          },
+          x: {
+            grid: { display: false },
+            ticks: { color: '#B6B9B5' }
+          }
+        }
+      }
+    });
+  </script>
+</body>
+</html>

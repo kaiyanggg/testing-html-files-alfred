@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Krafton Workato Usage Dashboard</title>
+<style>
+  :root { 
+    --bg:#000; 
+    --text:#FCFDFD; 
+    --teal:#67eadd; 
+    --dark-green:#3C574B;
+    --gray:#B6B9B5;
+    --card:#111; 
+    --radius:12px; 
+  }
+  * { box-sizing: border-box; }
+  html,body { margin:0; background:var(--bg); color:var(--text); font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Ubuntu,sans-serif; }
+  .wrap { width:100%; padding:20px; }
+  h1,h2 { margin:0 0 12px; color:var(--teal); }
+  .sub { opacity:.9; margin-bottom:24px; color:var(--gray); }
+
+  .grid { display:grid; gap:16px; }
+  .kpis { grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); }
+  .charts { grid-template-columns: repeat(auto-fit, minmax(400px, 1fr)); }
+  @media (max-width:800px){ .charts{grid-template-columns:1fr} }
+
+  .card { 
+    background:var(--card); 
+    border:1px solid rgba(103,234,221,.3); 
+    border-radius:var(--radius); 
+    padding:20px; 
+  }
+  .kpi .num { font-size:2.5rem; font-weight:800; color:var(--teal); line-height:1; }
+  .kpi .lab { opacity:.85; font-size:.95rem; margin-top:8px; }
+  .kpi .delta { font-size:0.9rem; color:var(--gray); margin-top:4px; }
+  .positive { color:#67eadd; }
+  .negative { color:#ff6b6b; }
+
+  .section { margin-top:32px; }
+  .chart-container { position:relative; height:300px; }
+  
+  .insight-box {
+    background:rgba(103,234,221,.1);
+    border-left:3px solid var(--teal);
+    padding:12px 16px;
+    margin-top:16px;
+    border-radius:4px;
+  }
+  .insight-box ul {
+    margin:8px 0 0 0;
+    padding-left:20px;
+  }
+  .insight-box li {
+    margin:4px 0;
+    font-size:0.9rem;
+    color:var(--gray);
+  }
+
+  .filters {
+    display:flex;
+    gap:12px;
+    margin-bottom:20px;
+    flex-wrap:wrap;
+  }
+  .filter-btn {
+    background:transparent;
+    border:1px solid var(--teal);
+    color:var(--teal);
+    padding:8px 16px;
+    border-radius:20px;
+    cursor:pointer;
+    transition:all 0.3s;
+  }
+  .filter-btn:hover, .filter-btn.active {
+    background:var(--teal);
+    color:var(--bg);
+  }
+
+  canvas { max-height:300px; }
+</style>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <h1>Krafton Workato Usage Dashboard</h1>
+      <div class="sub">Platform adoption, performance metrics, and integration insights</div>
+    </header>
+
+    <section class="section">
+      <h2>Key Performance Indicators</h2>
+      <div class="grid kpis">
+        <div class="card kpi">
+          <div class="num">111</div>
+          <div class="lab">Active Recipes</div>
+          <div class="delta positive">↑ Steady activity</div>
+        </div>
+        <div class="card kpi">
+          <div class="num">897</div>
+          <div class="lab">Daily Jobs</div>
+          <div class="delta positive">100% Success Rate</div>
+        </div>
+        <div class="card kpi">
+          <div class="num">157</div>
+          <div class="lab">Total Connections</div>
+          <div class="delta">Across 5 app tiers</div>
+        </div>
+        <div class="card kpi">
+          <div class="num">3</div>
+          <div class="lab">Active Builders</div>
+          <div class="delta">1 Active User</div>
+        </div>
+        <div class="card kpi">
+          <div class="num">9.9%</div>
+          <div class="lab">Task Utilization</div>
+          <div class="delta">Room for growth</div>
+        </div>
+        <div class="card kpi">
+          <div class="num">2/6</div>
+          <div class="lab">Capabilities Adopted</div>
+          <div class="delta negative">AI & ETL untapped</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>Usage Analytics</h2>
+      <div class="grid charts">
+        <div class="card">
+          <h3>Recipe Distribution by Capability</h3>
+          <div class="chart-container">
+            <canvas id="capabilityChart"></canvas>
+          </div>
+          <div class="insight-box">
+            <strong>Key Insights:</strong>
+            <ul>
+              <li>API recipes lead with 29 active (26% of total)</li>
+              <li>iPaaS follows with 24 recipes (22%)</li>
+              <li>58 recipes unclassified - opportunity for categorization</li>
+              <li>Zero adoption of AI, ETL/ELT, Workbot, and WFA capabilities</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="card">
+          <h3>Connection Distribution by App Tier</h3>
+          <div class="chart-container">
+            <canvas id="tierChart"></canvas>
+          </div>
+          <div class="insight-box">
+            <strong>Key Insights:</strong>
+            <ul>
+              <li>Tier 3 apps dominate with 51 connections (32%)</li>
+              <li>46 uncategorized connections need classification</li>
+              <li>Premium tiers (1-2) have 54 connections combined</li>
+              <li>Balanced distribution indicates diverse integration needs</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="card">
+          <h3>Job Execution Performance</h3>
+          <div class="chart-container">
+            <canvas id="jobChart"></canvas>
+          </div>
+          <div class="insight-box">
+            <strong>Key Insights:</strong>
+            <ul>
+              <li>Perfect 100% success rate - 897 jobs, zero failures</li>
+              <li>Excellent reliability indicates well-tested recipes</li>
+              <li>Low volume suggests conservative automation approach</li>
+              <li>Opportunity to scale with confidence given high reliability</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="card">
+          <h3>Platform Adoption Opportunities</h3>
+          <div class="chart-container">
+            <canvas id="adoptionChart"></canvas>
+          </div>
+          <div class="insight-box">
+            <strong>Key Insights:</strong>
+            <ul>
+              <li>Only 2 of 6 capabilities currently in use (33%)</li>
+              <li>Major gaps: AI, ETL/ELT, Workbot, Workflow Automation</li>
+              <li>Task utilization at 9.9% - significant headroom</li>
+              <li>Power builder program not yet activated</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>Strategic Recommendations</h2>
+      <div class="card">
+        <div class="insight-box" style="background:transparent; border-left-width:0;">
+          <h3 style="color:var(--teal); margin-bottom:16px;">🚀 Growth Opportunities</h3>
+          <ul style="padding-left:0; list-style:none;">
+            <li style="margin:12px 0; padding:12px; background:rgba(103,234,221,.1); border-radius:8px;">
+              <strong>1. Expand AI Adoption:</strong> With zero AI recipes currently, explore AI-powered automation for repetitive tasks
+            </li>
+            <li style="margin:12px 0; padding:12px; background:rgba(103,234,221,.1); border-radius:8px;">
+              <strong>2. Implement ETL/ELT:</strong> Leverage data integration capabilities for better insights and reporting
+            </li>
+            <li style="margin:12px 0; padding:12px; background:rgba(103,234,221,.1); border-radius:8px;">
+              <strong>3. Scale Builder Community:</strong> Develop power builders from current team to increase automation velocity
+            </li>
+            <li style="margin:12px 0; padding:12px; background:rgba(103,234,221,.1); border-radius:8px;">
+              <strong>4. Optimize Task Usage:</strong> At 9.9% utilization, significant room to scale current operations
+            </li>
+            <li style="margin:12px 0; padding:12px; background:rgba(103,234,221,.1); border-radius:8px;">
+              <strong>5. Categorize Connections:</strong> 29% of connections uncategorized - improve governance and visibility
+            </li>
+          </ul>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <script>
+    Chart.defaults.color = '#B6B9B5';
+    Chart.defaults.borderColor = 'rgba(103,234,221,0.2)';
+    
+    // Capability Distribution
+    new Chart(document.getElementById('capabilityChart'), {
+      type: 'doughnut',
+      data: {
+        labels: ['API', 'iPaaS', 'Unclassified', 'AI', 'ETL/ELT', 'Workbot', 'WFA'],
+        datasets: [{
+          data: [29, 24, 58, 0, 0, 0, 0],
+          backgroundColor: ['#67eadd', '#3C574B', '#B6B9B5', '#222', '#222', '#222', '#222'],
+          borderWidth: 0
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: {
+            position: 'right',
+            labels: { padding: 10 }
+          }
+        }
+      }
+    });
+
+    // App Tier Distribution
+    new Chart(document.getElementById('tierChart'), {
+      type: 'bar',
+      data: {
+        labels: ['Uncategorized', 'Tier 1', 'Tier 2', 'Tier 3', 'Tier 4', 'Tier 5'],
+        datasets: [{
+          label: 'Connections',
+          data: [46, 29, 25, 51, 4, 2],
+          backgroundColor: '#67eadd',
+          borderRadius: 8
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        scales: {
+          y: { beginAtZero: true, grid: { color: 'rgba(103,234,221,0.1)' } },
+          x: { grid: { display: false } }
+        },
+        plugins: {
+          legend: { display: false }
+        }
+      }
+    });
+
+    // Job Performance
+    new Chart(document.getElementById('jobChart'), {
+      type: 'pie',
+      data: {
+        labels: ['Successful Jobs', 'Failed Jobs'],
+        datasets: [{
+          data: [897, 0],
+          backgroundColor: ['#67eadd', '#ff6b6b'],
+          borderWidth: 0
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: {
+            position: 'bottom',
+            labels: { padding: 15 }
+          }
+        }
+      }
+    });
+
+    // Adoption Radar
+    new Chart(document.getElementById('adoptionChart'), {
+      type: 'radar',
+      data: {
+        labels: ['API', 'iPaaS', 'AI', 'ETL/ELT', 'Workbot', 'WFA'],
+        datasets: [{
+          label: 'Current Adoption',
+          data: [100, 100, 0, 0, 0, 0],
+          backgroundColor: 'rgba(103,234,221,0.2)',
+          borderColor: '#67eadd',
+          pointBackgroundColor: '#67eadd'
+        }, {
+          label: 'Potential',
+          data: [100, 100, 100, 100, 100, 100],
+          backgroundColor: 'rgba(60,87,75,0.1)',
+          borderColor: '#3C574B',
+          pointBackgroundColor: '#3C574B'
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        scales: {
+          r: {
+            beginAtZero: true,
+            max: 100,
+            grid: { color: 'rgba(103,234,221,0.1)' },
+            ticks: { display: false }
+          }
+        },
+        plugins: {
+          legend: {
+            position: 'bottom',
+            labels: { padding: 10 }
+          }
+        }
+      }
+    });
+  </script>
+</body>
+</html>

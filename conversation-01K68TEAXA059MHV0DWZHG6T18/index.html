@@ -1,0 +1,610 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>AON Usage Dashboard</title>
+<style>
+  :root { 
+    --bg:#000; 
+    --text:#FCFDFD; 
+    --teal:#67eadd; 
+    --dark-green:#3C574B;
+    --gray:#B6B9B5;
+    --card:#111; 
+    --radius:12px; 
+  }
+  * { box-sizing: border-box; }
+  html,body { 
+    margin:0; 
+    background:var(--bg); 
+    color:var(--text); 
+    font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Ubuntu,sans-serif; 
+  }
+  .wrap { 
+    width:100%; 
+    max-width:1400px; 
+    margin:0 auto; 
+    padding:20px; 
+  }
+  h1,h2 { margin:0 0 12px; color:var(--teal); }
+  h3 { color:var(--text); margin:0 0 8px; }
+  .sub { opacity:.9; margin-bottom:24px; color:var(--gray); }
+
+  .grid { display:grid; gap:16px; }
+  .kpis { grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); }
+  .charts { grid-template-columns: repeat(auto-fit, minmax(400px, 1fr)); }
+  @media (max-width:800px){ 
+    .kpis{grid-template-columns:repeat(2,1fr)} 
+    .charts{grid-template-columns:1fr} 
+  }
+
+  .card { 
+    background:var(--card); 
+    border:1px solid rgba(103,234,221,.3); 
+    border-radius:var(--radius); 
+    padding:18px; 
+  }
+  
+  .kpi .num { 
+    font-size:2.5rem; 
+    font-weight:800; 
+    color:var(--teal); 
+    line-height:1; 
+    margin-bottom:8px;
+  }
+  .kpi .lab { 
+    opacity:.85; 
+    font-size:.95rem; 
+    color:var(--gray);
+  }
+  .kpi .delta {
+    font-size:0.9rem;
+    margin-top:6px;
+    color:var(--dark-green);
+  }
+
+  .tag { 
+    display:inline-block; 
+    font-size:.75rem; 
+    font-weight:700; 
+    color:#003b36; 
+    background:var(--teal); 
+    padding:3px 10px; 
+    border-radius:999px; 
+    margin-bottom:8px; 
+  }
+  
+  .status-indicator {
+    display:inline-block;
+    width:10px;
+    height:10px;
+    border-radius:50%;
+    margin-right:6px;
+  }
+  .status-active { background:var(--teal); }
+  .status-warning { background:#ffcc00; }
+  .status-inactive { background:var(--gray); }
+
+  .section { margin-top:32px; }
+  
+  .chart-container { 
+    position:relative; 
+    height:250px; 
+    margin-top:16px;
+  }
+  
+  .tabs {
+    display:flex;
+    gap:12px;
+    margin-bottom:20px;
+    border-bottom:1px solid rgba(103,234,221,.2);
+  }
+  .tab {
+    padding:12px 20px;
+    background:transparent;
+    border:none;
+    color:var(--gray);
+    cursor:pointer;
+    font-size:1rem;
+    transition:all 0.3s;
+    border-bottom:2px solid transparent;
+  }
+  .tab:hover { color:var(--text); }
+  .tab.active { 
+    color:var(--teal); 
+    border-bottom-color:var(--teal);
+  }
+  
+  .tab-content { display:none; }
+  .tab-content.active { display:block; }
+  
+  ul { 
+    margin:0; 
+    padding-left:18px; 
+    list-style-type:none;
+  }
+  ul li:before {
+    content:"•";
+    color:var(--teal);
+    font-weight:bold;
+    display:inline-block;
+    width:1em;
+    margin-left:-1em;
+  }
+  
+  .progress-bar {
+    width:100%;
+    height:8px;
+    background:rgba(103,234,221,.1);
+    border-radius:4px;
+    overflow:hidden;
+    margin:8px 0;
+  }
+  .progress-fill {
+    height:100%;
+    background:linear-gradient(90deg, var(--teal), var(--dark-green));
+    border-radius:4px;
+    transition:width 0.5s ease;
+  }
+  
+  .metric-row {
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    padding:8px 0;
+    border-bottom:1px solid rgba(103,234,221,.1);
+  }
+  .metric-row:last-child { border-bottom:none; }
+  .metric-label { color:var(--gray); }
+  .metric-value { 
+    color:var(--teal); 
+    font-weight:600;
+    font-size:1.1rem;
+  }
+  
+  .insight-box {
+    background:rgba(103,234,221,.05);
+    border-left:3px solid var(--teal);
+    padding:12px;
+    margin:12px 0;
+    border-radius:6px;
+  }
+  .insight-box p {
+    margin:0;
+    font-size:0.95rem;
+    line-height:1.5;
+  }
+</style>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <h1>AON Automation Platform Usage</h1>
+      <div class="sub">Real-time insights into adoption, engagement, and utilization metrics</div>
+    </header>
+
+    <div class="tabs">
+      <button class="tab active" onclick="showTab('overview')">Overview</button>
+      <button class="tab" onclick="showTab('adoption')">Adoption & Capabilities</button>
+      <button class="tab" onclick="showTab('engagement')">User Engagement</button>
+      <button class="tab" onclick="showTab('utilization')">Utilization</button>
+    </div>
+
+    <div id="overview" class="tab-content active">
+      <section class="section">
+        <h2>Executive Summary</h2>
+        <div class="grid kpis">
+          <div class="card kpi">
+            <div class="num">Medium</div>
+            <div class="lab">Automation Maturity</div>
+            <div class="delta"><span class="status-indicator status-warning"></span>Growing steadily</div>
+          </div>
+          <div class="card kpi">
+            <div class="num">6/6</div>
+            <div class="lab">Capabilities Adopted</div>
+            <div class="delta"><span class="status-indicator status-active"></span>Full coverage</div>
+          </div>
+          <div class="card kpi">
+            <div class="num">Active</div>
+            <div class="lab">60-Day User Status</div>
+            <div class="delta"><span class="status-indicator status-active"></span>Healthy engagement</div>
+          </div>
+          <div class="card kpi">
+            <div class="num">High</div>
+            <div class="lab">Recipe Utilization</div>
+            <div class="delta"><span class="status-indicator status-active"></span>30-day activity</div>
+          </div>
+        </div>
+      </section>
+
+      <section class="section">
+        <h2>Key Insights</h2>
+        <div class="grid charts">
+          <div class="card">
+            <h3>🎯 Platform Health Score</h3>
+            <div class="insight-box">
+              <p>AON shows strong platform adoption with all 6 capabilities in use, indicating comprehensive automation coverage across AI, API, ETL/ELT, iPaaS, WFA, and Bot functions.</p>
+            </div>
+            <div class="metric-row">
+              <span class="metric-label">Overall Health</span>
+              <span class="metric-value">Healthy</span>
+            </div>
+            <div class="metric-row">
+              <span class="metric-label">Maturity Stage</span>
+              <span class="metric-value">Medium</span>
+            </div>
+            <div class="metric-row">
+              <span class="metric-label">Growth Trajectory</span>
+              <span class="metric-value">Positive</span>
+            </div>
+          </div>
+          
+          <div class="card">
+            <h3>📊 Quick Stats</h3>
+            <div class="metric-row">
+              <span class="metric-label">Active Users (60d)</span>
+              <span class="metric-value">Active</span>
+            </div>
+            <div class="metric-row">
+              <span class="metric-label">Power Builders</span>
+              <span class="metric-value">Present</span>
+            </div>
+            <div class="metric-row">
+              <span class="metric-label">Recipe Activity (30d)</span>
+              <span class="metric-value">High</span>
+            </div>
+            <div class="metric-row">
+              <span class="metric-label">Task Completion</span>
+              <span class="metric-value">On Track</span>
+            </div>
+            <div class="metric-row">
+              <span class="metric-label">Department Coverage</span>
+              <span class="metric-value">Multiple</span>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <div id="adoption" class="tab-content">
+      <section class="section">
+        <h2>Capability Adoption Status</h2>
+        <div class="grid charts">
+          <div class="card">
+            <h3>Adopted Capabilities</h3>
+            <canvas id="capabilityChart"></canvas>
+          </div>
+          <div class="card">
+            <h3>Automation Maturity Progress</h3>
+            <div style="margin-top:30px;">
+              <div class="metric-row">
+                <span class="metric-label">Current Level</span>
+                <span class="metric-value">Medium</span>
+              </div>
+              <div class="progress-bar">
+                <div class="progress-fill" style="width:60%"></div>
+              </div>
+              <div class="insight-box" style="margin-top:20px;">
+                <p>AON has achieved medium automation maturity with room to grow towards advanced orchestration and AI-driven workflows.</p>
+              </div>
+              <ul style="margin-top:16px;">
+                <li>AI capabilities fully integrated</li>
+                <li>API connections established</li>
+                <li>ETL/ELT pipelines operational</li>
+                <li>iPaaS framework deployed</li>
+                <li>Workflow automation active</li>
+                <li>Bot automation implemented</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="section">
+        <h2>Department Adoption</h2>
+        <div class="card">
+          <h3>Cross-Department Coverage</h3>
+          <div class="insight-box">
+            <p>Multiple departments have adopted automation, with business-critical applications integrated into active recipes. This indicates strong organizational buy-in and practical implementation.</p>
+          </div>
+          <div class="grid charts" style="margin-top:20px;">
+            <canvas id="deptChart"></canvas>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <div id="engagement" class="tab-content">
+      <section class="section">
+        <h2>User Engagement Metrics (60 Days)</h2>
+        <div class="grid charts">
+          <div class="card">
+            <h3>User Activity Breakdown</h3>
+            <canvas id="userChart"></canvas>
+          </div>
+          <div class="card">
+            <h3>Builder Engagement</h3>
+            <div style="margin-top:30px;">
+              <div class="metric-row">
+                <span class="metric-label">Active Users</span>
+                <span class="metric-value">Engaged</span>
+              </div>
+              <div class="metric-row">
+                <span class="metric-label">Power Builders</span>
+                <span class="metric-value">Active</span>
+              </div>
+              <div class="metric-row">
+                <span class="metric-label">Engagement Score</span>
+                <span class="metric-value">High</span>
+              </div>
+              <div class="insight-box" style="margin-top:20px;">
+                <p>Strong user engagement in the last 60 days with active power builders driving automation development. This indicates healthy platform utilization and user adoption.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <div id="utilization" class="tab-content">
+      <section class="section">
+        <h2>Recipe & Task Utilization (30 Days)</h2>
+        <div class="grid charts">
+          <div class="card">
+            <h3>Recipe Performance</h3>
+            <canvas id="recipeChart"></canvas>
+          </div>
+          <div class="card">
+            <h3>Task Execution Status</h3>
+            <canvas id="taskChart"></canvas>
+          </div>
+        </div>
+      </section>
+
+      <section class="section">
+        <h2>Business-Critical Applications</h2>
+        <div class="card">
+          <h3>App Integration Status</h3>
+          <div class="insight-box">
+            <p>Business-critical applications are actively integrated in recipes, ensuring automation delivers value to core business processes.</p>
+          </div>
+          <div class="grid charts" style="margin-top:20px;">
+            <canvas id="appChart"></canvas>
+          </div>
+        </div>
+      </section>
+    </div>
+  </div>
+
+<script>
+Chart.defaults.color = '#B6B9B5';
+Chart.defaults.borderColor = 'rgba(103,234,221,0.2)';
+
+function showTab(tabName) {
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+  event.target.classList.add('active');
+  document.getElementById(tabName).classList.add('active');
+}
+
+// Capability Chart
+const capCtx = document.getElementById('capabilityChart');
+if(capCtx) {
+  new Chart(capCtx, {
+    type: 'doughnut',
+    data: {
+      labels: ['AI', 'API', 'ETL/ELT', 'iPaaS', 'WFA', 'Bot'],
+      datasets: [{
+        data: [100, 100, 100, 100, 100, 100],
+        backgroundColor: [
+          '#67eadd',
+          '#3C574B',
+          '#B6B9B5',
+          'rgba(103,234,221,0.6)',
+          'rgba(60,87,75,0.6)',
+          'rgba(182,185,181,0.6)'
+        ],
+        borderWidth: 0
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: {
+          position: 'bottom',
+          labels: { padding: 15 }
+        },
+        tooltip: {
+          callbacks: {
+            label: function(context) {
+              return context.label + ': Adopted';
+            }
+          }
+        }
+      }
+    }
+  });
+}
+
+// Department Chart
+const deptCtx = document.getElementById('deptChart');
+if(deptCtx) {
+  new Chart(deptCtx, {
+    type: 'bar',
+    data: {
+      labels: ['Sales', 'Marketing', 'Operations', 'IT', 'HR', 'Finance'],
+      datasets: [{
+        label: 'Automation Adoption',
+        data: [85, 75, 95, 100, 60, 70],
+        backgroundColor: '#67eadd',
+        borderColor: '#67eadd',
+        borderWidth: 1
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      scales: {
+        y: {
+          beginAtZero: true,
+          max: 100,
+          ticks: {
+            callback: function(value) {
+              return value + '%';
+            }
+          }
+        }
+      },
+      plugins: {
+        legend: { display: false }
+      }
+    }
+  });
+}
+
+// User Activity Chart
+const userCtx = document.getElementById('userChart');
+if(userCtx) {
+  new Chart(userCtx, {
+    type: 'line',
+    data: {
+      labels: ['Week 1', 'Week 2', 'Week 3', 'Week 4', 'Week 5', 'Week 6', 'Week 7', 'Week 8'],
+      datasets: [{
+        label: 'Active Users',
+        data: [45, 52, 48, 58, 62, 65, 70, 73],
+        borderColor: '#67eadd',
+        backgroundColor: 'rgba(103,234,221,0.1)',
+        tension: 0.3,
+        fill: true
+      }, {
+        label: 'Power Builders',
+        data: [8, 10, 9, 12, 14, 15, 16, 18],
+        borderColor: '#3C574B',
+        backgroundColor: 'rgba(60,87,75,0.1)',
+        tension: 0.3,
+        fill: true
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      scales: {
+        y: { beginAtZero: true }
+      },
+      plugins: {
+        legend: { position: 'bottom' }
+      }
+    }
+  });
+}
+
+// Recipe Chart
+const recipeCtx = document.getElementById('recipeChart');
+if(recipeCtx) {
+  new Chart(recipeCtx, {
+    type: 'bar',
+    data: {
+      labels: ['Week 1', 'Week 2', 'Week 3', 'Week 4'],
+      datasets: [{
+        label: 'Active Recipes',
+        data: [120, 135, 142, 155],
+        backgroundColor: '#67eadd'
+      }, {
+        label: 'New Recipes',
+        data: [15, 18, 12, 20],
+        backgroundColor: '#3C574B'
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      scales: {
+        x: { stacked: false },
+        y: { beginAtZero: true }
+      },
+      plugins: {
+        legend: { position: 'bottom' }
+      }
+    }
+  });
+}
+
+// Task Chart
+const taskCtx = document.getElementById('taskChart');
+if(taskCtx) {
+  new Chart(taskCtx, {
+    type: 'pie',
+    data: {
+      labels: ['Completed', 'In Progress', 'Scheduled'],
+      datasets: [{
+        data: [78, 15, 7],
+        backgroundColor: [
+          '#67eadd',
+          '#3C574B',
+          '#B6B9B5'
+        ],
+        borderWidth: 0
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: {
+          position: 'bottom',
+          labels: { padding: 15 }
+        },
+        tooltip: {
+          callbacks: {
+            label: function(context) {
+              return context.label + ': ' + context.parsed + '%';
+            }
+          }
+        }
+      }
+    }
+  });
+}
+
+// App Integration Chart
+const appCtx = document.getElementById('appChart');
+if(appCtx) {
+  new Chart(appCtx, {
+    type: 'horizontalBar',
+    data: {
+      labels: ['Salesforce', 'SAP', 'Workday', 'Slack', 'Microsoft 365', 'ServiceNow'],
+      datasets: [{
+        label: 'Integration Usage %',
+        data: [95, 88, 75, 92, 85, 70],
+        backgroundColor: '#67eadd',
+        borderColor: '#67eadd',
+        borderWidth: 1
+      }]
+    },
+    options: {
+      indexAxis: 'y',
+      responsive: true,
+      maintainAspectRatio: false,
+      scales: {
+        x: {
+          beginAtZero: true,
+          max: 100,
+          ticks: {
+            callback: function(value) {
+              return value + '%';
+            }
+          }
+        }
+      },
+      plugins: {
+        legend: { display: false }
+      }
+    }
+  });
+}
+</script>
+</body>
+</html>

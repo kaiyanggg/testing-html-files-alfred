@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Zendesk Usage Summary Dashboard</title>
+<style>
+  :root { 
+    --bg:#000; 
+    --text:#FCFDFD; 
+    --teal:#67eadd; 
+    --dark-green:#3C574B;
+    --gray:#B6B9B5;
+    --card:#0a0a0a; 
+    --radius:12px; 
+  }
+  * { box-sizing: border-box; }
+  html,body { margin:0; background:var(--bg); color:var(--text); font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif; }
+  .wrap { width:100%; max-width:1400px; margin:0 auto; padding:20px; }
+  h1,h2,h3 { margin:0 0 12px; color:var(--teal); }
+  .sub { color:var(--gray); margin-bottom:24px; font-size:1.1rem; }
+
+  .grid { display:grid; gap:16px; }
+  .kpis { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+  .charts { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .insights { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  @media (max-width:1000px){ .charts{grid-template-columns:1fr} .insights{grid-template-columns:1fr} }
+  @media (max-width:800px){ .kpis{grid-template-columns:repeat(2,1fr)} }
+
+  .card { 
+    background:var(--card); 
+    border:1px solid rgba(103,234,221,.2); 
+    border-radius:var(--radius); 
+    padding:20px;
+    position:relative;
+  }
+  
+  .kpi .num { 
+    font-size:2.5rem; 
+    font-weight:800; 
+    color:var(--teal); 
+    line-height:1;
+    margin-bottom:8px;
+  }
+  .kpi .lab { 
+    color:var(--gray); 
+    font-size:.95rem;
+    text-transform:uppercase;
+    letter-spacing:1px;
+  }
+  .kpi .delta {
+    position:absolute;
+    top:20px;
+    right:20px;
+    font-size:.85rem;
+    padding:4px 8px;
+    border-radius:999px;
+    background:rgba(103,234,221,.1);
+    color:var(--teal);
+    border:1px solid var(--teal);
+  }
+
+  .tag { 
+    display:inline-block; 
+    font-size:.75rem; 
+    font-weight:700; 
+    color:#002a27; 
+    background:var(--teal); 
+    padding:4px 10px; 
+    border-radius:999px; 
+    margin-bottom:12px; 
+  }
+  
+  .section { margin-top:32px; }
+  
+  .chart-container { 
+    position:relative; 
+    height:300px; 
+    margin-top:16px;
+  }
+  
+  .insight-card {
+    transition: transform 0.2s;
+  }
+  .insight-card:hover {
+    transform: translateY(-4px);
+  }
+  
+  .metric-row {
+    display:flex;
+    justify-content:space-between;
+    padding:8px 0;
+    border-bottom:1px solid rgba(103,234,221,.1);
+  }
+  .metric-row:last-child {
+    border-bottom:none;
+  }
+  .metric-label {
+    color:var(--gray);
+  }
+  .metric-value {
+    color:var(--teal);
+    font-weight:600;
+  }
+  
+  .progress-bar {
+    width:100%;
+    height:8px;
+    background:rgba(103,234,221,.1);
+    border-radius:999px;
+    overflow:hidden;
+    margin-top:8px;
+  }
+  .progress-fill {
+    height:100%;
+    background:var(--teal);
+    transition: width 0.3s;
+  }
+  
+  ul { 
+    margin:0; 
+    padding-left:20px; 
+    color:var(--gray);
+    line-height:1.8;
+  }
+  ul li strong {
+    color:var(--teal);
+  }
+  
+  .alert {
+    background:rgba(252,253,253,.05);
+    border-left:4px solid var(--teal);
+    padding:16px;
+    margin-top:16px;
+    border-radius:6px;
+  }
+  .alert-title {
+    color:var(--teal);
+    font-weight:600;
+    margin-bottom:8px;
+  }
+</style>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+  <div class="wrap">
+    <!-- Header -->
+    <header>
+      <h1>Zendesk Customer Usage Summary</h1>
+      <div class="sub">Automation footprint analysis and engagement metrics</div>
+    </header>
+
+    <!-- Executive KPIs -->
+    <section>
+      <h2>Key Metrics</h2>
+      <div class="grid kpis">
+        <div class="card kpi">
+          <div class="num">692</div>
+          <div class="lab">Active Recipes</div>
+          <div class="delta">High Activity</div>
+        </div>
+        <div class="card kpi">
+          <div class="num">4/5</div>
+          <div class="lab">Depts Automated</div>
+          <div class="delta">80% Coverage</div>
+        </div>
+        <div class="card kpi">
+          <div class="num">5%</div>
+          <div class="lab">Task Utilization</div>
+          <div class="delta">Opportunity</div>
+        </div>
+        <div class="card kpi">
+          <div class="num">18</div>
+          <div class="lab">Active Builders</div>
+          <div class="delta">4 Power Users</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Charts Section -->
+    <section class="section">
+      <h2>Capability Adoption</h2>
+      <div class="grid charts">
+        <div class="card">
+          <h3>Recipe Distribution by Type</h3>
+          <canvas id="capabilityChart"></canvas>
+          <div class="alert">
+            <div class="alert-title">Key Insight</div>
+            iPaaS dominates with 317 recipes (46%), while AI capability is adopted but not actively used
+          </div>
+        </div>
+        <div class="card">
+          <h3>30-Day Activity Trend</h3>
+          <canvas id="activityChart"></canvas>
+          <div class="alert">
+            <div class="alert-title">Engagement Metrics</div>
+            366 recipes edited vs 27 created - indicates optimization focus over expansion
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Task Utilization -->
+    <section class="section">
+      <h2>Task Consumption Analysis</h2>
+      <div class="card">
+        <h3>Current Billing Period</h3>
+        <div class="metric-row">
+          <span class="metric-label">Tasks Purchased</span>
+          <span class="metric-value">1,225,000,000</span>
+        </div>
+        <div class="metric-row">
+          <span class="metric-label">Tasks Consumed</span>
+          <span class="metric-value">61,222,986</span>
+        </div>
+        <div class="metric-row">
+          <span class="metric-label">Remaining Tasks</span>
+          <span class="metric-value">1,163,777,014</span>
+        </div>
+        <div style="margin-top:16px;">
+          <div style="display:flex;justify-content:space-between;margin-bottom:8px;">
+            <span style="color:var(--gray)">Utilization Rate</span>
+            <span style="color:var(--teal);font-weight:600;">5%</span>
+          </div>
+          <div class="progress-bar">
+            <div class="progress-fill" style="width:5%"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Insights & Opportunities -->
+    <section class="section">
+      <h2>Growth Opportunities</h2>
+      <div class="grid insights">
+        <article class="card insight-card">
+          <div class="tag">Expansion Potential</div>
+          <h3>📈 Task Utilization Gap</h3>
+          <p style="color:var(--gray);line-height:1.6;">With only 5% utilization, significant capacity exists for scaling automation across remaining departments and use cases</p>
+          <ul>
+            <li>Current: <strong>61.2M</strong> tasks</li>
+            <li>Available: <strong>1.16B</strong> tasks</li>
+          </ul>
+        </article>
+
+        <article class="card insight-card">
+          <div class="tag">Quick Win</div>
+          <h3>🤖 AI Capability Activation</h3>
+          <p style="color:var(--gray);line-height:1.6;">AI capability adopted but not actively used - opportunity for immediate value with existing infrastructure</p>
+          <ul>
+            <li><strong>9</strong> AI recipes ready</li>
+            <li><strong>0</strong> currently active</li>
+          </ul>
+        </article>
+
+        <article class="card insight-card">
+          <div class="tag">Department Gap</div>
+          <h3>🏢 Complete Coverage</h3>
+          <p style="color:var(--gray);line-height:1.6;">1 department remains unautomated while 4/5 are covered - final push for full organizational adoption</p>
+          <ul>
+            <li><strong>80%</strong> coverage achieved</li>
+            <li><strong>1</strong> dept opportunity</li>
+          </ul>
+        </article>
+      </div>
+    </section>
+
+    <!-- Builder Engagement -->
+    <section class="section">
+      <h2>Builder Ecosystem</h2>
+      <div class="card">
+        <div class="grid" style="grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));">
+          <div>
+            <h3 style="color:var(--dark-green);font-size:1.1rem;">User Distribution</h3>
+            <div class="metric-row">
+              <span class="metric-label">Total Builders</span>
+              <span class="metric-value">18</span>
+            </div>
+            <div class="metric-row">
+              <span class="metric-label">Power Builders</span>
+              <span class="metric-value">4</span>
+            </div>
+            <div class="metric-row">
+              <span class="metric-label">Active Users</span>
+              <span class="metric-value">9</span>
+            </div>
+          </div>
+          <div>
+            <h3 style="color:var(--dark-green);font-size:1.1rem;">30-Day Activity</h3>
+            <div class="metric-row">
+              <span class="metric-label">Recipes Created</span>
+              <span class="metric-value">27</span>
+            </div>
+            <div class="metric-row">
+              <span class="metric-label">Recipes Edited</span>
+              <span class="metric-value">366</span>
+            </div>
+            <div class="metric-row">
+              <span class="metric-label">Edit/Create Ratio</span>
+              <span class="metric-value">13.6x</span>
+            </div>
+          </div>
+          <div>
+            <h3 style="color:var(--dark-green);font-size:1.1rem;">Capability Usage</h3>
+            <div class="metric-row">
+              <span class="metric-label">Types Adopted</span>
+              <span class="metric-value">6/6</span>
+            </div>
+            <div class="metric-row">
+              <span class="metric-label">Active Types</span>
+              <span class="metric-value">5/6</span>
+            </div>
+            <div class="metric-row">
+              <span class="metric-label">Recipes/Builder</span>
+              <span class="metric-value">38.4</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <script>
+    // Capability Distribution Chart
+    const ctx1 = document.getElementById('capabilityChart').getContext('2d');
+    new Chart(ctx1, {
+      type: 'doughnut',
+      data: {
+        labels: ['iPaaS', 'API', 'ETL/ELT', 'Bot', 'WFA', 'AI (Inactive)'],
+        datasets: [{
+          data: [317, 38, 29, 13, 7, 9],
+          backgroundColor: [
+            '#67eadd',
+            '#3C574B',
+            '#B6B9B5',
+            'rgba(103,234,221,0.6)',
+            'rgba(60,87,75,0.6)',
+            'rgba(182,185,181,0.3)'
+          ],
+          borderColor: '#000',
+          borderWidth: 2
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: {
+            position: 'bottom',
+            labels: {
+              color: '#FCFDFD',
+              padding: 12,
+              font: { size: 11 }
+            }
+          },
+          tooltip: {
+            callbacks: {
+              label: function(context) {
+                const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                const percentage = ((context.parsed / total) * 100).toFixed(1);
+                return context.label + ': ' + context.parsed + ' recipes (' + percentage + '%)';
+              }
+            }
+          }
+        }
+      }
+    });
+
+    // Activity Chart
+    const ctx2 = document.getElementById('activityChart').getContext('2d');
+    new Chart(ctx2, {
+      type: 'bar',
+      data: {
+        labels: ['Created', 'Edited'],
+        datasets: [{
+          label: 'Last 30 Days',
+          data: [27, 366],
+          backgroundColor: ['#3C574B', '#67eadd'],
+          borderColor: ['#3C574B', '#67eadd'],
+          borderWidth: 1
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        scales: {
+          y: {
+            beginAtZero: true,
+            ticks: { color: '#B6B9B5' },
+            grid: { color: 'rgba(182,185,181,0.1)' }
+          },
+          x: {
+            ticks: { color: '#B6B9B5' },
+            grid: { display: false }
+          }
+        },
+        plugins: {
+          legend: { display: false },
+          tooltip: {
+            callbacks: {
+              label: function(context) {
+                return context.parsed.y + ' recipes';
+              }
+            }
+          }
+        }
+      }
+    });
+  </script>
+</body>
+</html>

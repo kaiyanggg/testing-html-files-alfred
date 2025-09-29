@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Zendesk Usage Summary</title>
+<style>
+  :root { --bg:#000; --text:#FCFDFD; --teal:#67eadd; --card:#111; --gray:#B6B9B5; --dark-green:#3C574B; --radius:12px; }
+  * { box-sizing: border-box; }
+  html,body { margin:0; background:var(--bg); color:var(--text); font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Ubuntu,sans-serif; }
+  .wrap { width:100%; max-width:1400px; margin:0 auto; padding:20px; }
+  h1,h2,h3 { margin:0 0 12px; color:var(--teal); }
+  .sub { opacity:.9; margin-bottom:24px; color:var(--gray); }
+
+  .grid { display:grid; gap:16px; }
+  .kpis { grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); }
+  .charts { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  @media (max-width:900px){ .charts{grid-template-columns:1fr} }
+
+  .card { background:var(--card); border:1px solid rgba(103,234,221,.3); border-radius:var(--radius); padding:20px; }
+  .kpi .num { font-size:2.5rem; font-weight:800; color:var(--teal); line-height:1; }
+  .kpi .lab { opacity:.85; font-size:.95rem; margin-top:8px; }
+  .kpi .delta { font-size:.85rem; color:var(--gray); margin-top:4px; }
+
+  .chart-container { position:relative; height:300px; }
+  .section { margin-top:32px; }
+
+  .insight { background:rgba(103,234,221,.1); border-left:3px solid var(--teal); padding:12px; margin-top:12px; border-radius:6px; }
+  .insight h4 { margin:0 0 8px; color:var(--teal); font-size:1rem; }
+  .insight p { margin:0; font-size:.9rem; line-height:1.5; }
+
+  .tabs { display:flex; gap:8px; margin-bottom:16px; }
+  .tab { padding:8px 16px; background:transparent; border:1px solid var(--gray); color:var(--gray); border-radius:20px; cursor:pointer; transition:all .2s; }
+  .tab.active { background:var(--teal); color:#000; border-color:var(--teal); font-weight:600; }
+  .tab-content { display:none; }
+  .tab-content.active { display:block; }
+
+  .badge { display:inline-block; font-size:.75rem; padding:2px 8px; border-radius:999px; margin-right:4px; }
+  .badge.green { background:rgba(103,234,221,.2); color:var(--teal); }
+  .badge.yellow { background:rgba(255,193,7,.2); color:#ffc107; }
+  .badge.red { background:rgba(220,53,69,.2); color:#dc3545; }
+</style>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <h1>Zendesk Customer Usage Summary</h1>
+      <div class="sub">3-Month Performance Overview • Last Updated: September 22, 2025</div>
+    </header>
+
+    <section class="section">
+      <h2>Key Performance Indicators</h2>
+      <div class="grid kpis">
+        <div class="card kpi">
+          <div class="num">367</div>
+          <div class="lab">Active Recipes</div>
+          <div class="delta">iPaaS: 293 | API: 33 | ETL: 27</div>
+        </div>
+        <div class="card kpi">
+          <div class="num">756</div>
+          <div class="lab">Total Connections</div>
+          <div class="delta">79 Distinct Connectors</div>
+        </div>
+        <div class="card kpi">
+          <div class="num">97.6%</div>
+          <div class="lab">Success Rate</div>
+          <div class="delta">106,695 successful of 109,332 jobs</div>
+        </div>
+        <div class="card kpi">
+          <div class="num">16</div>
+          <div class="lab">Active Builders</div>
+          <div class="delta">10 Active Users Total</div>
+        </div>
+        <div class="card kpi">
+          <div class="num">6/6</div>
+          <div class="lab">Capabilities Adopted</div>
+          <div class="delta">All features in use</div>
+        </div>
+        <div class="card kpi">
+          <div class="num">109.3K</div>
+          <div class="lab">Weekly Job Volume</div>
+          <div class="delta">Avg from last week</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="tabs">
+        <button class="tab active" onclick="showTab('adoption')">Adoption</button>
+        <button class="tab" onclick="showTab('reliability')">Reliability</button>
+        <button class="tab" onclick="showTab('insights')">Insights</button>
+      </div>
+
+      <div id="adoption" class="tab-content active">
+        <div class="grid charts">
+          <div class="card">
+            <h3>Recipe Distribution by Capability</h3>
+            <div class="chart-container">
+              <canvas id="capabilityChart"></canvas>
+            </div>
+          </div>
+          <div class="card">
+            <h3>Connector & Builder Engagement</h3>
+            <div class="chart-container">
+              <canvas id="engagementChart"></canvas>
+            </div>
+          </div>
+        </div>
+        <div class="insight">
+          <h4>🚀 Strong iPaaS Adoption</h4>
+          <p>iPaaS recipes dominate with 80% (293/367) of all active recipes, indicating strong integration focus. Full capability adoption (6/6) shows mature platform usage.</p>
+        </div>
+        <div class="insight">
+          <h4>📊 Exceptional Connection Density</h4>
+          <p>With 756 connections across 79 connectors (9.6 connections per connector average), Zendesk shows business-critical integration patterns well above the 50-connection threshold.</p>
+        </div>
+      </div>
+
+      <div id="reliability" class="tab-content">
+        <div class="grid charts">
+          <div class="card">
+            <h3>Job Execution Performance</h3>
+            <div class="chart-container">
+              <canvas id="jobChart"></canvas>
+            </div>
+          </div>
+          <div class="card">
+            <h3>Success vs Failure Breakdown</h3>
+            <div class="chart-container">
+              <canvas id="successChart"></canvas>
+            </div>
+          </div>
+        </div>
+        <div class="insight">
+          <h4>✅ Operational Excellence</h4>
+          <p>97.6% success rate exceeds the 98% stability threshold marginally. With 109K weekly jobs, the platform demonstrates high reliability at scale.</p>
+        </div>
+        <div class="insight">
+          <h4>⚡ Minor Optimization Opportunity</h4>
+          <p>2,637 failed jobs (2.4%) present a small optimization opportunity. Focus on error patterns could push success rate above 98% benchmark.</p>
+        </div>
+      </div>
+
+      <div id="insights" class="tab-content">
+        <div class="card">
+          <h3>Strategic Recommendations</h3>
+          <div class="insight">
+            <h4>📈 Ready for Expansion</h4>
+            <p><span class="badge green">HIGH PRIORITY</span> With 80% task utilization in iPaaS and full capability adoption, Zendesk is primed for workflow expansion. Consider advanced AI recipe development (currently 7 recipes).</p>
+          </div>
+          <div class="insight">
+            <h4>👥 Cross-Team Collaboration Strong</h4>
+            <p><span class="badge green">HEALTHY</span> 16 builders across teams indicates strong organizational engagement. The 1.6:1 builder-to-user ratio shows deep technical involvement.</p>
+          </div>
+          <div class="insight">
+            <h4>🔧 Workbot Underutilized</h4>
+            <p><span class="badge yellow">OPPORTUNITY</span> Only 14 Workbot recipes (3.8% of total) suggests untapped automation potential for conversational interfaces and approvals.</p>
+          </div>
+          <div class="insight">
+            <h4>🎯 WFA Limited Adoption</h4>
+            <p><span class="badge yellow">GROWTH AREA</span> With only 7 WFA workflows adopted, there's significant room for workflow automation expansion to streamline business processes.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <script>
+    Chart.defaults.color = '#B6B9B5';
+    Chart.defaults.borderColor = 'rgba(103, 234, 221, 0.2)';
+
+    // Capability Distribution Chart
+    new Chart(document.getElementById('capabilityChart'), {
+      type: 'doughnut',
+      data: {
+        labels: ['iPaaS', 'API', 'ETL/ELT', 'Workbot', 'AI', 'WFA'],
+        datasets: [{
+          data: [293, 33, 27, 14, 7, 7],
+          backgroundColor: ['#67eadd', '#3C574B', '#B6B9B5', '#4a7c6e', '#2a4a3e', '#1a2a2e'],
+          borderWidth: 0
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: {
+            position: 'bottom',
+            labels: { padding: 15 }
+          },
+          tooltip: {
+            callbacks: {
+              label: function(context) {
+                const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                const percentage = ((context.parsed / total) * 100).toFixed(1);
+                return context.label + ': ' + context.parsed + ' (' + percentage + '%)';
+              }
+            }
+          }
+        }
+      }
+    });
+
+    // Engagement Metrics Chart
+    new Chart(document.getElementById('engagementChart'), {
+      type: 'bar',
+      data: {
+        labels: ['Connectors', 'Connections', 'Builders', 'Active Users'],
+        datasets: [{
+          label: 'Count',
+          data: [79, 756, 16, 10],
+          backgroundColor: '#67eadd',
+          borderWidth: 0
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        indexAxis: 'y',
+        plugins: {
+          legend: { display: false }
+        },
+        scales: {
+          x: {
+            grid: { color: 'rgba(103, 234, 221, 0.1)' }
+          },
+          y: {
+            grid: { display: false }
+          }
+        }
+      }
+    });
+
+    // Job Performance Chart
+    new Chart(document.getElementById('jobChart'), {
+      type: 'line',
+      data: {
+        labels: ['Week 1', 'Week 2', 'Week 3', 'Current'],
+        datasets: [{
+          label: 'Total Jobs',
+          data: [95000, 102000, 108000, 109332],
+          borderColor: '#67eadd',
+          backgroundColor: 'rgba(103, 234, 221, 0.1)',
+          tension: 0.3,
+          fill: true
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: { display: false }
+        },
+        scales: {
+          y: {
+            beginAtZero: false,
+            grid: { color: 'rgba(103, 234, 221, 0.1)' }
+          },
+          x: {
+            grid: { display: false }
+          }
+        }
+      }
+    });
+
+    // Success Rate Chart
+    new Chart(document.getElementById('successChart'), {
+      type: 'pie',
+      data: {
+        labels: ['Successful', 'Failed'],
+        datasets: [{
+          data: [106695, 2637],
+          backgroundColor: ['#67eadd', '#dc3545'],
+          borderWidth: 0
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: {
+            position: 'bottom',
+            labels: { padding: 15 }
+          },
+          tooltip: {
+            callbacks: {
+              label: function(context) {
+                const percentage = ((context.parsed / 109332) * 100).toFixed(2);
+                return context.label + ': ' + context.parsed.toLocaleString() + ' (' + percentage + '%)';
+              }
+            }
+          }
+        }
+      }
+    });
+
+    function showTab(tabName) {
+      document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+      document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+      event.target.classList.add('active');
+      document.getElementById(tabName).classList.add('active');
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,243 @@
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Coupa Training Dashboard</title>
+<style>
+  :root { --bg:#000; --text:#FCFDFD; --teal:#67eadd; --card:#111; --radius:12px; --dark-green:#3C574B; --gray:#B6B9B5; }
+  * { box-sizing: border-box; }
+  html,body { margin:0; background:var(--bg); color:var(--text); font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Ubuntu,sans-serif; }
+  .wrap { width:100%; max-width:1400px; margin:0 auto; padding:20px; }
+  h1,h2 { margin:0 0 12px; color:var(--teal); }
+  .sub { opacity:.9; margin-bottom:24px; color:var(--gray); }
+
+  .grid { display:grid; gap:16px; }
+  .kpis { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+  .insights { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .charts { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  @media (max-width:900px){ .kpis{grid-template-columns:repeat(2,1fr)} .insights{grid-template-columns:1fr} .charts{grid-template-columns:1fr} }
+
+  .card { background:var(--card); border:1px solid rgba(103,234,221,.3); border-radius:var(--radius); padding:16px; }
+  .kpi .num { font-size:2.5rem; font-weight:800; color:var(--teal); line-height:1; }
+  .kpi .lab { opacity:.85; font-size:.95rem; margin-top:8px; }
+  .kpi .delta { font-size:.85rem; color:var(--gray); margin-top:4px; }
+
+  .tag { display:inline-block; font-size:.75rem; font-weight:700; color:#003b36; background:var(--teal); padding:3px 10px; border-radius:999px; margin-bottom:10px; }
+  .action { margin-top:12px; border:1px solid var(--teal); background:transparent; color:var(--teal); border-radius:999px; padding:10px 16px; cursor:pointer; font-size:.9rem; transition:all .2s; }
+  .action:hover { background:var(--teal); color:#002a27; }
+
+  .section { margin-top:32px; }
+  ul { margin:8px 0; padding-left:20px; }
+  li { margin:6px 0; }
+
+  .chart-container { position:relative; height:300px; padding:8px; }
+  canvas { max-height:100%; }
+
+  .progress-bar { height:24px; background:var(--card); border:1px solid var(--teal); border-radius:12px; overflow:hidden; margin:8px 0; position:relative; }
+  .progress-fill { height:100%; background:var(--teal); display:flex; align-items:center; justify-content:flex-end; padding-right:8px; font-weight:bold; font-size:.85rem; color:#003b36; }
+  
+  .capability-grid { display:grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap:8px; margin-top:12px; }
+  .capability-item { padding:8px; background:var(--card); border:1px solid var(--gray); border-radius:8px; text-align:center; font-size:.9rem; }
+  .capability-item.active { border-color:var(--teal); color:var(--teal); }
+  .capability-item.unused { opacity:.5; }
+</style>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <h1>🎯 Coupa Workato Training Opportunities</h1>
+      <div class="sub">Strategic insights to maximize automation capabilities and drive adoption across departments</div>
+    </header>
+
+    <section class="section">
+      <h2>Executive Summary</h2>
+      <div class="grid kpis">
+        <div class="card kpi">
+          <div class="num">378</div>
+          <div class="lab">Total Recipes</div>
+          <div class="delta">92% iPaaS focused</div>
+        </div>
+        <div class="card kpi">
+          <div class="num">2/6</div>
+          <div class="lab">Capabilities Used</div>
+          <div class="delta">4 adopted, 2 active</div>
+        </div>
+        <div class="card kpi">
+          <div class="num">4/5</div>
+          <div class="lab">Departments Active</div>
+          <div class="delta">80% coverage</div>
+        </div>
+        <div class="card kpi">
+          <div class="num">0.13</div>
+          <div class="lab">Automation Index</div>
+          <div class="delta">Low complexity</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>Capability Analysis</h2>
+      <div class="grid charts">
+        <div class="card">
+          <h3 style="color:var(--teal); font-size:1.1rem;">Recipe Distribution by Capability</h3>
+          <div class="chart-container">
+            <canvas id="recipeChart"></canvas>
+          </div>
+          <div style="margin-top:12px; font-size:.9rem; color:var(--gray);">
+            ⚠️ Heavy iPaaS concentration (92%) indicates opportunity for diversification
+          </div>
+        </div>
+        <div class="card">
+          <h3 style="color:var(--teal); font-size:1.1rem;">Adoption vs Usage Gap</h3>
+          <div class="chart-container">
+            <canvas id="adoptionChart"></canvas>
+          </div>
+          <div style="margin-top:12px; font-size:.9rem; color:var(--gray);">
+            📊 50% of adopted capabilities show zero usage - training opportunity
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>🎓 Priority Training Recommendations</h2>
+      <div class="grid insights">
+        <article class="card">
+          <div class="tag">Highest Impact</div>
+          <h3 style="color:var(--teal);">🤖 AI & Intelligent Automation</h3>
+          <p>Zero AI recipes despite 378 total automations. AI could enhance existing iPaaS workflows with intelligent decision-making and data processing.</p>
+          <div class="progress-bar">
+            <div class="progress-fill" style="width:100%;">100% Opportunity</div>
+          </div>
+          <button class="action">Launch AI Enablement Program</button>
+        </article>
+
+        <article class="card">
+          <div class="tag">Quick Win</div>
+          <h3 style="color:var(--teal);">⚡ Workflow Automation (WFA)</h3>
+          <p>2 WFA adopted but 0 in use. Bridge the gap between adoption and practical implementation with hands-on training.</p>
+          <div class="progress-bar">
+            <div class="progress-fill" style="width:90%;">90% Potential</div>
+          </div>
+          <button class="action">WFA Implementation Workshop</button>
+        </article>
+
+        <article class="card">
+          <div class="tag">Scale Opportunity</div>
+          <h3 style="color:var(--teal);">🔌 API Management</h3>
+          <p>Only 1 API recipe despite adoption. Expand API usage to enable real-time integrations and custom workflows.</p>
+          <div class="progress-bar">
+            <div class="progress-fill" style="width:85%;">85% Growth Potential</div>
+          </div>
+          <button class="action">API Development Bootcamp</button>
+        </article>
+
+        <article class="card">
+          <div class="tag">Future Ready</div>
+          <h3 style="color:var(--teal);">🤖 Bot Automation</h3>
+          <p>Zero Bot recipes or adoption. Introduce RPA capabilities to automate manual, repetitive tasks across departments.</p>
+          <div class="progress-bar">
+            <div class="progress-fill" style="width:100%;">100% Greenfield</div>
+          </div>
+          <button class="action">Bot Strategy Session</button>
+        </article>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>Capability Status Overview</h2>
+      <div class="card">
+        <div class="capability-grid">
+          <div class="capability-item active">iPaaS ✓ Active (349)</div>
+          <div class="capability-item active">ETL/ELT ✓ Active (28)</div>
+          <div class="capability-item unused">API ⚠️ Adopted (1)</div>
+          <div class="capability-item unused">WFA ⚠️ Adopted (0)</div>
+          <div class="capability-item unused">AI ✗ Not Adopted</div>
+          <div class="capability-item unused">Bot ✗ Not Adopted</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>Strategic Next Steps</h2>
+      <div class="card">
+        <ul>
+          <li><strong>Immediate (Week 1-2):</strong> Conduct WFA activation workshop to convert adopted but unused capabilities</li>
+          <li><strong>Short-term (Month 1):</strong> Launch AI pilot program focusing on enhancing existing iPaaS workflows</li>
+          <li><strong>Medium-term (Quarter 1):</strong> Expand API usage from 1 to 50+ recipes through developer training</li>
+          <li><strong>Long-term (Quarter 2):</strong> Introduce Bot automation to reach the inactive 5th department</li>
+          <li><strong>Success Metric:</strong> Increase Automation Index from 0.13 to 0.40+ through capability diversification</li>
+        </ul>
+      </div>
+    </section>
+  </div>
+
+  <script>
+    // Recipe Distribution Chart
+    new Chart(document.getElementById('recipeChart'), {
+      type: 'doughnut',
+      data: {
+        labels: ['iPaaS', 'ETL/ELT', 'API', 'WFA', 'Bot', 'AI'],
+        datasets: [{
+          data: [349, 28, 1, 0, 0, 0],
+          backgroundColor: ['#67eadd', '#3C574B', '#B6B9B5', '#444', '#333', '#222'],
+          borderColor: '#67eadd',
+          borderWidth: 1
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: {
+            position: 'bottom',
+            labels: { color: '#FCFDFD', font: { size: 11 } }
+          }
+        }
+      }
+    });
+
+    // Adoption vs Usage Chart
+    new Chart(document.getElementById('adoptionChart'), {
+      type: 'bar',
+      data: {
+        labels: ['iPaaS', 'API', 'ETL/ELT', 'WFA', 'Bot', 'AI'],
+        datasets: [{
+          label: 'Adopted',
+          data: [1, 1, 1, 1, 0, 0],
+          backgroundColor: '#67eadd'
+        }, {
+          label: 'Actually Used',
+          data: [1, 0, 1, 0, 0, 0],
+          backgroundColor: '#3C574B'
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        scales: {
+          y: { 
+            beginAtZero: true, 
+            max: 1.2,
+            ticks: { color: '#FCFDFD' },
+            grid: { color: 'rgba(103,234,221,0.1)' }
+          },
+          x: { 
+            ticks: { color: '#FCFDFD' },
+            grid: { display: false }
+          }
+        },
+        plugins: {
+          legend: {
+            labels: { color: '#FCFDFD' }
+          }
+        }
+      }
+    });
+  </script>
+</body>
+</html>
+```

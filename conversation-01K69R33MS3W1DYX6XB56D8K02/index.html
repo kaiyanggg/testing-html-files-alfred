@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Coupa Usage Summary Dashboard</title>
+<style>
+  :root { --bg:#000; --text:#FCFDFD; --teal:#67eadd; --card:#111; --dark-green:#3C574B; --gray:#B6B9B5; --radius:12px; }
+  * { box-sizing: border-box; }
+  html,body { margin:0; background:var(--bg); color:var(--text); font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Ubuntu,sans-serif; }
+  .wrap { width:100%; max-width:1400px; margin:0 auto; padding:20px; }
+  h1,h2 { margin:0 0 12px; color:var(--teal); }
+  .sub { opacity:.9; margin-bottom:24px; color:var(--gray); }
+
+  .grid { display:grid; gap:16px; }
+  .kpis { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+  .charts { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  @media (max-width:900px){ .kpis{grid-template-columns:repeat(2,1fr)} .charts{grid-template-columns:1fr} }
+
+  .card { background:var(--card); border:1px solid rgba(103,234,221,.3); border-radius:var(--radius); padding:16px; }
+  .kpi .num { font-size:2.5rem; font-weight:800; color:var(--teal); line-height:1; }
+  .kpi .lab { opacity:.85; font-size:.9rem; margin-top:8px; }
+  .kpi .delta { font-size:.85rem; color:var(--gray); margin-top:4px; }
+
+  .chart-container { height:300px; position:relative; }
+  .section { margin-top:32px; }
+  
+  .stat-row { display:flex; justify-content:space-between; padding:8px 0; border-bottom:1px solid rgba(103,234,221,.1); }
+  .stat-row:last-child { border-bottom:none; }
+  .stat-label { color:var(--gray); }
+  .stat-value { color:var(--teal); font-weight:600; }
+  
+  .tier-bar { display:flex; align-items:center; gap:8px; margin:8px 0; }
+  .tier-label { min-width:120px; color:var(--gray); font-size:.9rem; }
+  .tier-progress { flex:1; height:24px; background:rgba(103,234,221,.1); border-radius:4px; position:relative; overflow:hidden; }
+  .tier-fill { height:100%; background:var(--teal); display:flex; align-items:center; justify-content:flex-end; padding-right:8px; }
+  .tier-count { color:var(--card); font-weight:600; font-size:.85rem; }
+  
+  .insight { background:rgba(103,234,221,.05); border-left:3px solid var(--teal); padding:12px; margin-top:12px; border-radius:4px; }
+  .insight-title { color:var(--teal); font-weight:600; margin-bottom:4px; }
+  .insight-text { color:var(--gray); font-size:.9rem; }
+</style>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <h1>Coupa Integration Platform Usage Summary</h1>
+      <div class="sub">Performance metrics for the last 3 months</div>
+    </header>
+
+    <section class="section">
+      <h2>Key Performance Indicators</h2>
+      <div class="grid kpis">
+        <div class="card kpi">
+          <div class="num">3.2M</div>
+          <div class="lab">Jobs Executed</div>
+          <div class="delta">Non-test jobs in 90 days</div>
+        </div>
+        <div class="card kpi">
+          <div class="num">465</div>
+          <div class="lab">Active Recipes</div>
+          <div class="delta">Across all capabilities</div>
+        </div>
+        <div class="card kpi">
+          <div class="num">707</div>
+          <div class="lab">Total Connections</div>
+          <div class="delta">Active across tiers</div>
+        </div>
+        <div class="card kpi">
+          <div class="num">20%</div>
+          <div class="lab">Avg Task Utilization</div>
+          <div class="delta">Range: 9-30%</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="grid charts">
+        <div class="card">
+          <h2>Recipe Distribution by Capability</h2>
+          <div class="chart-container">
+            <canvas id="capabilityChart"></canvas>
+          </div>
+          <div class="insight">
+            <div class="insight-title">📊 Key Insight</div>
+            <div class="insight-text">iPaaS dominates with 88% of recipes (411), while ETL/ELT accounts for 11% (53) and API only 1 recipe</div>
+          </div>
+        </div>
+
+        <div class="card">
+          <h2>Health Metrics Trend</h2>
+          <div class="chart-container">
+            <canvas id="healthChart"></canvas>
+          </div>
+          <div class="insight">
+            <div class="insight-title">📈 Key Insight</div>
+            <div class="insight-text">Active users growing from 7 to 12 (+71%), while task utilization varies significantly (9-30%)</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="grid charts">
+        <div class="card">
+          <h2>Connection Distribution by App Tier</h2>
+          <div class="tier-bar">
+            <div class="tier-label">Tier 2</div>
+            <div class="tier-progress">
+              <div class="tier-fill" style="width:26.7%">
+                <span class="tier-count">189</span>
+              </div>
+            </div>
+          </div>
+          <div class="tier-bar">
+            <div class="tier-label">Tier 4</div>
+            <div class="tier-progress">
+              <div class="tier-fill" style="width:20.6%">
+                <span class="tier-count">146</span>
+              </div>
+            </div>
+          </div>
+          <div class="tier-bar">
+            <div class="tier-label">Unspecified</div>
+            <div class="tier-progress">
+              <div class="tier-fill" style="width:19.4%">
+                <span class="tier-count">137</span>
+              </div>
+            </div>
+          </div>
+          <div class="tier-bar">
+            <div class="tier-label">Tier 3</div>
+            <div class="tier-progress">
+              <div class="tier-fill" style="width:15%">
+                <span class="tier-count">106</span>
+              </div>
+            </div>
+          </div>
+          <div class="tier-bar">
+            <div class="tier-label">Tier 5</div>
+            <div class="tier-progress">
+              <div class="tier-fill" style="width:9.5%">
+                <span class="tier-count">67</span>
+              </div>
+            </div>
+          </div>
+          <div class="tier-bar">
+            <div class="tier-label">Business Critical</div>
+            <div class="tier-progress">
+              <div class="tier-fill" style="width:8.8%">
+                <span class="tier-count">62</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <h2>Platform Adoption Metrics</h2>
+          <div class="stat-row">
+            <span class="stat-label">Capabilities Adopted</span>
+            <span class="stat-value">4</span>
+          </div>
+          <div class="stat-row">
+            <span class="stat-label">Capabilities in Active Use</span>
+            <span class="stat-value">2</span>
+          </div>
+          <div class="stat-row">
+            <span class="stat-label">Recipe Growth Range</span>
+            <span class="stat-value">510 - 535</span>
+          </div>
+          <div class="stat-row">
+            <span class="stat-label">Active Users Range</span>
+            <span class="stat-value">7 - 12</span>
+          </div>
+          <div class="stat-row">
+            <span class="stat-label">Job Volume (90 days)</span>
+            <span class="stat-value">3,204,658</span>
+          </div>
+          <div class="insight">
+            <div class="insight-title">⚡ Performance Note</div>
+            <div class="insight-text">Processing over 35K jobs daily with only 2 of 4 adopted capabilities actively used - opportunity for expansion</div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <script>
+    Chart.defaults.color = '#B6B9B5';
+    Chart.defaults.borderColor = 'rgba(103,234,221,0.2)';
+    
+    // Capability Distribution Chart
+    new Chart(document.getElementById('capabilityChart'), {
+      type: 'doughnut',
+      data: {
+        labels: ['iPaaS', 'ETL/ELT', 'API'],
+        datasets: [{
+          data: [411, 53, 1],
+          backgroundColor: ['#67eadd', '#3C574B', '#B6B9B5'],
+          borderWidth: 0
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: {
+            position: 'bottom',
+            labels: {
+              padding: 15,
+              font: { size: 11 }
+            }
+          },
+          tooltip: {
+            callbacks: {
+              label: function(context) {
+                const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                const percentage = ((context.raw / total) * 100).toFixed(1);
+                return context.label + ': ' + context.raw + ' recipes (' + percentage + '%)';
+              }
+            }
+          }
+        }
+      }
+    });
+
+    // Health Metrics Chart
+    new Chart(document.getElementById('healthChart'), {
+      type: 'line',
+      data: {
+        labels: ['Month 1', 'Month 2', 'Month 3'],
+        datasets: [{
+          label: 'Active Recipes',
+          data: [510, 520, 535],
+          borderColor: '#67eadd',
+          backgroundColor: 'rgba(103,234,221,0.1)',
+          yAxisID: 'y1',
+          tension: 0.3
+        }, {
+          label: 'Task Utilization %',
+          data: [9, 20, 30],
+          borderColor: '#3C574B',
+          backgroundColor: 'rgba(60,87,75,0.1)',
+          yAxisID: 'y2',
+          tension: 0.3
+        }, {
+          label: 'Active Users',
+          data: [7, 10, 12],
+          borderColor: '#B6B9B5',
+          backgroundColor: 'rgba(182,185,181,0.1)',
+          yAxisID: 'y2',
+          tension: 0.3
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        interaction: {
+          mode: 'index',
+          intersect: false
+        },
+        scales: {
+          y1: {
+            type: 'linear',
+            display: true,
+            position: 'left',
+            title: {
+              display: true,
+              text: 'Active Recipes',
+              color: '#67eadd'
+            },
+            ticks: { color: '#67eadd' },
+            grid: { color: 'rgba(103,234,221,0.1)' }
+          },
+          y2: {
+            type: 'linear',
+            display: true,
+            position: 'right',
+            title: {
+              display: true,
+              text: 'Utilization % / Users',
+              color: '#B6B9B5'
+            },
+            grid: { drawOnChartArea: false }
+          },
+          x: {
+            grid: { color: 'rgba(103,234,221,0.1)' }
+          }
+        },
+        plugins: {
+          legend: {
+            position: 'bottom',
+            labels: {
+              padding: 15,
+              font: { size: 11 }
+            }
+          }
+        }
+      }
+    });
+  </script>
+</body>
+</html>

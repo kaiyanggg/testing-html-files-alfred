@@ -1,0 +1,434 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Ideal Design Partners for Data Pipelines / IDP</title>
+<style>
+  :root { 
+    --bg:#000; 
+    --text:#FCFDFD; 
+    --teal:#67eadd; 
+    --dark-green:#3C574B;
+    --gray:#B6B9B5;
+    --card:#111; 
+    --radius:12px; 
+  }
+  * { box-sizing: border-box; }
+  html,body { 
+    margin:0; 
+    background:var(--bg); 
+    color:var(--text); 
+    font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Ubuntu,sans-serif; 
+  }
+  .wrap { width:100%; max-width:1400px; margin:0 auto; padding:20px; }
+  h1,h2 { margin:0 0 12px; color:var(--teal); }
+  h3 { color:var(--text); margin:10px 0; }
+  .sub { opacity:.9; margin-bottom:24px; color:var(--gray); }
+
+  .grid { display:grid; gap:16px; }
+  .kpis { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+  .partners { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .insights { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  
+  @media (max-width:1200px){ .partners{grid-template-columns:repeat(2,1fr)} }
+  @media (max-width:800px){ 
+    .kpis{grid-template-columns:repeat(2,1fr)} 
+    .insights{grid-template-columns:1fr}
+    .partners{grid-template-columns:1fr}
+  }
+
+  .card { 
+    background:var(--card); 
+    border:1px solid rgba(103,234,221,.3); 
+    border-radius:var(--radius); 
+    padding:20px; 
+    transition: all 0.3s;
+  }
+  
+  .card:hover { 
+    border-color:var(--teal); 
+    box-shadow: 0 0 20px rgba(103,234,221,0.2);
+  }
+  
+  .kpi .num { 
+    font-size:2.5rem; 
+    font-weight:800; 
+    color:var(--teal); 
+    line-height:1; 
+  }
+  .kpi .lab { 
+    opacity:.85; 
+    font-size:.95rem; 
+    margin-top:8px;
+    color:var(--gray);
+  }
+
+  .partner-card {
+    position: relative;
+    overflow: hidden;
+  }
+  
+  .partner-card.top-tier {
+    border-color: var(--teal);
+    background: linear-gradient(135deg, rgba(103,234,221,0.1) 0%, var(--card) 100%);
+  }
+  
+  .badge {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    font-size: 0.7rem;
+    font-weight: 700;
+    color: var(--bg);
+    background: var(--teal);
+    padding: 4px 10px;
+    border-radius: 999px;
+  }
+  
+  .partner-name {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--teal);
+    margin-bottom: 12px;
+  }
+  
+  .metric {
+    display: flex;
+    justify-content: space-between;
+    margin: 8px 0;
+    padding: 8px 0;
+    border-bottom: 1px solid rgba(103,234,221,0.1);
+  }
+  
+  .metric-label {
+    color: var(--gray);
+    font-size: 0.9rem;
+  }
+  
+  .metric-value {
+    color: var(--text);
+    font-weight: 600;
+  }
+  
+  .growth-indicator {
+    display: inline-block;
+    color: #67eadd;
+    font-size: 0.85rem;
+    margin-left: 5px;
+  }
+
+  .section { margin-top:32px; }
+  
+  .chart-container {
+    position: relative;
+    height: 300px;
+    width: 100%;
+    margin-top: 20px;
+  }
+  
+  .criteria-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+  
+  .criteria-list li {
+    padding: 12px;
+    margin: 8px 0;
+    background: rgba(103,234,221,0.1);
+    border-left: 3px solid var(--teal);
+    border-radius: 6px;
+  }
+  
+  .criteria-list li strong {
+    color: var(--teal);
+    display: block;
+    margin-bottom: 4px;
+  }
+  
+  .insights-text {
+    line-height: 1.6;
+    color: var(--gray);
+  }
+  
+  .highlight {
+    color: var(--teal);
+    font-weight: 600;
+  }
+</style>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <h1>Ideal Design Partners for Data Pipelines / IDP</h1>
+      <div class="sub">Organizations with proven ETL/ELT production success, high recipe usage, and consistent growth</div>
+    </header>
+
+    <section class="section">
+      <h2>Executive Summary</h2>
+      <div class="grid kpis">
+        <div class="card kpi">
+          <div class="num">12</div>
+          <div class="lab">Qualified Partners</div>
+        </div>
+        <div class="card kpi">
+          <div class="num">759</div>
+          <div class="lab">Max Recipe Count</div>
+        </div>
+        <div class="card kpi">
+          <div class="num">100%</div>
+          <div class="lab">Production Ready</div>
+        </div>
+        <div class="card kpi">
+          <div class="num">All</div>
+          <div class="lab">Showing Growth</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>Top Design Partner Candidates</h2>
+      <div class="grid partners">
+        <div class="card partner-card top-tier">
+          <div class="badge">TOP PARTNER</div>
+          <div class="partner-name">Insud Pharma</div>
+          <div class="metric">
+            <span class="metric-label">ETL/ELT Recipes</span>
+            <span class="metric-value">759 <span class="growth-indicator">↑</span></span>
+          </div>
+          <div class="metric">
+            <span class="metric-label">Production Status</span>
+            <span class="metric-value">Active</span>
+          </div>
+          <div class="metric">
+            <span class="metric-label">Growth Trend</span>
+            <span class="metric-value">Expanding</span>
+          </div>
+        </div>
+        
+        <div class="card partner-card top-tier">
+          <div class="badge">TOP PARTNER</div>
+          <div class="partner-name">Guidewire Software</div>
+          <div class="metric">
+            <span class="metric-label">ETL/ELT Recipes</span>
+            <span class="metric-value">390 <span class="growth-indicator">↑</span></span>
+          </div>
+          <div class="metric">
+            <span class="metric-label">Production Status</span>
+            <span class="metric-value">Active</span>
+          </div>
+          <div class="metric">
+            <span class="metric-label">Growth Trend</span>
+            <span class="metric-value">Expanding</span>
+          </div>
+        </div>
+        
+        <div class="card partner-card">
+          <div class="partner-name">Payless Ecommerce LLC</div>
+          <div class="metric">
+            <span class="metric-label">ETL/ELT Recipes</span>
+            <span class="metric-value">191 <span class="growth-indicator">↑</span></span>
+          </div>
+          <div class="metric">
+            <span class="metric-label">Production Status</span>
+            <span class="metric-value">Active</span>
+          </div>
+          <div class="metric">
+            <span class="metric-label">Growth Trend</span>
+            <span class="metric-value">Growing</span>
+          </div>
+        </div>
+        
+        <div class="card partner-card">
+          <div class="partner-name">Technology Services Group LLC</div>
+          <div class="metric">
+            <span class="metric-label">ETL/ELT Recipes</span>
+            <span class="metric-value">190 <span class="growth-indicator">↑</span></span>
+          </div>
+          <div class="metric">
+            <span class="metric-label">Production Status</span>
+            <span class="metric-value">Active</span>
+          </div>
+          <div class="metric">
+            <span class="metric-label">Growth Trend</span>
+            <span class="metric-value">Growing</span>
+          </div>
+        </div>
+        
+        <div class="card partner-card">
+          <div class="partner-name">Hamilton College</div>
+          <div class="metric">
+            <span class="metric-label">ETL/ELT Recipes</span>
+            <span class="metric-value">180 <span class="growth-indicator">↑</span></span>
+          </div>
+          <div class="metric">
+            <span class="metric-label">Production Status</span>
+            <span class="metric-value">Active</span>
+          </div>
+          <div class="metric">
+            <span class="metric-label">Growth Trend</span>
+            <span class="metric-value">Growing</span>
+          </div>
+        </div>
+        
+        <div class="card partner-card">
+          <div class="partner-name">Project44</div>
+          <div class="metric">
+            <span class="metric-label">ETL/ELT Recipes</span>
+            <span class="metric-value">153 <span class="growth-indicator">↑</span></span>
+          </div>
+          <div class="metric">
+            <span class="metric-label">Production Status</span>
+            <span class="metric-value">Active</span>
+          </div>
+          <div class="metric">
+            <span class="metric-label">Growth Trend</span>
+            <span class="metric-value">Growing</span>
+          </div>
+        </div>
+        
+        <div class="card partner-card">
+          <div class="partner-name">HubSpot</div>
+          <div class="metric">
+            <span class="metric-label">ETL/ELT Recipes</span>
+            <span class="metric-value">140 <span class="growth-indicator">↑</span></span>
+          </div>
+          <div class="metric">
+            <span class="metric-label">Production Status</span>
+            <span class="metric-value">Active</span>
+          </div>
+          <div class="metric">
+            <span class="metric-label">Growth Trend</span>
+            <span class="metric-value">Growing</span>
+          </div>
+        </div>
+        
+        <div class="card partner-card">
+          <div class="partner-name">TELUS International</div>
+          <div class="metric">
+            <span class="metric-label">ETL/ELT Recipes</span>
+            <span class="metric-value">148 <span class="growth-indicator">↑</span></span>
+          </div>
+          <div class="metric">
+            <span class="metric-label">Production Status</span>
+            <span class="metric-value">Active</span>
+          </div>
+          <div class="metric">
+            <span class="metric-label">Growth Trend</span>
+            <span class="metric-value">Growing</span>
+          </div>
+        </div>
+        
+        <div class="card partner-card">
+          <div class="partner-name">Bluemercury</div>
+          <div class="metric">
+            <span class="metric-label">ETL/ELT Recipes</span>
+            <span class="metric-value">138 <span class="growth-indicator">↑</span></span>
+          </div>
+          <div class="metric">
+            <span class="metric-label">Production Status</span>
+            <span class="metric-value">Active</span>
+          </div>
+          <div class="metric">
+            <span class="metric-label">Growth Trend</span>
+            <span class="metric-value">Growing</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>Recipe Usage Distribution</h2>
+      <div class="card">
+        <canvas id="recipeChart"></canvas>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>Partner Selection Criteria</h2>
+      <div class="grid insights">
+        <div class="card">
+          <h3>Qualification Metrics</h3>
+          <ul class="criteria-list">
+            <li>
+              <strong>High ETL/ELT Recipe Usage</strong>
+              All qualified partners have >100 recipes in production
+            </li>
+            <li>
+              <strong>Proven Production Success</strong>
+              100% of listed partners show active production deployments
+            </li>
+            <li>
+              <strong>Consistent Growth Pattern</strong>
+              Each partner demonstrates ongoing recipe growth quarter over quarter
+            </li>
+          </ul>
+        </div>
+        
+        <div class="card">
+          <h3>Key Insights</h3>
+          <div class="insights-text">
+            <p>• <span class="highlight">Insud Pharma</span> leads with 759 recipes, showing exceptional maturity in data pipeline automation</p>
+            <p>• <span class="highlight">Guidewire Software</span> (390 recipes) represents enterprise-scale implementation</p>
+            <p>• Additional growth partners include <span class="highlight">Toast, HashiCorp, Coursera, Innovid, and Blend360</span></p>
+            <p>• All partners show active scaling of data workflows with upward engagement trends</p>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <script>
+    const ctx = document.getElementById('recipeChart').getContext('2d');
+    new Chart(ctx, {
+      type: 'bar',
+      data: {
+        labels: ['Insud Pharma', 'Guidewire', 'Payless', 'Tech Services', 'Hamilton', 'Project44', 'TELUS', 'HubSpot', 'Bluemercury', 'AlerisLife'],
+        datasets: [{
+          label: 'ETL/ELT Recipes',
+          data: [759, 390, 191, 190, 180, 153, 148, 140, 138, 132],
+          backgroundColor: 'rgba(103, 234, 221, 0.6)',
+          borderColor: '#67eadd',
+          borderWidth: 2
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: {
+            display: false
+          },
+          tooltip: {
+            backgroundColor: 'rgba(0,0,0,0.9)',
+            titleColor: '#67eadd',
+            bodyColor: '#FCFDFD',
+            borderColor: '#67eadd',
+            borderWidth: 1
+          }
+        },
+        scales: {
+          x: {
+            grid: {
+              color: 'rgba(182, 185, 181, 0.1)'
+            },
+            ticks: {
+              color: '#B6B9B5'
+            }
+          },
+          y: {
+            grid: {
+              color: 'rgba(182, 185, 181, 0.1)'
+            },
+            ticks: {
+              color: '#B6B9B5'
+            }
+          }
+        }
+      }
+    });
+  </script>
+</body>
+</html>

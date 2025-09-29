@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Intuit Top Users Dashboard</title>
+<style>
+  :root { 
+    --bg:#000; 
+    --text:#FCFDFD; 
+    --teal:#67eadd; 
+    --card:#111; 
+    --radius:12px;
+    --dark-green:#3C574B;
+    --gray:#B6B9B5;
+  }
+  * { box-sizing: border-box; }
+  html,body { margin:0; background:var(--bg); color:var(--text); font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Ubuntu,sans-serif; }
+  .wrap { width:100%; max-width:1200px; margin:0 auto; padding:20px; }
+  h1,h2 { margin:0 0 12px; color:var(--teal); }
+  .sub { opacity:.9; margin-bottom:24px; color:var(--gray); }
+
+  .grid { display:grid; gap:16px; }
+  .kpis { grid-template-columns: repeat(5, minmax(0, 1fr)); }
+  .charts { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  @media (max-width:800px){ 
+    .kpis{grid-template-columns:repeat(2,1fr)} 
+    .charts{grid-template-columns:1fr}
+  }
+
+  .card { 
+    background:var(--card); 
+    border:1px solid rgba(103,234,221,.3); 
+    border-radius:var(--radius); 
+    padding:16px; 
+  }
+  .kpi .num { font-size:2.5rem; font-weight:800; color:var(--teal); line-height:1; }
+  .kpi .lab { opacity:.85; font-size:.9rem; margin-top:8px; }
+  .kpi .delta { font-size:.85rem; color:var(--dark-green); margin-top:4px; }
+
+  .section { margin-top:32px; }
+  
+  .chart-container { position:relative; height:300px; }
+  
+  .user-card {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 0;
+    border-bottom: 1px solid rgba(103,234,221,.2);
+  }
+  .user-card:last-child { border-bottom: none; }
+  .user-name { font-weight: 600; color: var(--teal); }
+  .user-metrics { display: flex; gap: 20px; }
+  .metric { text-align: center; }
+  .metric-value { font-size: 1.2rem; font-weight: 700; color: var(--text); }
+  .metric-label { font-size: .75rem; color: var(--gray); margin-top: 2px; }
+  
+  .trend-indicator {
+    display: inline-block;
+    margin-left: 8px;
+    color: var(--dark-green);
+    font-size: .9rem;
+  }
+  
+  .badge {
+    display: inline-block;
+    font-size: .7rem;
+    font-weight: 700;
+    background: var(--teal);
+    color: #000;
+    padding: 2px 8px;
+    border-radius: 999px;
+    margin-left: 8px;
+  }
+</style>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <h1>Intuit Power Users Dashboard</h1>
+      <div class="sub">Top builders and active users performance metrics - Last 3 months</div>
+    </header>
+
+    <section class="section">
+      <h2>Key Metrics Overview</h2>
+      <div class="grid kpis">
+        <div class="card kpi">
+          <div class="num">3</div>
+          <div class="lab">Power Builders</div>
+          <div class="delta">Peak performance</div>
+        </div>
+        <div class="card kpi">
+          <div class="num">17</div>
+          <div class="lab">Active Users</div>
+          <div class="delta">↑ 13% growth</div>
+        </div>
+        <div class="card kpi">
+          <div class="num">69</div>
+          <div class="lab">Peak Recipes/Month</div>
+          <div class="delta">↑ 109% increase</div>
+        </div>
+        <div class="card kpi">
+          <div class="num">30%</div>
+          <div class="lab">Task Utilization</div>
+          <div class="delta">↑ 25% improvement</div>
+        </div>
+        <div class="card kpi">
+          <div class="num">4</div>
+          <div class="lab">Max Capabilities</div>
+          <div class="delta">Steady adoption</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="grid charts">
+        <div class="card">
+          <h2>Recipe Creation Trend</h2>
+          <div class="chart-container">
+            <canvas id="recipeChart"></canvas>
+          </div>
+        </div>
+        <div class="card">
+          <h2>Task Utilization Growth</h2>
+          <div class="chart-container">
+            <canvas id="taskChart"></canvas>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>Top Power Users</h2>
+      <div class="card">
+        <div class="user-card">
+          <div>
+            <span class="user-name">User Alpha</span>
+            <span class="badge">POWER BUILDER</span>
+          </div>
+          <div class="user-metrics">
+            <div class="metric">
+              <div class="metric-value">69</div>
+              <div class="metric-label">Recipes/mo</div>
+            </div>
+            <div class="metric">
+              <div class="metric-value">30%</div>
+              <div class="metric-label">Task Util</div>
+            </div>
+            <div class="metric">
+              <div class="metric-value">4</div>
+              <div class="metric-label">Capabilities</div>
+            </div>
+          </div>
+        </div>
+        <div class="user-card">
+          <div>
+            <span class="user-name">User Beta</span>
+            <span class="badge">POWER BUILDER</span>
+          </div>
+          <div class="user-metrics">
+            <div class="metric">
+              <div class="metric-value">52</div>
+              <div class="metric-label">Recipes/mo</div>
+            </div>
+            <div class="metric">
+              <div class="metric-value">28%</div>
+              <div class="metric-label">Task Util</div>
+            </div>
+            <div class="metric">
+              <div class="metric-value">4</div>
+              <div class="metric-label">Capabilities</div>
+            </div>
+          </div>
+        </div>
+        <div class="user-card">
+          <div>
+            <span class="user-name">User Gamma</span>
+            <span class="badge">POWER BUILDER</span>
+          </div>
+          <div class="user-metrics">
+            <div class="metric">
+              <div class="metric-value">45</div>
+              <div class="metric-label">Recipes/mo</div>
+            </div>
+            <div class="metric">
+              <div class="metric-value">27%</div>
+              <div class="metric-label">Task Util</div>
+            </div>
+            <div class="metric">
+              <div class="metric-value">3</div>
+              <div class="metric-label">Capabilities</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>User Growth Analysis</h2>
+      <div class="card">
+        <canvas id="userGrowthChart" style="height:250px"></canvas>
+      </div>
+    </section>
+  </div>
+
+  <script>
+    const chartDefaults = {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: {
+          labels: { color: '#FCFDFD' }
+        }
+      },
+      scales: {
+        x: {
+          ticks: { color: '#B6B9B5' },
+          grid: { color: 'rgba(182,185,181,0.1)' }
+        },
+        y: {
+          ticks: { color: '#B6B9B5' },
+          grid: { color: 'rgba(182,185,181,0.1)' }
+        }
+      }
+    };
+
+    // Recipe Creation Chart
+    new Chart(document.getElementById('recipeChart'), {
+      type: 'line',
+      data: {
+        labels: ['Month 1', 'Month 2', 'Month 3'],
+        datasets: [{
+          label: 'Recipes Created',
+          data: [33, 52, 69],
+          borderColor: '#67eadd',
+          backgroundColor: 'rgba(103,234,221,0.1)',
+          tension: 0.3
+        }]
+      },
+      options: chartDefaults
+    });
+
+    // Task Utilization Chart
+    new Chart(document.getElementById('taskChart'), {
+      type: 'bar',
+      data: {
+        labels: ['Month 1', 'Month 2', 'Month 3'],
+        datasets: [{
+          label: 'Task Utilization %',
+          data: [24, 27, 30],
+          backgroundColor: '#3C574B',
+          borderColor: '#67eadd',
+          borderWidth: 1
+        }]
+      },
+      options: chartDefaults
+    });
+
+    // User Growth Chart
+    new Chart(document.getElementById('userGrowthChart'), {
+      type: 'line',
+      data: {
+        labels: ['Month 1', 'Month 2', 'Month 3'],
+        datasets: [{
+          label: 'Active Users',
+          data: [15, 16, 17],
+          borderColor: '#67eadd',
+          backgroundColor: 'rgba(103,234,221,0.1)',
+          tension: 0.3
+        }, {
+          label: 'Power Builders',
+          data: [1, 2, 3],
+          borderColor: '#3C574B',
+          backgroundColor: 'rgba(60,87,75,0.1)',
+          tension: 0.3
+        }]
+      },
+      options: chartDefaults
+    });
+  </script>
+</body>
+</html>

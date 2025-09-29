@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Coupa Usage Summary Dashboard</title>
+<style>
+  :root { 
+    --bg:#000; 
+    --text:#FCFDFD; 
+    --teal:#67eadd; 
+    --darkgreen:#3C574B;
+    --gray:#B6B9B5;
+    --card:#111; 
+    --radius:12px; 
+  }
+  * { box-sizing: border-box; }
+  html,body { margin:0; background:var(--bg); color:var(--text); font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Ubuntu,sans-serif; }
+  .wrap { width:100%; max-width:1400px; margin:0 auto; padding:20px; }
+  h1,h2 { margin:0 0 12px; color:var(--teal); }
+  .sub { color:var(--gray); margin-bottom:24px; }
+
+  .grid { display:grid; gap:16px; }
+  .kpis { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+  .charts { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  @media (max-width:900px){ 
+    .kpis{grid-template-columns:repeat(2,1fr)} 
+    .charts{grid-template-columns:1fr} 
+  }
+
+  .card { 
+    background:var(--card); 
+    border:1px solid rgba(103,234,221,.3); 
+    border-radius:var(--radius); 
+    padding:20px; 
+  }
+  .kpi .num { 
+    font-size:2.5rem; 
+    font-weight:800; 
+    color:var(--teal); 
+    line-height:1; 
+  }
+  .kpi .lab { 
+    color:var(--gray); 
+    font-size:.95rem; 
+    margin-top:8px;
+  }
+  .kpi .delta { 
+    font-size:.85rem; 
+    color:#67eadd; 
+    margin-top:4px;
+  }
+
+  .section { margin-top:32px; }
+  
+  .chart-container {
+    position: relative;
+    height: 300px;
+    width: 100%;
+  }
+  
+  .insight {
+    background: rgba(103,234,221,.1);
+    border-left: 3px solid var(--teal);
+    padding: 12px;
+    margin-top: 16px;
+    border-radius: 4px;
+    font-size: 0.9rem;
+  }
+  
+  .legend-item {
+    display: inline-flex;
+    align-items: center;
+    margin-right: 16px;
+    margin-bottom: 8px;
+    font-size: 0.85rem;
+  }
+  
+  .legend-color {
+    width: 16px;
+    height: 16px;
+    margin-right: 6px;
+    border-radius: 3px;
+  }
+  
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 12px;
+  }
+  
+  th {
+    background: rgba(103,234,221,.1);
+    color: var(--teal);
+    padding: 12px;
+    text-align: left;
+    border-bottom: 2px solid var(--darkgreen);
+  }
+  
+  td {
+    padding: 10px 12px;
+    border-bottom: 1px solid rgba(103,234,221,.1);
+  }
+  
+  tr:hover {
+    background: rgba(103,234,221,.05);
+  }
+  
+  .tier-badge {
+    display: inline-block;
+    padding: 4px 8px;
+    border-radius: 999px;
+    font-size: 0.8rem;
+    font-weight: bold;
+    background: var(--darkgreen);
+    color: var(--teal);
+  }
+</style>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <h1>Coupa Usage Summary</h1>
+      <div class="sub">Automation Platform Activity & Performance Metrics • Last 3 Months</div>
+    </header>
+
+    <section class="section">
+      <h2>Key Performance Indicators</h2>
+      <div class="grid kpis">
+        <div class="card kpi">
+          <div class="num">395</div>
+          <div class="lab">Active Recipes (Aug)</div>
+          <div class="delta">↑ 7.6% from July</div>
+        </div>
+        <div class="card kpi">
+          <div class="num">3.2M</div>
+          <div class="lab">Successful Jobs</div>
+          <div class="delta">Last 3 months</div>
+        </div>
+        <div class="card kpi">
+          <div class="num">88</div>
+          <div class="lab">Total Connectors</div>
+          <div class="delta">Across 6 tiers</div>
+        </div>
+        <div class="card kpi">
+          <div class="num">89%</div>
+          <div class="lab">iPaaS Dominance</div>
+          <div class="delta">Primary capability</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>Recipe Trends & Capability Distribution</h2>
+      <div class="grid charts">
+        <div class="card">
+          <h3 style="color:var(--gray); margin-bottom:20px;">Recipe Growth Trend</h3>
+          <div class="chart-container">
+            <canvas id="recipeChart"></canvas>
+          </div>
+          <div class="insight">
+            📈 <strong>7.3% overall growth</strong> in eligible recipes from June to August, with consistent month-over-month improvements indicating healthy platform adoption.
+          </div>
+        </div>
+        <div class="card">
+          <h3 style="color:var(--gray); margin-bottom:20px;">Capability Distribution (August)</h3>
+          <div class="chart-container">
+            <canvas id="capabilityChart"></canvas>
+          </div>
+          <div class="insight">
+            ⚡ <strong>iPaaS dominates with 351 recipes (89%)</strong>, while ETL/ELT accounts for 43 (11%). Minimal API usage suggests opportunity for API-first integration patterns.
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>Connector Ecosystem</h2>
+      <div class="card">
+        <h3 style="color:var(--gray); margin-bottom:20px;">Connector Distribution by Application Tier</h3>
+        <div class="chart-container" style="height:400px;">
+          <canvas id="connectorChart"></canvas>
+        </div>
+        <table>
+          <thead>
+            <tr>
+              <th>Tier</th>
+              <th>Connector Count</th>
+              <th>% of Total</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><span class="tier-badge">Tier 1</span></td>
+              <td>8</td>
+              <td>9.1%</td>
+              <td style="color:var(--teal)">Premium</td>
+            </tr>
+            <tr>
+              <td><span class="tier-badge">Tier 2</span></td>
+              <td>19</td>
+              <td>21.6%</td>
+              <td style="color:var(--teal)">Standard</td>
+            </tr>
+            <tr>
+              <td><span class="tier-badge">Tier 3</span></td>
+              <td>19</td>
+              <td>21.6%</td>
+              <td style="color:var(--teal)">Standard</td>
+            </tr>
+            <tr>
+              <td><span class="tier-badge">Tier 4</span></td>
+              <td>13</td>
+              <td>14.8%</td>
+              <td style="color:var(--gray)">Basic</td>
+            </tr>
+            <tr>
+              <td><span class="tier-badge">Tier 5</span></td>
+              <td>4</td>
+              <td>4.5%</td>
+              <td style="color:var(--gray)">Basic</td>
+            </tr>
+            <tr>
+              <td><span class="tier-badge">Untiered</span></td>
+              <td>25</td>
+              <td>28.4%</td>
+              <td style="color:var(--gray)">Custom/Other</td>
+            </tr>
+          </tbody>
+        </table>
+        <div class="insight">
+          🔗 <strong>88 unique connectors</strong> are utilized, with 28% untiered (custom/legacy). Tier 2-3 connectors represent 43% of the ecosystem, indicating balanced enterprise-grade integration coverage.
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>Platform Insights</h2>
+      <div class="grid charts">
+        <div class="card">
+          <h3 style="color:var(--gray); margin-bottom:20px;">Key Observations</h3>
+          <ul style="line-height:1.8; color:var(--gray);">
+            <li><strong style="color:var(--teal)">High automation success:</strong> 3.2M successful non-test jobs demonstrate robust platform reliability</li>
+            <li><strong style="color:var(--teal)">iPaaS-centric architecture:</strong> 89% of recipes use iPaaS, indicating strong integration focus</li>
+            <li><strong style="color:var(--teal)">Growing adoption:</strong> Steady 7.3% growth in eligible recipes over 3 months</li>
+            <li><strong style="color:var(--teal)">Diverse connectivity:</strong> 88 connectors across multiple tiers enable broad system integration</li>
+          </ul>
+        </div>
+        <div class="card">
+          <h3 style="color:var(--gray); margin-bottom:20px;">Optimization Opportunities</h3>
+          <ul style="line-height:1.8; color:var(--gray);">
+            <li><strong style="color:var(--teal)">API expansion:</strong> Only 1 API recipe suggests untapped potential for API-driven automations</li>
+            <li><strong style="color:var(--teal)">Capability diversification:</strong> No Workbot, AI, or WFA usage indicates opportunity for advanced automation</li>
+            <li><strong style="color:var(--teal)">Connector tiering:</strong> 28% untiered connectors may benefit from classification and optimization</li>
+            <li><strong style="color:var(--teal)">ETL growth:</strong> 10% growth in ETL/ELT recipes shows emerging data transformation needs</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+  </div>
+
+<script>
+Chart.defaults.color = '#B6B9B5';
+Chart.defaults.borderColor = 'rgba(103,234,221,0.1)';
+
+// Recipe Growth Chart
+const recipeCtx = document.getElementById('recipeChart').getContext('2d');
+new Chart(recipeCtx, {
+  type: 'line',
+  data: {
+    labels: ['June', 'July', 'August'],
+    datasets: [{
+      label: 'Eligible Recipes',
+      data: [368, 367, 395],
+      borderColor: '#67eadd',
+      backgroundColor: 'rgba(103,234,221,0.1)',
+      tension: 0.4,
+      fill: true,
+      borderWidth: 3,
+      pointRadius: 6,
+      pointBackgroundColor: '#67eadd'
+    }]
+  },
+  options: {
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: {
+      legend: { display: false },
+      tooltip: {
+        backgroundColor: 'rgba(0,0,0,0.9)',
+        borderColor: '#67eadd',
+        borderWidth: 1
+      }
+    },
+    scales: {
+      y: {
+        beginAtZero: false,
+        min: 350,
+        grid: { color: 'rgba(103,234,221,0.1)' }
+      },
+      x: {
+        grid: { display: false }
+      }
+    }
+  }
+});
+
+// Capability Distribution Chart
+const capCtx = document.getElementById('capabilityChart').getContext('2d');
+new Chart(capCtx, {
+  type: 'doughnut',
+  data: {
+    labels: ['iPaaS', 'ETL/ELT', 'API'],
+    datasets: [{
+      data: [351, 43, 1],
+      backgroundColor: ['#67eadd', '#3C574B', '#B6B9B5'],
+      borderWidth: 0
+    }]
+  },
+  options: {
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: {
+      legend: {
+        position: 'bottom',
+        labels: { padding: 20 }
+      },
+      tooltip: {
+        callbacks: {
+          label: function(context) {
+            const total = context.dataset.data.reduce((a, b) => a + b, 0);
+            const percentage = ((context.parsed / total) * 100).toFixed(1);
+            return context.label + ': ' + context.parsed + ' (' + percentage + '%)';
+          }
+        }
+      }
+    }
+  }
+});
+
+// Connector Distribution Chart
+const connCtx = document.getElementById('connectorChart').getContext('2d');
+new Chart(connCtx, {
+  type: 'bar',
+  data: {
+    labels: ['Tier 1', 'Tier 2', 'Tier 3', 'Tier 4', 'Tier 5', 'Untiered'],
+    datasets: [{
+      label: 'Number of Connectors',
+      data: [8, 19, 19, 13, 4, 25],
+      backgroundColor: [
+        '#67eadd',
+        'rgba(103,234,221,0.8)',
+        'rgba(103,234,221,0.6)',
+        '#3C574B',
+        'rgba(60,87,75,0.7)',
+        '#B6B9B5'
+      ],
+      borderWidth: 0
+    }]
+  },
+  options: {
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: {
+      legend: { display: false },
+      tooltip: {
+        backgroundColor: 'rgba(0,0,0,0.9)',
+        borderColor: '#67eadd',
+        borderWidth: 1
+      }
+    },
+    scales: {
+      y: {
+        beginAtZero: true,
+        grid: { color: 'rgba(103,234,221,0.1)' }
+      },
+      x: {
+        grid: { display: false }
+      }
+    }
+  }
+});
+</script>
+</body>
+</html>

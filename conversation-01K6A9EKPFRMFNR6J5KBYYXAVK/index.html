@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Zendesk Customer Usage Summary</title>
+<style>
+  :root { 
+    --bg:#FCFDFD; 
+    --text:#3C574B; 
+    --teal:#67eadd; 
+    --dark-green:#3C574B;
+    --gray:#B6B9B5;
+    --card:#fff; 
+    --radius:12px; 
+  }
+  * { box-sizing: border-box; }
+  html,body { 
+    margin:0; 
+    background:var(--bg); 
+    color:var(--text); 
+    font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Ubuntu,sans-serif; 
+  }
+  .wrap { width:100%; max-width:1400px; margin:0 auto; padding:20px; }
+  h1,h2,h3 { margin:0 0 12px; color:var(--dark-green); }
+  h1 { font-size:2rem; }
+  .sub { color:var(--gray); margin-bottom:24px; font-size:1.1rem; }
+
+  .grid { display:grid; gap:16px; }
+  .kpis { grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); }
+  .charts { grid-template-columns: repeat(auto-fit, minmax(400px, 1fr)); }
+  .apps { grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); }
+  
+  @media (max-width:800px){ 
+    .charts{grid-template-columns:1fr} 
+  }
+
+  .card { 
+    background:var(--card); 
+    border:2px solid var(--teal); 
+    border-radius:var(--radius); 
+    padding:20px; 
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+  }
+  
+  .kpi .num { 
+    font-size:2.5rem; 
+    font-weight:800; 
+    background: linear-gradient(135deg, var(--teal), var(--dark-green));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    line-height:1; 
+  }
+  .kpi .lab { 
+    color:var(--gray); 
+    font-size:0.9rem; 
+    margin-top:8px;
+    font-weight:600;
+  }
+  .kpi .trend {
+    font-size:0.85rem;
+    margin-top:8px;
+    color:var(--dark-green);
+  }
+
+  .section { margin-top:32px; }
+  
+  .chart-container {
+    position: relative;
+    height: 250px;
+  }
+  
+  .capability-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+    gap: 12px;
+    margin-top: 16px;
+  }
+  
+  .capability-item {
+    text-align: center;
+    padding: 16px 8px;
+    border-radius: 8px;
+    background: var(--bg);
+    border: 1px solid var(--gray);
+    transition: all 0.3s;
+  }
+  
+  .capability-item.active {
+    background: var(--teal);
+    border-color: var(--teal);
+    color: var(--dark-green);
+    font-weight: 600;
+  }
+  
+  .capability-item.inactive {
+    opacity: 0.5;
+  }
+  
+  .app-tag {
+    display: inline-block;
+    padding: 6px 12px;
+    margin: 4px;
+    background: var(--teal);
+    color: var(--dark-green);
+    border-radius: 20px;
+    font-size: 0.85rem;
+    font-weight: 600;
+  }
+  
+  .metric-bar {
+    width: 100%;
+    height: 8px;
+    background: var(--gray);
+    border-radius: 4px;
+    overflow: hidden;
+    margin-top: 8px;
+  }
+  
+  .metric-fill {
+    height: 100%;
+    background: var(--teal);
+    transition: width 0.5s ease;
+  }
+  
+  .insight {
+    padding: 12px;
+    background: var(--bg);
+    border-left: 4px solid var(--teal);
+    margin-top: 12px;
+    border-radius: 4px;
+  }
+  
+  .insight-title {
+    font-weight: 600;
+    color: var(--dark-green);
+    margin-bottom: 4px;
+  }
+  
+  .insight-text {
+    font-size: 0.9rem;
+    color: var(--gray);
+  }
+</style>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <h1>Zendesk Customer Usage Summary</h1>
+      <div class="sub">Automation Platform Adoption & Performance Analytics</div>
+    </header>
+
+    <section class="section">
+      <h2>Key Performance Indicators</h2>
+      <div class="grid kpis">
+        <div class="card kpi">
+          <div class="num">754</div>
+          <div class="lab">Active Recipes</div>
+          <div class="trend">↑ 10.9% growth</div>
+        </div>
+        <div class="card kpi">
+          <div class="num">8M+</div>
+          <div class="lab">Monthly Tasks</div>
+          <div class="trend">Task utilization: 0.06</div>
+        </div>
+        <div class="card kpi">
+          <div class="num">5/6</div>
+          <div class="lab">Active Capabilities</div>
+          <div class="trend">AI adopted but unused</div>
+        </div>
+        <div class="card kpi">
+          <div class="num">36+</div>
+          <div class="lab">Connected Apps</div>
+          <div class="trend">Full ecosystem integration</div>
+        </div>
+        <div class="card kpi">
+          <div class="num">20</div>
+          <div class="lab">Active Builders</div>
+          <div class="trend">4 power builders</div>
+        </div>
+        <div class="card kpi">
+          <div class="num">0.22</div>
+          <div class="lab">Automation Index</div>
+          <div class="trend">Steady performance</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>Platform Capabilities Usage</h2>
+      <div class="card">
+        <h3>Active vs Inactive Capabilities</h3>
+        <div class="capability-grid">
+          <div class="capability-item active">API<br>✓ Active</div>
+          <div class="capability-item active">ETL/ELT<br>✓ Active</div>
+          <div class="capability-item active">iPaaS<br>✓ Active</div>
+          <div class="capability-item active">Workbot<br>✓ Active</div>
+          <div class="capability-item active">WFA<br>✓ Active</div>
+          <div class="capability-item inactive">AI<br>⚠ Adopted Only</div>
+        </div>
+        <div class="insight">
+          <div class="insight-title">Opportunity Alert</div>
+          <div class="insight-text">AI capability has been adopted but is not being utilized. Consider training or use case development to activate this powerful feature.</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="grid charts">
+        <div class="card">
+          <h3>Recipe & Task Trends (Last 3 Months)</h3>
+          <div class="chart-container">
+            <canvas id="trendChart"></canvas>
+          </div>
+          <div class="insight">
+            <div class="insight-title">Growth Analysis</div>
+            <div class="insight-text">Recipe count increased from 680 to 754, but creation rate is slowing with only 3 new recipes in the last 30 days.</div>
+          </div>
+        </div>
+        
+        <div class="card">
+          <h3>User Engagement Levels</h3>
+          <div class="chart-container">
+            <canvas id="userChart"></canvas>
+          </div>
+          <div class="insight">
+            <div class="insight-title">Builder Community</div>
+            <div class="insight-text">Strong builder engagement with 20% of builders achieving power builder status.</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>Department Automation Coverage</h2>
+      <div class="card">
+        <h3>4 out of 5 Departments Automated</h3>
+        <div class="metric-bar">
+          <div class="metric-fill" style="width: 80%"></div>
+        </div>
+        <p style="margin-top:12px; color:var(--gray);">80% department coverage achieved with consistent adoption over the last 3 months</p>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>Connected Applications Ecosystem</h2>
+      <div class="card">
+        <h3>Core Business Applications (36+ Active)</h3>
+        <div style="margin-top:16px;">
+          <span class="app-tag">Salesforce</span>
+          <span class="app-tag">Snowflake</span>
+          <span class="app-tag">Slack</span>
+          <span class="app-tag">Okta</span>
+          <span class="app-tag">Workday</span>
+          <span class="app-tag">NetSuite</span>
+          <span class="app-tag">Box</span>
+          <span class="app-tag" style="background:var(--gray); color:white;">+29 More Apps</span>
+        </div>
+        <div class="insight">
+          <div class="insight-title">Integration Maturity</div>
+          <div class="insight-text">Zendesk has achieved comprehensive integration across major business systems, enabling cross-platform automation workflows.</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>Summary & Recommendations</h2>
+      <div class="card">
+        <h3>Key Findings</h3>
+        <ul style="line-height:1.8; color:var(--dark-green);">
+          <li><strong>Strong Foundation:</strong> 754 active recipes processing 8M+ tasks monthly with steady automation index</li>
+          <li><strong>Untapped Potential:</strong> AI capability adopted but not utilized - significant opportunity for advanced automation</li>
+          <li><strong>Slowing Growth:</strong> Recipe creation trending down to only 3 new recipes in last 30 days</li>
+          <li><strong>Engaged Community:</strong> 20 builders with 4 power builders driving automation initiatives</li>
+          <li><strong>Comprehensive Integration:</strong> 36+ applications connected covering all major business systems</li>
+        </ul>
+        
+        <h3 style="margin-top:24px;">Recommended Actions</h3>
+        <ul style="line-height:1.8; color:var(--dark-green);">
+          <li>Activate AI capability through targeted training and use case workshops</li>
+          <li>Investigate recipe creation slowdown - potential for optimization or new automation opportunities</li>
+          <li>Expand automation to the 5th department for complete organizational coverage</li>
+          <li>Develop power builder program to scale expertise across the organization</li>
+        </ul>
+      </div>
+    </section>
+  </div>
+
+  <script>
+    // Trend Chart
+    const trendCtx = document.getElementById('trendChart').getContext('2d');
+    new Chart(trendCtx, {
+      type: 'line',
+      data: {
+        labels: ['Month 1', 'Month 2', 'Month 3'],
+        datasets: [{
+          label: 'Active Recipes',
+          data: [680, 720, 754],
+          borderColor: '#67eadd',
+          backgroundColor: 'rgba(103, 234, 221, 0.1)',
+          tension: 0.3,
+          fill: true,
+          yAxisID: 'y'
+        }, {
+          label: 'Task Utilization',
+          data: [0.03, 0.045, 0.06],
+          borderColor: '#3C574B',
+          backgroundColor: 'rgba(60, 87, 75, 0.1)',
+          tension: 0.3,
+          fill: true,
+          yAxisID: 'y1'
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        interaction: {
+          mode: 'index',
+          intersect: false,
+        },
+        scales: {
+          y: {
+            type: 'linear',
+            display: true,
+            position: 'left',
+            grid: {
+              color: 'rgba(182, 185, 181, 0.2)'
+            }
+          },
+          y1: {
+            type: 'linear',
+            display: true,
+            position: 'right',
+            grid: {
+              drawOnChartArea: false,
+            }
+          },
+          x: {
+            grid: {
+              color: 'rgba(182, 185, 181, 0.2)'
+            }
+          }
+        },
+        plugins: {
+          legend: {
+            position: 'top',
+          }
+        }
+      }
+    });
+
+    // User Chart
+    const userCtx = document.getElementById('userChart').getContext('2d');
+    new Chart(userCtx, {
+      type: 'bar',
+      data: {
+        labels: ['Month 1', 'Month 2', 'Month 3'],
+        datasets: [{
+          label: 'Active Users',
+          data: [10, 11, 12],
+          backgroundColor: '#67eadd',
+        }, {
+          label: 'Builders',
+          data: [14, 18, 20],
+          backgroundColor: '#3C574B',
+        }, {
+          label: 'Power Builders',
+          data: [2, 3, 4],
+          backgroundColor: '#B6B9B5',
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        scales: {
+          y: {
+            beginAtZero: true,
+            grid: {
+              color: 'rgba(182, 185, 181, 0.2)'
+            }
+          },
+          x: {
+            grid: {
+              color: 'rgba(182, 185, 181, 0.2)'
+            }
+          }
+        },
+        plugins: {
+          legend: {
+            position: 'top',
+          }
+        }
+      }
+    });
+  </script>
+</body>
+</html>

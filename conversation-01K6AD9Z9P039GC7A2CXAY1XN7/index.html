@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>User Role Distribution Dashboard</title>
+<style>
+  :root { --bg:#000; --text:#FCFDFD; --teal:#67eadd; --dark-green:#3C574B; --gray:#B6B9B5; --card:#111; --radius:12px; }
+  * { box-sizing: border-box; }
+  html,body { margin:0; background:var(--bg); color:var(--text); font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Ubuntu,sans-serif; }
+  .wrap { width:100%; max-width:1400px; margin:0 auto; padding:20px; }
+  h1,h2 { margin:0 0 12px; color:var(--teal); }
+  .sub { opacity:.9; margin-bottom:24px; color:var(--gray); }
+
+  .grid { display:grid; gap:16px; }
+  .kpis { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+  .charts { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  @media (max-width:900px){ .kpis{grid-template-columns:repeat(2,1fr)} .charts{grid-template-columns:1fr} }
+
+  .card { background:var(--card); border:1px solid rgba(103,234,221,.3); border-radius:var(--radius); padding:20px; }
+  .kpi .num { font-size:2.5rem; font-weight:800; color:var(--teal); line-height:1; }
+  .kpi .lab { opacity:.85; font-size:.95rem; margin-top:8px; }
+  .kpi .perc { font-size:1.2rem; color:var(--gray); margin-top:4px; }
+
+  .section { margin-top:32px; }
+  
+  .chart-container { position:relative; height:300px; }
+  
+  .insights { margin-top:24px; padding:16px; background:rgba(103,234,221,.05); border-radius:8px; border:1px solid rgba(103,234,221,.2); }
+  .insights h3 { color:var(--teal); font-size:1.1rem; margin:0 0 12px; }
+  .insights ul { margin:0; padding-left:20px; }
+  .insights li { margin-bottom:8px; color:var(--text); opacity:.9; }
+  
+  .tag { display:inline-block; font-size:.75rem; font-weight:700; color:#003b36; background:var(--teal); padding:2px 8px; border-radius:999px; margin-right:8px; }
+  .warning { background:#ff6b6b; color:#fff; }
+  .success { background:#51cf66; color:#fff; }
+</style>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <h1>Workato User Role Distribution</h1>
+      <div class="sub">System-wide analysis of 80,781 total users and their engagement levels</div>
+    </header>
+
+    <section class="section">
+      <h2>Key Metrics</h2>
+      <div class="grid kpis">
+        <div class="card kpi">
+          <div class="num">80,781</div>
+          <div class="lab">Total Users</div>
+        </div>
+        <div class="card kpi">
+          <div class="num">6,599</div>
+          <div class="lab">Users with Roles</div>
+          <div class="perc">8.2% of total</div>
+        </div>
+        <div class="card kpi">
+          <div class="num">74,182</div>
+          <div class="lab">Users with No Role</div>
+          <div class="perc">91.8% of total</div>
+        </div>
+        <div class="card kpi">
+          <div class="num">5,901</div>
+          <div class="lab">Builder-type Users</div>
+          <div class="perc">7.3% of total</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>Role Distribution Analysis</h2>
+      <div class="grid charts">
+        <div class="card">
+          <h3>User Role Breakdown</h3>
+          <div class="chart-container">
+            <canvas id="roleChart"></canvas>
+          </div>
+        </div>
+        <div class="card">
+          <h3>Role Combination Details</h3>
+          <div class="chart-container">
+            <canvas id="comboChart"></canvas>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="insights">
+        <h3>📊 Key Insights & Benchmarking</h3>
+        <ul>
+          <li><span class="tag warning">Below Benchmark</span>Active users represent only 3.2% of total (2,625 users) vs. 10-15% benchmark for well-adopted environments</li>
+          <li><span class="tag success">Strong</span>Builder presence at 7.3% exceeds the 3-5% typical benchmark, indicating strong automation culture</li>
+          <li><span class="tag">Alert</span>91.8% of users have no assigned role - significant opportunity for user activation and engagement</li>
+          <li><span class="tag success">Positive</span>Power builders at 2.0% (1,656 users) align with 1-2% industry benchmarks</li>
+          <li>1,359 users have all three roles (Active + Builder + Power), representing the most engaged 1.7% of the platform</li>
+        </ul>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>Recommendations</h2>
+      <div class="card">
+        <h3>🎯 Action Items Based on Analysis</h3>
+        <ul style="margin:16px 0; padding-left:20px;">
+          <li><strong>User Activation Priority:</strong> With 74,182 users (91.8%) having no role, implement user enablement programs to increase active user percentage from 3.2% to target 10-15%</li>
+          <li><strong>Leverage Builder Strength:</strong> With builder ratio exceeding benchmarks, focus on empowering these users with advanced training and resources</li>
+          <li><strong>Role Assignment Review:</strong> Audit the large no-role user base to identify potential candidates for active user or builder roles</li>
+          <li><strong>Monitor Power Builder Growth:</strong> Current 2.0% is healthy; maintain support to sustain this level of expertise</li>
+        </ul>
+      </div>
+    </section>
+  </div>
+
+  <script>
+    // Role Distribution Pie Chart
+    const ctx1 = document.getElementById('roleChart').getContext('2d');
+    new Chart(ctx1, {
+      type: 'doughnut',
+      data: {
+        labels: ['No Role', 'Active Only', 'Builders Only', 'Power Builders Only', 'Active+Builder+Power', 'Active+Builder'],
+        datasets: [{
+          data: [74182, 401, 2677, 297, 1359, 1865],
+          backgroundColor: ['#B6B9B5', '#67eadd', '#3C574B', '#4a9d83', '#2d6650', '#5fb49c'],
+          borderColor: '#000',
+          borderWidth: 2
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: {
+            position: 'bottom',
+            labels: { color: '#FCFDFD', padding: 10, font: { size: 11 } }
+          },
+          tooltip: {
+            callbacks: {
+              label: function(context) {
+                const value = context.parsed;
+                const total = 80781;
+                const percent = ((value / total) * 100).toFixed(1);
+                return context.label + ': ' + value.toLocaleString() + ' (' + percent + '%)';
+              }
+            }
+          }
+        }
+      }
+    });
+
+    // Role Combinations Bar Chart
+    const ctx2 = document.getElementById('comboChart').getContext('2d');
+    new Chart(ctx2, {
+      type: 'bar',
+      data: {
+        labels: ['Active Users', 'Builders', 'Power Builders', 'Active+Builder', 'All Three Roles'],
+        datasets: [{
+          label: 'User Count',
+          data: [401, 2677, 297, 1865, 1359],
+          backgroundColor: '#67eadd',
+          borderColor: '#67eadd',
+          borderWidth: 1
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        indexAxis: 'y',
+        plugins: {
+          legend: { display: false },
+          tooltip: {
+            callbacks: {
+              label: function(context) {
+                return 'Users: ' + context.parsed.x.toLocaleString();
+              }
+            }
+          }
+        },
+        scales: {
+          x: {
+            grid: { color: 'rgba(255,255,255,0.1)' },
+            ticks: { color: '#FCFDFD' }
+          },
+          y: {
+            grid: { display: false },
+            ticks: { color: '#FCFDFD' }
+          }
+        }
+      }
+    });
+  </script>
+</body>
+</html>

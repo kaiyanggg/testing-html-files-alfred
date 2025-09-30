@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Atlassian Usage Summary</title>
+<style>
+  :root { 
+    --bg:#000; 
+    --text:#FCFDFD; 
+    --teal:#67eadd; 
+    --dark-green:#3C574B;
+    --gray:#B6B9B5;
+    --card:#111; 
+    --radius:12px; 
+  }
+  * { box-sizing: border-box; }
+  html,body { margin:0; background:var(--bg); color:var(--text); font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Ubuntu,sans-serif; }
+  .wrap { width:100%; max-width:1400px; margin:0 auto; padding:20px; }
+  h1,h2 { margin:0 0 12px; color:var(--teal); }
+  .sub { opacity:.9; margin-bottom:24px; color:var(--gray); }
+
+  /* Grid helpers */
+  .grid { display:grid; gap:16px; }
+  .kpis { grid-template-columns: repeat(6, minmax(0, 1fr)); }
+  .charts { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .insights { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  @media (max-width:1200px){ .kpis{grid-template-columns:repeat(3,1fr)} }
+  @media (max-width:800px){ .kpis{grid-template-columns:repeat(2,1fr)} .charts{grid-template-columns:1fr} .insights{grid-template-columns:1fr} }
+
+  /* Cards */
+  .card { background:var(--card); border:1px solid rgba(103,234,221,.3); border-radius:var(--radius); padding:20px; }
+  .kpi .num { font-size:2.5rem; font-weight:800; color:var(--teal); line-height:1; }
+  .kpi .lab { opacity:.85; font-size:.9rem; margin-top:8px; }
+  .kpi .delta { font-size:.8rem; color:var(--gray); margin-top:4px; }
+
+  .tag { display:inline-block; font-size:.75rem; font-weight:700; color:#003b36; background:var(--teal); padding:3px 10px; border-radius:999px; margin-bottom:8px; }
+  .warning-tag { background:#ffc107; color:#000; }
+  .success-tag { background:#4caf50; color:#fff; }
+  
+  .action { margin-top:12px; border:1px solid var(--teal); background:transparent; color:var(--teal); border-radius:999px; padding:8px 16px; cursor:pointer; font-size:.9rem; }
+  .action:hover { background:var(--teal); color:#002a27; }
+
+  .section { margin-top:32px; }
+  ul { margin:8px 0; padding-left:20px; }
+  li { line-height:1.6; }
+  
+  .chart-container { position:relative; height:300px; }
+  .small-chart { height:200px; }
+  
+  h3 { color:var(--teal); margin-bottom:12px; font-size:1.1rem; }
+  p { line-height:1.5; margin:8px 0; }
+  
+  .stat-row { display:flex; justify-content:space-between; padding:8px 0; border-bottom:1px solid rgba(103,234,221,.1); }
+  .stat-row:last-child { border-bottom:none; }
+  .stat-label { color:var(--gray); }
+  .stat-value { color:var(--teal); font-weight:600; }
+  
+  .progress-bar { width:100%; height:8px; background:rgba(103,234,221,.1); border-radius:4px; overflow:hidden; margin-top:8px; }
+  .progress-fill { height:100%; background:var(--teal); transition:width 0.3s; }
+</style>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+  <div class="wrap">
+    <!-- Title -->
+    <header>
+      <h1>Atlassian Usage Summary</h1>
+      <div class="sub">Platform adoption metrics, operational performance, and growth opportunities</div>
+    </header>
+
+    <!-- Executive Summary KPIs -->
+    <section class="section">
+      <h2>Executive Summary</h2>
+      <div class="grid kpis">
+        <div class="card kpi">
+          <div class="num">6,593</div>
+          <div class="lab">Active Recipes</div>
+          <div class="delta">Across all capabilities</div>
+        </div>
+        <div class="card kpi">
+          <div class="num">473K</div>
+          <div class="lab">Total Jobs (3mo)</div>
+          <div class="delta">444K successful</div>
+        </div>
+        <div class="card kpi">
+          <div class="num">93.9%</div>
+          <div class="lab">Success Rate</div>
+          <div class="delta">29K failures</div>
+        </div>
+        <div class="card kpi">
+          <div class="num">58</div>
+          <div class="lab">Active Users</div>
+          <div class="delta">Platform builders</div>
+        </div>
+        <div class="card kpi">
+          <div class="num">6,868</div>
+          <div class="lab">Total Connections</div>
+          <div class="delta">Across all app tiers</div>
+        </div>
+        <div class="card kpi">
+          <div class="num">0</div>
+          <div class="lab">AI Recipes</div>
+          <div class="delta">Untapped opportunity</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Recipe Distribution Charts -->
+    <section class="section">
+      <h2>Capability Adoption</h2>
+      <div class="grid charts">
+        <div class="card">
+          <h3>Recipe Distribution by Capability</h3>
+          <div class="chart-container">
+            <canvas id="capabilityChart"></canvas>
+          </div>
+          <ul style="margin-top:16px; font-size:0.9rem;">
+            <li>iPaaS dominates with 39.8% of all recipes (2,625)</li>
+            <li>API platform shows strong adoption at 5.2% (345)</li>
+            <li>AI capability completely unutilized - major opportunity</li>
+          </ul>
+        </div>
+        <div class="card">
+          <h3>Connection Distribution by App Tier</h3>
+          <div class="chart-container">
+            <canvas id="appTierChart"></canvas>
+          </div>
+          <ul style="margin-top:16px; font-size:0.9rem;">
+            <li>Tier 2 apps lead with 1,557 connections (22.7%)</li>
+            <li>2,811 connections lack tier classification (40.9%)</li>
+            <li>Business-critical apps (Tier 1-3) account for 43.1%</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- Job Performance -->
+    <section class="section">
+      <h2>Operational Performance</h2>
+      <div class="grid charts">
+        <div class="card">
+          <h3>Job Execution Overview (Last 3 Months)</h3>
+          <div class="chart-container small-chart">
+            <canvas id="jobsChart"></canvas>
+          </div>
+          <div style="margin-top:16px;">
+            <div class="stat-row">
+              <span class="stat-label">Total Jobs Executed</span>
+              <span class="stat-value">473,062</span>
+            </div>
+            <div class="stat-row">
+              <span class="stat-label">Successful Jobs</span>
+              <span class="stat-value">444,054 (93.9%)</span>
+            </div>
+            <div class="stat-row">
+              <span class="stat-label">Failed Jobs</span>
+              <span class="stat-value">29,008 (6.1%)</span>
+            </div>
+            <div class="stat-row">
+              <span class="stat-label">Average Jobs/Recipe</span>
+              <span class="stat-value">71.7</span>
+            </div>
+          </div>
+        </div>
+        <div class="card">
+          <h3>Platform Adoption Metrics</h3>
+          <div style="margin-top:20px;">
+            <div class="stat-row">
+              <span class="stat-label">WFA Workflows Adopted</span>
+              <span class="stat-value">9</span>
+            </div>
+            <div class="stat-row">
+              <span class="stat-label">Bot Recipes</span>
+              <span class="stat-value">90</span>
+            </div>
+            <div class="stat-row">
+              <span class="stat-label">ETL/ELT Recipes</span>
+              <span class="stat-value">113</span>
+            </div>
+            <div class="stat-row">
+              <span class="stat-label">Recipes per Active User</span>
+              <span class="stat-value">113.7</span>
+            </div>
+          </div>
+          <h3 style="margin-top:24px;">Capability Utilization</h3>
+          <div>
+            <div style="margin:12px 0;">
+              <div style="display:flex; justify-content:space-between; margin-bottom:4px;">
+                <span style="font-size:0.9rem;">iPaaS</span>
+                <span style="font-size:0.9rem; color:var(--teal);">39.8%</span>
+              </div>
+              <div class="progress-bar">
+                <div class="progress-fill" style="width:39.8%"></div>
+              </div>
+            </div>
+            <div style="margin:12px 0;">
+              <div style="display:flex; justify-content:space-between; margin-bottom:4px;">
+                <span style="font-size:0.9rem;">API</span>
+                <span style="font-size:0.9rem; color:var(--teal);">5.2%</span>
+              </div>
+              <div class="progress-bar">
+                <div class="progress-fill" style="width:5.2%"></div>
+              </div>
+            </div>
+            <div style="margin:12px 0;">
+              <div style="display:flex; justify-content:space-between; margin-bottom:4px;">
+                <span style="font-size:0.9rem;">ETL/ELT</span>
+                <span style="font-size:0.9rem; color:var(--teal);">1.7%</span>
+              </div>
+              <div class="progress-bar">
+                <div class="progress-fill" style="width:1.7%"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Growth Opportunities -->
+    <section class="section">
+      <h2>Strategic Growth Opportunities</h2>
+      <div class="grid insights">
+        <article class="card">
+          <div class="tag warning-tag">Immediate Priority</div>
+          <h3>🤖 Unlock AI Capabilities</h3>
+          <p>Zero AI recipes despite 6,593 total active recipes. With strong iPaaS adoption, Atlassian is primed for AI integration to enhance automation intelligence.</p>
+          <button class="action">Launch AI Enablement Program</button>
+        </article>
+
+        <article class="card">
+          <div class="tag success-tag">Scale Opportunity</div>
+          <h3>👥 Expand User Base</h3>
+          <p>58 active users managing 113.7 recipes each indicates high individual workload. Scaling the builder community can improve resilience and innovation capacity.</p>
+          <button class="action">Builder Certification Drive</button>
+        </article>
+
+        <article class="card">
+          <div class="tag">Optimization</div>
+          <h3>🔧 Reduce Failure Rate</h3>
+          <p>29K failed jobs (6.1% failure rate) represents operational friction. Root cause analysis and targeted improvements could save significant time and resources.</p>
+          <button class="action">Error Analysis Workshop</button>
+        </article>
+
+        <article class="card">
+          <div class="tag">Integration Focus</div>
+          <h3>🔗 Classify Untiered Connections</h3>
+          <p>40.9% of connections lack tier classification. Proper categorization will enable better resource allocation and risk management.</p>
+          <button class="action">Connection Audit</button>
+        </article>
+
+        <article class="card">
+          <div class="tag success-tag">Expansion</div>
+          <h3>📊 Scale ETL/ELT Usage</h3>
+          <p>Only 113 ETL/ELT recipes (1.7%) despite data integration needs. Significant opportunity to expand data pipeline automation.</p>
+          <button class="action">Data Integration Training</button>
+        </article>
+
+        <article class="card">
+          <div class="tag">Platform Growth</div>
+          <h3>🚀 Increase WFA Adoption</h3>
+          <p>Only 9 WFA workflows adopted. Expanding workflow automation can streamline complex business processes across departments.</p>
+          <button class="action">WFA Success Stories</button>
+        </article>
+      </div>
+    </section>
+
+    <!-- Next Steps -->
+    <section class="section">
+      <h2>Recommended Next Steps</h2>
+      <div class="card">
+        <ul>
+          <li><strong>Immediate:</strong> Schedule AI capability workshop to identify high-value use cases across existing iPaaS recipes</li>
+          <li><strong>Week 1-2:</strong> Conduct failure analysis on top 10 error-prone recipes to reduce 6.1% failure rate</li>
+          <li><strong>Month 1:</strong> Launch builder enablement program to grow from 58 to 100+ active users</li>
+          <li><strong>Quarter 1:</strong> Classify all 2,811 untiered connections and establish governance framework</li>
+          <li><strong>Quarter 2:</strong> Expand ETL/ELT adoption through targeted training for data teams</li>
+        </ul>
+      </div>
+    </section>
+  </div>
+
+<script>
+// Chart configurations
+Chart.defaults.color = '#B6B9B5';
+Chart.defaults.borderColor = 'rgba(103,234,221,0.2)';
+
+// Capability Distribution Chart
+const capabilityCtx = document.getElementById('capabilityChart').getContext('2d');
+new Chart(capabilityCtx, {
+  type: 'doughnut',
+  data: {
+    labels: ['iPaaS (2,625)', 'API (345)', 'ETL/ELT (113)', 'Bot (90)', 'Other (3,420)'],
+    datasets: [{
+      data: [2625, 345, 113, 90, 3420],
+      backgroundColor: ['#67eadd', '#3C574B', '#B6B9B5', '#FCFDFD', '#1a4d47'],
+      borderWidth: 0
+    }]
+  },
+  options: {
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: {
+      legend: {
+        position: 'bottom',
+        labels: {
+          padding: 15,
+          font: { size: 11 }
+        }
+      }
+    }
+  }
+});
+
+// App Tier Chart
+const appTierCtx = document.getElementById('appTierChart').getContext('2d');
+new Chart(appTierCtx, {
+  type: 'bar',
+  data: {
+    labels: ['Unclassified', 'Tier 2', 'Tier 3', 'Tier 4', 'Tier 1', 'Tier 5'],
+    datasets: [{
+      label: 'Connections',
+      data: [2811, 1557, 959, 917, 368, 256],
+      backgroundColor: '#67eadd',
+      borderWidth: 0
+    }]
+  },
+  options: {
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: {
+      legend: { display: false }
+    },
+    scales: {
+      y: {
+        beginAtZero: true,
+        grid: { color: 'rgba(103,234,221,0.1)' }
+      },
+      x: {
+        grid: { display: false }
+      }
+    }
+  }
+});
+
+// Jobs Performance Chart
+const jobsCtx = document.getElementById('jobsChart').getContext('2d');
+new Chart(jobsCtx, {
+  type: 'pie',
+  data: {
+    labels: ['Successful Jobs (93.9%)', 'Failed Jobs (6.1%)'],
+    datasets: [{
+      data: [444054, 29008],
+      backgroundColor: ['#67eadd', '#3C574B'],
+      borderWidth: 0
+    }]
+  },
+  options: {
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: {
+      legend: {
+        position: 'bottom',
+        labels: {
+          padding: 10,
+          font: { size: 12 }
+        }
+      }
+    }
+  }
+});
+</script>
+</body>
+</html>

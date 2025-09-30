@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Bazaarvoice Platform Usage Dashboard</title>
+<style>
+  :root { 
+    --bg:#000; 
+    --text:#FCFDFD; 
+    --teal:#67eadd; 
+    --darkgreen:#3C574B;
+    --gray:#B6B9B5;
+    --card:#111; 
+    --radius:12px; 
+  }
+  * { box-sizing: border-box; }
+  html,body { margin:0; background:var(--bg); color:var(--text); font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Ubuntu,sans-serif; }
+  .wrap { width:100%; padding:20px; }
+  h1,h2,h3 { margin:0 0 12px; color:var(--teal); }
+  .sub { opacity:.9; margin-bottom:24px; color:var(--gray); }
+
+  .grid { display:grid; gap:16px; margin-bottom:24px; }
+  .kpis { grid-template-columns: repeat(5, minmax(0, 1fr)); }
+  .charts { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .insights { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  @media (max-width:900px){ 
+    .kpis{grid-template-columns:repeat(2,1fr)} 
+    .charts{grid-template-columns:1fr}
+    .insights{grid-template-columns:1fr}
+  }
+
+  .card { 
+    background:var(--card); 
+    border:1px solid rgba(103,234,221,.3); 
+    border-radius:var(--radius); 
+    padding:16px;
+    position:relative;
+  }
+  .kpi .num { 
+    font-size:2.2rem; 
+    font-weight:800; 
+    color:var(--teal); 
+    line-height:1;
+    margin-bottom:4px;
+  }
+  .kpi .lab { 
+    color:var(--gray); 
+    font-size:.9rem; 
+    text-transform:uppercase;
+    letter-spacing:0.5px;
+  }
+  .kpi .delta {
+    font-size:0.85rem;
+    color:var(--darkgreen);
+    margin-top:4px;
+  }
+
+  .chart-container {
+    position:relative;
+    height:300px;
+  }
+  canvas { width:100% !important; height:100% !important; }
+
+  .tag { 
+    display:inline-block; 
+    font-size:.7rem; 
+    font-weight:700; 
+    color:#000; 
+    background:var(--teal); 
+    padding:3px 10px; 
+    border-radius:999px; 
+    margin-bottom:8px;
+    text-transform:uppercase;
+  }
+  
+  .insight-card {
+    background:linear-gradient(135deg, var(--card), rgba(103,234,221,.05));
+  }
+  .insight-card h3 {
+    color:#FCFDFD;
+    font-size:1.1rem;
+    margin-bottom:8px;
+  }
+  .insight-card p {
+    color:var(--gray);
+    font-size:0.9rem;
+    line-height:1.5;
+  }
+  
+  .section { margin-top:32px; }
+  
+  .progress-bar {
+    width:100%;
+    height:8px;
+    background:var(--darkgreen);
+    border-radius:4px;
+    overflow:hidden;
+    margin-top:8px;
+  }
+  .progress-fill {
+    height:100%;
+    background:var(--teal);
+    border-radius:4px;
+    transition:width 0.3s ease;
+  }
+
+  .stat-row {
+    display:flex;
+    justify-content:space-between;
+    padding:8px 0;
+    border-bottom:1px solid rgba(103,234,221,.1);
+  }
+  .stat-row:last-child { border-bottom:none; }
+  .stat-label { color:var(--gray); }
+  .stat-value { color:var(--teal); font-weight:600; }
+
+  ul { margin:0; padding-left:20px; color:var(--gray); }
+  li { margin-bottom:8px; }
+</style>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <h1>Bazaarvoice Platform Usage Analysis</h1>
+      <div class="sub">Comprehensive breakdown of platform adoption, capabilities, and growth opportunities</div>
+    </header>
+
+    <section class="section">
+      <h2>Key Performance Metrics</h2>
+      <div class="grid kpis">
+        <div class="card kpi">
+          <div class="num">241</div>
+          <div class="lab">Total Recipes</div>
+          <div class="delta">↑ Up to 80 new/month</div>
+        </div>
+        <div class="card kpi">
+          <div class="num">28%</div>
+          <div class="lab">Task Utilization</div>
+          <div class="delta">↑ From 19% (3mo)</div>
+        </div>
+        <div class="card kpi">
+          <div class="num">3M</div>
+          <div class="lab">Monthly Tasks</div>
+          <div class="delta">↑ Peak volume</div>
+        </div>
+        <div class="card kpi">
+          <div class="num">4/5</div>
+          <div class="lab">Dept Coverage</div>
+          <div class="delta">80% engaged</div>
+        </div>
+        <div class="card kpi">
+          <div class="num">244</div>
+          <div class="lab">App Connections</div>
+          <div class="delta">Across 5 tiers</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>Platform Analytics</h2>
+      <div class="grid charts">
+        <div class="card">
+          <h3>Recipe Distribution by Capability</h3>
+          <div class="chart-container">
+            <canvas id="capabilityChart"></canvas>
+          </div>
+          <div style="margin-top:12px; padding-top:12px; border-top:1px solid rgba(103,234,221,.1);">
+            <p style="color:var(--gray); font-size:0.85rem; margin:0;">
+              <strong style="color:var(--teal);">iPaaS dominates</strong> with 88% of recipes (212), while AI adoption remains low at 3.7% (9 recipes)
+            </p>
+          </div>
+        </div>
+
+        <div class="card">
+          <h3>Department Recipe Usage</h3>
+          <div class="chart-container">
+            <canvas id="deptChart"></canvas>
+          </div>
+          <div style="margin-top:12px; padding-top:12px; border-top:1px solid rgba(103,234,221,.1);">
+            <p style="color:var(--gray); font-size:0.85rem; margin:0;">
+              <strong style="color:var(--teal);">Data Ops leads</strong> with 27 use cases; 1 department remains unengaged
+            </p>
+          </div>
+        </div>
+
+        <div class="card">
+          <h3>App Connection Tier Distribution</h3>
+          <div class="chart-container">
+            <canvas id="tierChart"></canvas>
+          </div>
+          <div style="margin-top:12px; padding-top:12px; border-top:1px solid rgba(103,234,221,.1);">
+            <p style="color:var(--gray); font-size:0.85rem; margin:0;">
+              <strong style="color:var(--teal);">Business-critical focus:</strong> Tier 2/3 apps comprise 54% of connections
+            </p>
+          </div>
+        </div>
+
+        <div class="card">
+          <h3>Task Utilization Trend</h3>
+          <div class="chart-container">
+            <canvas id="utilizationChart"></canvas>
+          </div>
+          <div style="margin-top:12px; padding-top:12px; border-top:1px solid rgba(103,234,221,.1);">
+            <p style="color:var(--gray); font-size:0.85rem; margin:0;">
+              <strong style="color:var(--teal);">47% growth</strong> in utilization rate over 3 months indicates expanding usage
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>Growth Opportunities & Insights</h2>
+      <div class="grid insights">
+        <div class="card insight-card">
+          <div class="tag">High Potential</div>
+          <h3>🚀 Scale AI & API Capabilities</h3>
+          <p>Only 11 non-iPaaS recipes (4.5%). Significant whitespace in AI (9) and API (2) automation presents major growth opportunity.</p>
+          <div class="progress-bar">
+            <div class="progress-fill" style="width:4.5%"></div>
+          </div>
+        </div>
+
+        <div class="card insight-card">
+          <div class="tag">Quick Win</div>
+          <h3>📈 Optimize Task Capacity</h3>
+          <p>At 28% utilization with steady growth, platform has 72% unused capacity. Room for 3x expansion without infrastructure changes.</p>
+          <div class="progress-bar">
+            <div class="progress-fill" style="width:28%"></div>
+          </div>
+        </div>
+
+        <div class="card insight-card">
+          <div class="tag">Expansion</div>
+          <h3>👥 Engage Missing Department</h3>
+          <p>1 of 5 departments not using platform. Target this gap to achieve 100% organizational coverage and unlock cross-functional workflows.</p>
+          <div class="progress-bar">
+            <div class="progress-fill" style="width:80%"></div>
+          </div>
+        </div>
+
+        <div class="card insight-card">
+          <div class="tag">Stability Risk</div>
+          <h3>⚠️ Builder Concentration</h3>
+          <p>Only 2-3 active builders managing 241 recipes. Knowledge concentration poses continuity risk. Need builder expansion program.</p>
+          <div class="stat-row">
+            <span class="stat-label">Active Users</span>
+            <span class="stat-value">1-2</span>
+          </div>
+          <div class="stat-row">
+            <span class="stat-label">Builders</span>
+            <span class="stat-value">2-3</span>
+          </div>
+          <div class="stat-row">
+            <span class="stat-label">Power Builders</span>
+            <span class="stat-value">2</span>
+          </div>
+        </div>
+
+        <div class="card insight-card">
+          <div class="tag">Optimize</div>
+          <h3>🔗 Leverage Tier 1 Apps</h3>
+          <p>23 Tier 1 connections but low relative usage. Premium app investments underutilized - develop advanced integrations.</p>
+          <div class="stat-row">
+            <span class="stat-label">Tier 1 Apps</span>
+            <span class="stat-value">23</span>
+          </div>
+          <div class="stat-row">
+            <span class="stat-label">Unclassified</span>
+            <span class="stat-value">72</span>
+          </div>
+        </div>
+
+        <div class="card insight-card">
+          <div class="tag">Strategic</div>
+          <h3>💡 Department Imbalance</h3>
+          <p>Data Ops has 2x more use cases than IT. Cross-pollinate successful patterns to underutilized departments like HR (4 cases).</p>
+          <div class="stat-row">
+            <span class="stat-label">Top: Data Ops</span>
+            <span class="stat-value">27 cases</span>
+          </div>
+          <div class="stat-row">
+            <span class="stat-label">Low: HR</span>
+            <span class="stat-value">4 cases</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>Recommended Actions</h2>
+      <div class="card">
+        <ul>
+          <li><strong>Immediate:</strong> Launch AI/ML training program to diversify from 88% iPaaS concentration</li>
+          <li><strong>Short-term:</strong> Recruit 3-5 additional builders to reduce knowledge risk and support growth</li>
+          <li><strong>Medium-term:</strong> Target 50% task utilization through department expansion and new use cases</li>
+          <li><strong>Long-term:</strong> Achieve 100% department coverage and establish center of excellence for automation</li>
+          <li><strong>Strategic:</strong> Classify remaining 72 unclassified connections and optimize tier 1 app usage</li>
+        </ul>
+      </div>
+    </section>
+  </div>
+
+  <script>
+    Chart.defaults.color = '#B6B9B5';
+    Chart.defaults.borderColor = 'rgba(103,234,221,.1)';
+    
+    // Capability Distribution
+    new Chart(document.getElementById('capabilityChart'), {
+      type: 'doughnut',
+      data: {
+        labels: ['iPaaS', 'Bot', 'AI', 'ETL/ELT', 'API'],
+        datasets: [{
+          data: [212, 15, 9, 3, 2],
+          backgroundColor: ['#67eadd', '#3C574B', '#B6B9B5', '#4a7c6b', '#2a4c3b'],
+          borderWidth: 0
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: {
+            position: 'bottom',
+            labels: { padding: 12 }
+          }
+        }
+      }
+    });
+
+    // Department Usage
+    new Chart(document.getElementById('deptChart'), {
+      type: 'bar',
+      data: {
+        labels: ['Data Ops & Product', 'Finance & Accounting', 'RevOps & CS Ops', 'IT', 'Human Resources'],
+        datasets: [{
+          label: 'Use Cases',
+          data: [27, 13, 11, 9, 4],
+          backgroundColor: '#67eadd',
+          borderRadius: 4
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        indexAxis: 'y',
+        plugins: {
+          legend: { display: false }
+        },
+        scales: {
+          x: { grid: { color: 'rgba(103,234,221,.1)' } },
+          y: { grid: { display: false } }
+        }
+      }
+    });
+
+    // Tier Distribution
+    new Chart(document.getElementById('tierChart'), {
+      type: 'polarArea',
+      data: {
+        labels: ['Tier 2', 'Unclassified', 'Tier 3', 'Tier 1', 'Tier 4', 'Tier 5'],
+        datasets: [{
+          data: [81, 72, 51, 23, 13, 4],
+          backgroundColor: [
+            'rgba(103,234,221,0.8)',
+            'rgba(182,185,181,0.8)',
+            'rgba(60,87,75,0.8)',
+            'rgba(103,234,221,0.5)',
+            'rgba(60,87,75,0.5)',
+            'rgba(182,185,181,0.5)'
+          ],
+          borderWidth: 0
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: {
+            position: 'bottom',
+            labels: { padding: 8 }
+          }
+        }
+      }
+    });
+
+    // Utilization Trend
+    new Chart(document.getElementById('utilizationChart'), {
+      type: 'line',
+      data: {
+        labels: ['Month 1', 'Month 2', 'Month 3'],
+        datasets: [{
+          label: 'Task Utilization %',
+          data: [19, 23.5, 28],
+          borderColor: '#67eadd',
+          backgroundColor: 'rgba(103,234,221,0.1)',
+          tension: 0.4,
+          fill: true
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: { display: false }
+        },
+        scales: {
+          y: {
+            beginAtZero: true,
+            max: 100,
+            ticks: {
+              callback: function(value) { return value + '%'; }
+            },
+            grid: { color: 'rgba(103,234,221,.1)' }
+          },
+          x: {
+            grid: { display: false }
+          }
+        }
+      }
+    });
+  </script>
+</body>
+</html>

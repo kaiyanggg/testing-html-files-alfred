@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Coupa Customer Usage Summary</title>
+<style>
+  :root { --bg:#000; --text:#FCFDFD; --teal:#67eadd; --dark-green:#3C574B; --gray:#B6B9B5; --card:#111; --radius:12px; }
+  * { box-sizing: border-box; }
+  html,body { margin:0; background:var(--bg); color:var(--text); font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Ubuntu,sans-serif; }
+  .wrap { width:100%; max-width:1200px; margin:0 auto; padding:20px; }
+  h1,h2,h3 { margin:0 0 12px; color:var(--teal); }
+  .sub { opacity:.9; margin-bottom:24px; color:var(--gray); }
+
+  .grid { display:grid; gap:16px; }
+  .kpis { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+  .charts { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  @media (max-width:800px){ .kpis{grid-template-columns:repeat(2,1fr)} .charts{grid-template-columns:1fr} }
+
+  .card { background:var(--card); border:1px solid rgba(103,234,221,.3); border-radius:var(--radius); padding:16px; }
+  .kpi .num { font-size:2.5rem; font-weight:800; color:var(--teal); line-height:1; }
+  .kpi .lab { opacity:.85; font-size:.9rem; margin-top:4px; }
+  .kpi .delta { font-size:0.9rem; color:var(--dark-green); margin-top:4px; }
+
+  .section { margin-top:32px; }
+  
+  .chart-container { position:relative; height:250px; }
+  
+  .insight { background:rgba(103,234,221,.1); border-left:3px solid var(--teal); padding:12px; margin-top:12px; font-size:0.9rem; }
+  
+  .capability-bar { display:flex; align-items:center; margin:8px 0; }
+  .capability-label { width:80px; font-size:0.85rem; color:var(--gray); }
+  .capability-value { flex:1; background:var(--dark-green); height:24px; position:relative; border-radius:4px; overflow:hidden; }
+  .capability-fill { background:var(--teal); height:100%; display:flex; align-items:center; padding:0 8px; }
+  .capability-count { color:var(--bg); font-weight:700; font-size:0.8rem; }
+  
+  .status-pill { display:inline-block; padding:4px 12px; border-radius:999px; font-size:0.75rem; font-weight:600; margin-right:8px; }
+  .status-good { background:var(--dark-green); color:var(--text); }
+  .status-warn { background:#8B7355; color:var(--text); }
+  .status-alert { background:#8B3A3A; color:var(--text); }
+  
+  .metric-row { display:flex; justify-content:space-between; padding:8px 0; border-bottom:1px solid rgba(182,185,181,0.2); }
+  .metric-label { color:var(--gray); font-size:0.9rem; }
+  .metric-value { color:var(--teal); font-weight:600; }
+  
+  ul { margin:8px 0; padding-left:20px; }
+  li { margin:4px 0; font-size:0.9rem; }
+</style>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <h1>Coupa Customer Usage Summary</h1>
+      <div class="sub">Automation Platform Performance & Adoption Metrics</div>
+    </header>
+
+    <section class="section">
+      <h2>Executive Summary</h2>
+      <div class="grid kpis">
+        <div class="card kpi">
+          <div class="num">527</div>
+          <div class="lab">Active Recipes</div>
+          <div class="delta">As of Sep 22, 2025</div>
+        </div>
+        <div class="card kpi">
+          <div class="num">30%</div>
+          <div class="lab">Task Utilization</div>
+          <div class="delta">↑ 8% from 22%</div>
+        </div>
+        <div class="card kpi">
+          <div class="num">22</div>
+          <div class="lab">Active Builders</div>
+          <div class="delta">3-5 power builders</div>
+        </div>
+        <div class="card kpi">
+          <div class="num">75</div>
+          <div class="lab">Connected Apps</div>
+          <div class="delta">725 total connections</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>Recipe Distribution & Capability Adoption</h2>
+      <div class="grid charts">
+        <div class="card">
+          <h3>Recipe Mix by Capability</h3>
+          <div class="capability-bar">
+            <div class="capability-label">iPaaS</div>
+            <div class="capability-value">
+              <div class="capability-fill" style="width:64%">
+                <span class="capability-count">337</span>
+              </div>
+            </div>
+          </div>
+          <div class="capability-bar">
+            <div class="capability-label">ETL/ELT</div>
+            <div class="capability-value">
+              <div class="capability-fill" style="width:5.7%">
+                <span class="capability-count">30</span>
+              </div>
+            </div>
+          </div>
+          <div class="capability-bar">
+            <div class="capability-label">WFA</div>
+            <div class="capability-value">
+              <div class="capability-fill" style="width:0.4%">
+                <span class="capability-count">2</span>
+              </div>
+            </div>
+          </div>
+          <div class="capability-bar">
+            <div class="capability-label">API</div>
+            <div class="capability-value">
+              <div class="capability-fill" style="width:0.2%">
+                <span class="capability-count">1</span>
+              </div>
+            </div>
+          </div>
+          <div class="capability-bar">
+            <div class="capability-label">AI/Bot</div>
+            <div class="capability-value">
+              <div class="capability-fill" style="width:0%">
+                <span class="capability-count">0</span>
+              </div>
+            </div>
+          </div>
+          <div class="insight">
+            <strong>Key Finding:</strong> Heavy concentration in iPaaS (64% of recipes) with minimal diversification. No AI/Bot adoption detected - significant opportunity for capability expansion.
+          </div>
+        </div>
+        
+        <div class="card">
+          <h3>Task Volume Trend</h3>
+          <canvas id="taskChart"></canvas>
+          <div class="insight">
+            <strong>Growth Pattern:</strong> Task volume increased from ~22M to 23M per month with utilization rate jumping from 22% to 30% - indicating healthy scaling and improved efficiency.
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>User Engagement & App Connectivity</h2>
+      <div class="grid charts">
+        <div class="card">
+          <h3>Builder Activity Metrics</h3>
+          <div class="metric-row">
+            <span class="metric-label">Total Builders</span>
+            <span class="metric-value">22</span>
+          </div>
+          <div class="metric-row">
+            <span class="metric-label">Active Users</span>
+            <span class="metric-value">9</span>
+          </div>
+          <div class="metric-row">
+            <span class="metric-label">User-to-Builder Ratio</span>
+            <span class="metric-value">0.4</span>
+          </div>
+          <div class="metric-row">
+            <span class="metric-label">Power Builders</span>
+            <span class="metric-value">3-5 consistent</span>
+          </div>
+          <div class="insight">
+            <strong>Engagement Gap:</strong> Low user-to-builder ratio (0.4) suggests limited end-user adoption. Focus on expanding user base beyond builders.
+          </div>
+        </div>
+        
+        <div class="card">
+          <h3>Application Connection Status</h3>
+          <div style="margin:16px 0">
+            <span class="status-pill status-good">75 Apps Connected</span>
+            <span class="status-pill status-warn">725 Connections</span>
+          </div>
+          <h4 style="color:var(--gray); font-size:0.9rem; margin-top:16px">Unused Critical Apps:</h4>
+          <ul>
+            <li><strong>Tier 1:</strong> MySQL (0 recipes)</li>
+            <li><strong>Tier 2:</strong> Active Directory, Datadog, GitHub, OpenAI, Redshift (all showing zero usage)</li>
+          </ul>
+          <div class="insight">
+            <strong>Opportunity:</strong> Critical apps connected but unused - training needed for MySQL, monitoring (Datadog), and AI (OpenAI) integrations.
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>Key Recommendations</h2>
+      <div class="card">
+        <ul>
+          <li><strong>Immediate Priority:</strong> Enable AI/Bot capabilities - currently at 0 recipes despite industry trends</li>
+          <li><strong>App Utilization:</strong> Activate unused Tier 1/2 applications (MySQL, Datadog, OpenAI) through targeted training</li>
+          <li><strong>Builder Program:</strong> Expand from 3-5 power builders to 10+ to support growing task volume</li>
+          <li><strong>User Adoption:</strong> Improve user-to-builder ratio from 0.4 to industry standard of 2-3</li>
+          <li><strong>Capability Mix:</strong> Diversify beyond iPaaS dominance - target 20% ETL/ELT and 10% AI/Bot within 6 months</li>
+        </ul>
+      </div>
+    </section>
+  </div>
+
+  <script>
+    const ctx = document.getElementById('taskChart').getContext('2d');
+    new Chart(ctx, {
+      type: 'line',
+      data: {
+        labels: ['Month 1', 'Month 2', 'Month 3'],
+        datasets: [
+          {
+            label: 'Task Volume (M)',
+            data: [22, 22.5, 23],
+            borderColor: '#67eadd',
+            backgroundColor: 'rgba(103, 234, 221, 0.1)',
+            tension: 0.4,
+            fill: true
+          },
+          {
+            label: 'Utilization %',
+            data: [22, 26, 30],
+            borderColor: '#3C574B',
+            backgroundColor: 'rgba(60, 87, 75, 0.1)',
+            tension: 0.4,
+            fill: true,
+            yAxisID: 'y1'
+          }
+        ]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: {
+            labels: { color: '#B6B9B5' }
+          }
+        },
+        scales: {
+          y: {
+            type: 'linear',
+            display: true,
+            position: 'left',
+            ticks: { color: '#B6B9B5' },
+            grid: { color: 'rgba(182, 185, 181, 0.1)' }
+          },
+          y1: {
+            type: 'linear',
+            display: true,
+            position: 'right',
+            ticks: { color: '#B6B9B5' },
+            grid: { drawOnChartArea: false }
+          },
+          x: {
+            ticks: { color: '#B6B9B5' },
+            grid: { color: 'rgba(182, 185, 181, 0.1)' }
+          }
+        }
+      }
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Coupa Usage Summary Dashboard</title>
+<style>
+  :root { --bg:#000; --text:#FCFDFD; --teal:#67eadd; --card:#111; --radius:12px; --dark-green:#3C574B; --gray:#B6B9B5; }
+  * { box-sizing: border-box; }
+  html,body { margin:0; background:var(--bg); color:var(--text); font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Ubuntu,sans-serif; }
+  .wrap { width:100%; max-width:1400px; margin:0 auto; padding:20px; }
+  h1,h2,h3 { margin:0 0 12px; color:var(--teal); }
+  .sub { opacity:.9; margin-bottom:24px; color:var(--gray); }
+
+  .grid { display:grid; gap:16px; }
+  .kpis { grid-template-columns: repeat(5, minmax(0, 1fr)); }
+  .charts { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .insights { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  @media (max-width:900px){ .kpis{grid-template-columns:repeat(2,1fr)} .charts{grid-template-columns:1fr} .insights{grid-template-columns:1fr} }
+
+  .card { background:var(--card); border:1px solid rgba(103,234,221,.3); border-radius:var(--radius); padding:16px; position:relative; }
+  .kpi .num { font-size:2.2rem; font-weight:800; color:var(--teal); line-height:1.1; }
+  .kpi .lab { opacity:.85; font-size:.9rem; margin-top:4px; }
+  .kpi .delta { font-size:.85rem; color:var(--gray); margin-top:4px; }
+  .kpi.positive .delta { color:#4ade80; }
+  .kpi.negative .delta { color:#f87171; }
+
+  .chart-container { height:300px; position:relative; padding:8px 0; }
+  .section { margin-top:32px; }
+  
+  .tag { display:inline-block; font-size:.75rem; font-weight:700; color:#003b36; background:var(--teal); padding:3px 10px; border-radius:999px; margin-bottom:8px; }
+  .insight-card { background:var(--card); border:1px solid rgba(103,234,221,.3); border-radius:var(--radius); padding:16px; }
+  .insight-card h3 { font-size:1.1rem; margin-bottom:8px; }
+  .insight-card p { color:var(--gray); line-height:1.5; margin:0; font-size:.95rem; }
+  
+  ul { margin:8px 0; padding-left:20px; color:var(--gray); }
+  li { margin:4px 0; }
+  .highlight { color:var(--teal); font-weight:600; }
+</style>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <h1>Coupa Usage Summary</h1>
+      <div class="sub">Platform engagement, capability adoption, and automation maturity overview</div>
+    </header>
+
+    <section class="section">
+      <h2>Key Metrics</h2>
+      <div class="grid kpis">
+        <div class="card kpi positive">
+          <div class="num">60M</div>
+          <div class="lab">Tasks Consumed</div>
+          <div class="delta">↑ 8.7% from last week</div>
+        </div>
+        <div class="card kpi">
+          <div class="num">527</div>
+          <div class="lab">Active Recipes</div>
+          <div class="delta">Stable (-2 from last week)</div>
+        </div>
+        <div class="card kpi">
+          <div class="num">22</div>
+          <div class="lab">Total Builders</div>
+          <div class="delta">3 Power Builders</div>
+        </div>
+        <div class="card kpi">
+          <div class="num">4/5</div>
+          <div class="lab">Departments Adopted</div>
+          <div class="delta">80% coverage</div>
+        </div>
+        <div class="card kpi">
+          <div class="num">3/6</div>
+          <div class="lab">Capabilities Active</div>
+          <div class="delta">iPaaS, ETL/ELT, WFA</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>Usage Trends & Capability Adoption</h2>
+      <div class="grid charts">
+        <div class="card">
+          <h3>Task Consumption Trend (3 Months)</h3>
+          <div class="chart-container">
+            <canvas id="taskTrend"></canvas>
+          </div>
+          <ul>
+            <li>Strong growth: <span class="highlight">+21% over 3 months</span></li>
+            <li>Current run rate: ~240M tasks annually</li>
+          </ul>
+        </div>
+        <div class="card">
+          <h3>Capability Adoption vs Usage</h3>
+          <div class="chart-container">
+            <canvas id="capabilities"></canvas>
+          </div>
+          <ul>
+            <li><span class="highlight">API & WFA adopted but not active</span> - training opportunity</li>
+            <li>ETL/ELT showing strong utilization</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>Departmental Automation</h2>
+      <div class="grid charts">
+        <div class="card">
+          <h3>Use Cases by Department</h3>
+          <div class="chart-container">
+            <canvas id="departments"></canvas>
+          </div>
+          <ul>
+            <li><span class="highlight">IT leads with 27 use cases</span> (41% of total)</li>
+            <li>Data Ops & Finance each with 13 use cases</li>
+            <li>RevOps lowest adoption - expansion opportunity</li>
+          </ul>
+        </div>
+        <div class="card">
+          <h3>User Engagement Profile</h3>
+          <div class="chart-container">
+            <canvas id="userProfile"></canvas>
+          </div>
+          <ul>
+            <li><span class="highlight">13.6% power builder ratio</span> (3 of 22 builders)</li>
+            <li>9 active users - room for user expansion</li>
+            <li>Strong builder base relative to active users</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>Growth Opportunities</h2>
+      <div class="grid insights">
+        <div class="insight-card">
+          <div class="tag">High Impact</div>
+          <h3>🚀 Activate Unused Capabilities</h3>
+          <p>API Management and Workflow Automation are adopted but showing zero usage. These represent immediate value capture opportunities through targeted enablement.</p>
+        </div>
+        <div class="insight-card">
+          <div class="tag">Expansion</div>
+          <h3>🤖 AI & Workbot Adoption</h3>
+          <p>Neither AI nor Workbot capabilities are currently adopted. With 60M tasks/quarter run rate, AI could significantly optimize automation efficiency.</p>
+        </div>
+        <div class="insight-card">
+          <div class="tag">Scale</div>
+          <h3>📈 RevOps Department Growth</h3>
+          <p>RevOps shows only 3 use cases (4.5% of total) despite 80% department adoption. Significant automation potential in revenue operations.</p>
+        </div>
+        <div class="insight-card">
+          <div class="tag">Optimization</div>
+          <h3>👥 Power Builder Development</h3>
+          <p>With only 13.6% power builders, investing in advanced training for existing builders could accelerate complex automation delivery.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>Recommended Actions</h2>
+      <div class="card">
+        <ul>
+          <li><strong>Immediate:</strong> Schedule training sessions for API Management and WFA teams to activate adopted but unused capabilities</li>
+          <li><strong>Q1 Priority:</strong> Launch AI pilot program leveraging high task volume for maximum impact</li>
+          <li><strong>Strategic:</strong> Develop RevOps automation playbook to scale from 3 to 10+ use cases</li>
+          <li><strong>Ongoing:</strong> Implement power builder certification program to increase advanced user ratio from 13% to 25%</li>
+        </ul>
+      </div>
+    </section>
+  </div>
+
+  <script>
+    Chart.defaults.color = '#B6B9B5';
+    Chart.defaults.borderColor = 'rgba(103,234,221,0.2)';
+    
+    // Task Trend Chart
+    new Chart(document.getElementById('taskTrend'), {
+      type: 'line',
+      data: {
+        labels: ['Sep 8', 'Sep 15', 'Sep 22'],
+        datasets: [{
+          label: 'Tasks Consumed (Millions)',
+          data: [49.5, 55.2, 60.0],
+          borderColor: '#67eadd',
+          backgroundColor: 'rgba(103,234,221,0.1)',
+          tension: 0.3,
+          fill: true
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: { display: false }
+        },
+        scales: {
+          y: {
+            beginAtZero: true,
+            ticks: { callback: val => val + 'M' }
+          }
+        }
+      }
+    });
+
+    // Capabilities Chart
+    new Chart(document.getElementById('capabilities'), {
+      type: 'bar',
+      data: {
+        labels: ['iPaaS', 'API', 'ETL/ELT', 'WFA', 'Workbot', 'AI'],
+        datasets: [{
+          label: 'Adopted',
+          data: [1, 1, 1, 1, 0, 0],
+          backgroundColor: '#3C574B'
+        }, {
+          label: 'Actively Used',
+          data: [1, 0, 1, 0, 0, 0],
+          backgroundColor: '#67eadd'
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: { position: 'bottom' }
+        },
+        scales: {
+          y: {
+            beginAtZero: true,
+            max: 1,
+            ticks: { callback: val => val === 1 ? 'Yes' : 'No' }
+          }
+        }
+      }
+    });
+
+    // Departments Chart
+    new Chart(document.getElementById('departments'), {
+      type: 'doughnut',
+      data: {
+        labels: ['IT', 'Finance & Accounting', 'Data Ops & Product', 'Human Resources', 'RevOps & CS Ops'],
+        datasets: [{
+          data: [27, 13, 13, 9, 3],
+          backgroundColor: ['#67eadd', '#3C574B', '#B6B9B5', '#4ade80', '#f87171']
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: { position: 'right' }
+        }
+      }
+    });
+
+    // User Profile Chart
+    new Chart(document.getElementById('userProfile'), {
+      type: 'bar',
+      data: {
+        labels: ['Active Users', 'Builders', 'Power Builders'],
+        datasets: [{
+          label: 'Count',
+          data: [9, 22, 3],
+          backgroundColor: ['#B6B9B5', '#3C574B', '#67eadd']
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        indexAxis: 'y',
+        plugins: {
+          legend: { display: false }
+        },
+        scales: {
+          x: { beginAtZero: true }
+        }
+      }
+    });
+  </script>
+</body>
+</html>

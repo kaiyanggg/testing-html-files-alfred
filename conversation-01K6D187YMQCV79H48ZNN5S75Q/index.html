@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Atlassian Recipe Capabilities Dashboard</title>
+<style>
+  :root { --bg:#000; --text:#FCFDFD; --teal:#67eadd; --dark-green:#3C574B; --gray:#B6B9B5; --card:#111; --radius:12px; }
+  * { box-sizing: border-box; }
+  html,body { margin:0; background:var(--bg); color:var(--text); font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Ubuntu,sans-serif; }
+  .wrap { width:100%; max-width:1400px; margin:0 auto; padding:20px; }
+  h1,h2,h3 { margin:0 0 12px; color:var(--teal); }
+  .sub { opacity:.9; margin-bottom:24px; color:var(--gray); }
+
+  .grid { display:grid; gap:16px; }
+  .kpis { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+  .charts { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  @media (max-width:900px){ .kpis{grid-template-columns:repeat(2,1fr)} .charts{grid-template-columns:1fr} }
+
+  .card { background:var(--card); border:1px solid rgba(103,234,221,.3); border-radius:var(--radius); padding:20px; }
+  .kpi .num { font-size:2.5rem; font-weight:800; color:var(--teal); line-height:1; }
+  .kpi .lab { opacity:.85; font-size:.95rem; margin-top:8px; }
+  .kpi .detail { font-size:.8rem; color:var(--gray); margin-top:4px; }
+
+  .section { margin-top:32px; }
+  .chart-container { position:relative; height:300px; }
+  
+  .insight-list { margin-top:16px; padding:0; list-style:none; }
+  .insight-list li { padding:8px 0; border-left:3px solid var(--teal); padding-left:12px; margin-bottom:8px; }
+  
+  .tag { display:inline-block; font-size:.75rem; font-weight:700; color:#003b36; background:var(--teal); padding:2px 10px; border-radius:999px; margin-bottom:8px; }
+  .tag.warning { background:var(--gray); color:var(--card); }
+  
+  .progress-bar { width:100%; height:8px; background:var(--dark-green); border-radius:4px; overflow:hidden; margin-top:8px; }
+  .progress-fill { height:100%; background:var(--teal); transition:width 0.3s ease; }
+</style>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <h1>Atlassian Recipe Capability Analysis</h1>
+      <div class="sub">Distribution of automation recipes across different capability types</div>
+    </header>
+
+    <section class="section">
+      <h2>Executive Summary</h2>
+      <div class="grid kpis">
+        <div class="card kpi">
+          <div class="num">3,108</div>
+          <div class="lab">Total Recipes</div>
+          <div class="detail">Strong production phase</div>
+        </div>
+        <div class="card kpi">
+          <div class="num">81.6%</div>
+          <div class="lab">iPaaS Dominance</div>
+          <div class="detail">2,537 of total recipes</div>
+        </div>
+        <div class="card kpi">
+          <div class="num">4/4</div>
+          <div class="lab">Capabilities Used</div>
+          <div class="detail">Full platform adoption</div>
+        </div>
+        <div class="card kpi">
+          <div class="num">99</div>
+          <div class="lab">Bot Recipes</div>
+          <div class="detail">Opportunity for growth</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>Capability Distribution</h2>
+      <div class="grid charts">
+        <div class="card">
+          <h3>Recipe Count by Capability</h3>
+          <div class="chart-container">
+            <canvas id="barChart"></canvas>
+          </div>
+        </div>
+        <div class="card">
+          <h3>Capability Mix</h3>
+          <div class="chart-container">
+            <canvas id="pieChart"></canvas>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>Maturity Analysis</h2>
+      <div class="card">
+        <h3>Capability Adoption Levels</h3>
+        <div style="margin-top:20px">
+          <div style="margin-bottom:20px">
+            <div style="display:flex;justify-content:space-between;margin-bottom:4px">
+              <span>iPaaS</span>
+              <span style="color:var(--teal);font-weight:600">2,537 recipes</span>
+            </div>
+            <div class="progress-bar">
+              <div class="progress-fill" style="width:100%"></div>
+            </div>
+            <div class="tag" style="margin-top:8px">Mature - Core Operations</div>
+          </div>
+          
+          <div style="margin-bottom:20px">
+            <div style="display:flex;justify-content:space-between;margin-bottom:4px">
+              <span>API</span>
+              <span style="color:var(--teal);font-weight:600">337 recipes</span>
+            </div>
+            <div class="progress-bar">
+              <div class="progress-fill" style="width:13.3%"></div>
+            </div>
+            <div class="tag" style="margin-top:8px">Production Phase</div>
+          </div>
+          
+          <div style="margin-bottom:20px">
+            <div style="display:flex;justify-content:space-between;margin-bottom:4px">
+              <span>ETL/ELT</span>
+              <span style="color:var(--teal);font-weight:600">135 recipes</span>
+            </div>
+            <div class="progress-bar">
+              <div class="progress-fill" style="width:5.3%"></div>
+            </div>
+            <div class="tag" style="margin-top:8px">Production Phase</div>
+          </div>
+          
+          <div style="margin-bottom:20px">
+            <div style="display:flex;justify-content:space-between;margin-bottom:4px">
+              <span>Bot</span>
+              <span style="color:var(--teal);font-weight:600">99 recipes</span>
+            </div>
+            <div class="progress-bar">
+              <div class="progress-fill" style="width:3.9%"></div>
+            </div>
+            <div class="tag warning" style="margin-top:8px">Exploration Phase</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>Key Insights & Opportunities</h2>
+      <div class="grid charts">
+        <div class="card">
+          <h3>Current State Analysis</h3>
+          <ul class="insight-list">
+            <li>iPaaS recipes at 2,537 indicate <strong>mature automation of core operational processes</strong></li>
+            <li>API capability shows healthy adoption with 337 recipes in production phase</li>
+            <li>ETL/ELT at 135 recipes suggests data integration is established but has room for expansion</li>
+            <li>Bot automation at 99 recipes is just entering production phase (10+ threshold)</li>
+          </ul>
+        </div>
+        <div class="card">
+          <h3>Growth Opportunities</h3>
+          <ul class="insight-list">
+            <li><strong>Bot capability expansion:</strong> Currently at 3.2% of total, significant untapped potential</li>
+            <li><strong>ETL/ELT scaling:</strong> Data integration use cases could be expanded to more departments</li>
+            <li><strong>Capability diversification:</strong> Heavy iPaaS concentration suggests need for training in other areas</li>
+            <li><strong>Department-specific automation:</strong> Lower Bot/ETL counts may indicate specialized team opportunities</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>Recommendations</h2>
+      <div class="card">
+        <ul class="insight-list">
+          <li><strong>Immediate:</strong> Assess Bot automation opportunities - current 99 recipes suggest early adoption that could be accelerated</li>
+          <li><strong>Short-term:</strong> Expand ETL/ELT capabilities training to unlock more data integration use cases</li>
+          <li><strong>Strategic:</strong> While iPaaS dominance shows strong automation maturity, consider capability diversification for resilience</li>
+          <li><strong>Training focus:</strong> Target teams not using Bot/ETL capabilities to identify department-specific automation needs</li>
+        </ul>
+      </div>
+    </section>
+  </div>
+
+  <script>
+    const data = {
+      iPaaS: 2537,
+      API: 337,
+      'ETL/ELT': 135,
+      Bot: 99
+    };
+
+    const colors = {
+      primary: '#67eadd',
+      secondary: '#3C574B',
+      accent: '#B6B9B5',
+      background: '#111'
+    };
+
+    // Bar Chart
+    const barCtx = document.getElementById('barChart').getContext('2d');
+    new Chart(barCtx, {
+      type: 'bar',
+      data: {
+        labels: Object.keys(data),
+        datasets: [{
+          label: 'Recipe Count',
+          data: Object.values(data),
+          backgroundColor: ['#67eadd', '#3C574B', '#B6B9B5', '#67eadd80'],
+          borderColor: '#67eadd',
+          borderWidth: 1
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: { display: false },
+          tooltip: {
+            callbacks: {
+              label: function(context) {
+                const total = Object.values(data).reduce((a, b) => a + b, 0);
+                const percentage = ((context.parsed.y / total) * 100).toFixed(1);
+                return `${context.parsed.y} recipes (${percentage}%)`;
+              }
+            }
+          }
+        },
+        scales: {
+          y: {
+            beginAtZero: true,
+            grid: { color: 'rgba(103,234,221,0.1)' },
+            ticks: { color: '#B6B9B5' }
+          },
+          x: {
+            grid: { display: false },
+            ticks: { color: '#B6B9B5' }
+          }
+        }
+      }
+    });
+
+    // Pie Chart
+    const pieCtx = document.getElementById('pieChart').getContext('2d');
+    new Chart(pieCtx, {
+      type: 'doughnut',
+      data: {
+        labels: Object.keys(data),
+        datasets: [{
+          data: Object.values(data),
+          backgroundColor: ['#67eadd', '#3C574B', '#B6B9B5', '#67eadd80'],
+          borderColor: '#111',
+          borderWidth: 2
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: {
+            position: 'right',
+            labels: {
+              color: '#FCFDFD',
+              padding: 15,
+              font: { size: 12 }
+            }
+          },
+          tooltip: {
+            callbacks: {
+              label: function(context) {
+                const total = Object.values(data).reduce((a, b) => a + b, 0);
+                const percentage = ((context.parsed / total) * 100).toFixed(1);
+                return `${context.label}: ${context.parsed} (${percentage}%)`;
+              }
+            }
+          }
+        }
+      }
+    });
+  </script>
+</body>
+</html>

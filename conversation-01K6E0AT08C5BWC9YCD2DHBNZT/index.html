@@ -1,0 +1,457 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Bazaarvoice Usage Dashboard</title>
+<style>
+  :root { 
+    --bg:#000; 
+    --text:#FCFDFD; 
+    --teal:#67eadd; 
+    --card:#111; 
+    --radius:12px;
+    --dark-green:#3C574B;
+    --gray:#B6B9B5;
+  }
+  * { box-sizing: border-box; }
+  html,body { margin:0; background:var(--bg); color:var(--text); font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Ubuntu,sans-serif; }
+  .wrap { width:100%; max-width:1400px; margin:0 auto; padding:20px; }
+  h1,h2,h3 { margin:0 0 12px; color:var(--teal); }
+  .sub { opacity:.9; margin-bottom:24px; color:var(--gray); }
+
+  .grid { display:grid; gap:16px; }
+  .kpis { grid-template-columns: repeat(5, minmax(0, 1fr)); }
+  .insights { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .charts { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  @media (max-width:900px){ 
+    .kpis{grid-template-columns:repeat(2,1fr)} 
+    .insights{grid-template-columns:1fr}
+    .charts{grid-template-columns:1fr}
+  }
+
+  .card { 
+    background:var(--card); 
+    border:1px solid rgba(103,234,221,.3); 
+    border-radius:var(--radius); 
+    padding:20px; 
+  }
+  
+  .kpi .num { 
+    font-size:2.5rem; 
+    font-weight:800; 
+    color:var(--teal); 
+    line-height:1; 
+    margin-bottom:8px;
+  }
+  .kpi .lab { 
+    opacity:.85; 
+    font-size:.95rem; 
+    color:var(--gray);
+  }
+  .kpi .delta { 
+    font-size:.85rem; 
+    color:var(--dark-green);
+    margin-top:4px;
+  }
+
+  .tag { 
+    display:inline-block; 
+    font-size:.75rem; 
+    font-weight:700; 
+    color:#000; 
+    background:var(--teal); 
+    padding:3px 10px; 
+    border-radius:999px; 
+    margin-bottom:12px; 
+  }
+  
+  .action { 
+    margin-top:12px; 
+    border:1px solid var(--teal); 
+    background:transparent; 
+    color:var(--teal); 
+    border-radius:6px; 
+    padding:10px 16px; 
+    cursor:pointer; 
+    font-size:.9rem;
+    transition: all 0.3s;
+  }
+  .action:hover { 
+    background:var(--teal); 
+    color:#000; 
+  }
+
+  .section { margin-top:32px; }
+  ul { margin:8px 0; padding-left:20px; color:var(--gray); }
+  li { margin:8px 0; }
+  
+  .progress-bar {
+    height:24px;
+    background:rgba(103,234,221,.1);
+    border-radius:12px;
+    overflow:hidden;
+    position:relative;
+    margin:12px 0;
+  }
+  .progress-fill {
+    height:100%;
+    background:linear-gradient(90deg, var(--teal), var(--dark-green));
+    display:flex;
+    align-items:center;
+    padding:0 12px;
+    font-size:.85rem;
+    font-weight:600;
+    color:#000;
+  }
+  
+  .chart-container {
+    position:relative;
+    height:250px;
+    margin-top:16px;
+  }
+  
+  .capability-grid {
+    display:grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap:12px;
+    margin-top:16px;
+  }
+  @media (max-width:600px){ 
+    .capability-grid{grid-template-columns:repeat(2,1fr)}
+  }
+  
+  .capability-item {
+    background:rgba(103,234,221,.05);
+    border:1px solid rgba(103,234,221,.2);
+    border-radius:8px;
+    padding:12px;
+    text-align:center;
+    transition: all 0.3s;
+  }
+  .capability-item.active {
+    background:rgba(103,234,221,.15);
+    border-color:var(--teal);
+  }
+  .capability-item .icon {
+    font-size:1.5rem;
+    margin-bottom:4px;
+  }
+  .capability-item .name {
+    font-size:.9rem;
+    font-weight:600;
+    color:var(--text);
+  }
+  .capability-item .status {
+    font-size:.75rem;
+    color:var(--gray);
+    margin-top:2px;
+  }
+  
+  .warning {
+    background:rgba(255,193,7,.1);
+    border:1px solid rgba(255,193,7,.3);
+    color:#ffc107;
+    padding:12px;
+    border-radius:8px;
+    margin:12px 0;
+    font-size:.9rem;
+  }
+  
+  .success {
+    background:rgba(103,234,221,.1);
+    border:1px solid rgba(103,234,221,.3);
+    color:var(--teal);
+    padding:12px;
+    border-radius:8px;
+    margin:12px 0;
+    font-size:.9rem;
+  }
+</style>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <h1>Bazaarvoice Automation Dashboard</h1>
+      <div class="sub">Last 3 Months Performance & Usage Analysis</div>
+    </header>
+
+    <section class="section">
+      <h2>Executive Summary</h2>
+      <div class="grid kpis">
+        <div class="card kpi">
+          <div class="num">523</div>
+          <div class="lab">Active Recipes</div>
+          <div class="delta">↑ 42% growth</div>
+        </div>
+        <div class="card kpi">
+          <div class="num">26%</div>
+          <div class="lab">Task Utilization</div>
+          <div class="delta">23.8M of 92M</div>
+        </div>
+        <div class="card kpi">
+          <div class="num">2/6</div>
+          <div class="lab">Active Capabilities</div>
+          <div class="delta">iPaaS & Bot only</div>
+        </div>
+        <div class="card kpi">
+          <div class="num">3</div>
+          <div class="lab">Total Builders</div>
+          <div class="delta">2 power builders</div>
+        </div>
+        <div class="card kpi">
+          <div class="num">4/5</div>
+          <div class="lab">Dept Adoption</div>
+          <div class="delta">80% coverage</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="grid charts">
+        <div class="card">
+          <h3>Recipe Growth Trend</h3>
+          <div class="chart-container">
+            <canvas id="recipeChart"></canvas>
+          </div>
+          <div class="success">
+            ✓ Strong momentum: 156 new recipes added (42% growth)
+          </div>
+        </div>
+        
+        <div class="card">
+          <h3>Task Consumption Pattern</h3>
+          <div class="chart-container">
+            <canvas id="taskChart"></canvas>
+          </div>
+          <div class="warning">
+            ⚠ Fluctuating usage: 1.8M to 3M monthly variation
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="card">
+        <h3>Capability Adoption Status</h3>
+        <div class="capability-grid">
+          <div class="capability-item active">
+            <div class="icon">🔄</div>
+            <div class="name">iPaaS</div>
+            <div class="status" style="color:var(--teal)">Active</div>
+          </div>
+          <div class="capability-item active">
+            <div class="icon">🤖</div>
+            <div class="name">Bot</div>
+            <div class="status" style="color:var(--teal)">Active</div>
+          </div>
+          <div class="capability-item">
+            <div class="icon">🔌</div>
+            <div class="name">API</div>
+            <div class="status">Adopted, Not Active</div>
+          </div>
+          <div class="capability-item">
+            <div class="icon">📊</div>
+            <div class="name">ETL/ELT</div>
+            <div class="status">Adopted, Not Active</div>
+          </div>
+          <div class="capability-item">
+            <div class="icon">⚡</div>
+            <div class="name">WFA</div>
+            <div class="status">Adopted, Not Active</div>
+          </div>
+          <div class="capability-item">
+            <div class="icon">🧠</div>
+            <div class="name">AI</div>
+            <div class="status">Adopted, Not Active</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>Expansion Opportunities</h2>
+      <div class="grid insights">
+        <article class="card">
+          <div class="tag">High Impact</div>
+          <h3>🚀 Maximize Task Utilization</h3>
+          <p style="color:var(--gray)">Currently using only 26% of purchased capacity (68.2M tasks available). Significant room for scaling automation initiatives across departments.</p>
+          <button class="action">Review Expansion Use Cases</button>
+        </article>
+
+        <article class="card">
+          <div class="tag">Quick Win</div>
+          <h3>🔓 Activate Dormant Capabilities</h3>
+          <p style="color:var(--gray)">4 capabilities (API, ETL/ELT, WFA, AI) are adopted but inactive. Enabling these could unlock advanced automation workflows.</p>
+          <button class="action">Schedule Capability Training</button>
+        </article>
+
+        <article class="card">
+          <div class="tag">Growth</div>
+          <h3>👥 Expand Builder Community</h3>
+          <p style="color:var(--gray)">With only 3 builders (2 power), there's opportunity to train more team members and distribute automation ownership.</p>
+          <button class="action">Launch Builder Program</button>
+        </article>
+
+        <article class="card">
+          <div class="tag">Coverage</div>
+          <h3>📈 Complete Department Coverage</h3>
+          <p style="color:var(--gray)">1 department hasn't adopted automation yet. Target this for 100% organizational coverage.</p>
+          <button class="action">Department Onboarding</button>
+        </article>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="card">
+        <h3>Task Utilization Analysis</h3>
+        <div style="margin:16px 0;">
+          <div style="display:flex; justify-content:space-between; margin-bottom:8px;">
+            <span>Current Period Usage</span>
+            <span style="color:var(--teal); font-weight:600;">23.8M / 92M tasks</span>
+          </div>
+          <div class="progress-bar">
+            <div class="progress-fill" style="width:26%">
+              26% Utilized
+            </div>
+          </div>
+          <div class="warning" style="margin-top:16px;">
+            ⚠ Underutilized: 68.2M tasks available for expansion without additional cost
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>Recommended Actions</h2>
+      <div class="card">
+        <ul>
+          <li>Investigate task consumption fluctuation (1.8M-3M range) to identify usage patterns and optimization opportunities</li>
+          <li>Conduct enablement sessions for API, ETL/ELT, and AI capabilities to unlock their potential</li>
+          <li>Develop builder certification program to grow from 3 to 10+ builders in next quarter</li>
+          <li>Create department-specific automation playbooks to drive adoption in the remaining department</li>
+          <li>Establish monthly automation review to track recipe effectiveness and identify scaling opportunities</li>
+        </ul>
+      </div>
+    </section>
+  </div>
+
+  <script>
+    // Recipe Growth Chart
+    const recipeCtx = document.getElementById('recipeChart').getContext('2d');
+    new Chart(recipeCtx, {
+      type: 'line',
+      data: {
+        labels: ['Month 1', 'Month 2', 'Month 3'],
+        datasets: [{
+          label: 'Active Recipes',
+          data: [367, 445, 523],
+          borderColor: '#67eadd',
+          backgroundColor: 'rgba(103, 234, 221, 0.1)',
+          tension: 0.3,
+          fill: true,
+          pointBackgroundColor: '#67eadd',
+          pointBorderColor: '#67eadd',
+          pointRadius: 5,
+          pointHoverRadius: 7
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: {
+            display: false
+          },
+          tooltip: {
+            backgroundColor: 'rgba(0,0,0,0.8)',
+            titleColor: '#67eadd',
+            bodyColor: '#FCFDFD',
+            borderColor: '#67eadd',
+            borderWidth: 1
+          }
+        },
+        scales: {
+          y: {
+            beginAtZero: false,
+            grid: {
+              color: 'rgba(182, 185, 181, 0.1)'
+            },
+            ticks: {
+              color: '#B6B9B5'
+            }
+          },
+          x: {
+            grid: {
+              color: 'rgba(182, 185, 181, 0.1)'
+            },
+            ticks: {
+              color: '#B6B9B5'
+            }
+          }
+        }
+      }
+    });
+
+    // Task Consumption Chart
+    const taskCtx = document.getElementById('taskChart').getContext('2d');
+    new Chart(taskCtx, {
+      type: 'bar',
+      data: {
+        labels: ['Month 1', 'Month 2', 'Month 3'],
+        datasets: [{
+          label: 'Task Consumption (M)',
+          data: [1.8, 3.0, 2.4],
+          backgroundColor: ['rgba(103, 234, 221, 0.6)', 'rgba(103, 234, 221, 0.6)', 'rgba(103, 234, 221, 0.6)'],
+          borderColor: '#67eadd',
+          borderWidth: 1
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: {
+            display: false
+          },
+          tooltip: {
+            backgroundColor: 'rgba(0,0,0,0.8)',
+            titleColor: '#67eadd',
+            bodyColor: '#FCFDFD',
+            borderColor: '#67eadd',
+            borderWidth: 1,
+            callbacks: {
+              label: function(context) {
+                return context.parsed.y + 'M tasks';
+              }
+            }
+          }
+        },
+        scales: {
+          y: {
+            beginAtZero: true,
+            grid: {
+              color: 'rgba(182, 185, 181, 0.1)'
+            },
+            ticks: {
+              color: '#B6B9B5',
+              callback: function(value) {
+                return value + 'M';
+              }
+            }
+          },
+          x: {
+            grid: {
+              display: false
+            },
+            ticks: {
+              color: '#B6B9B5'
+            }
+          }
+        }
+      }
+    });
+  </script>
+</body>
+</html>

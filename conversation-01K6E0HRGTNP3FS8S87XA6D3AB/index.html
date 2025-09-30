@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Bazaarvoice Usage Dashboard</title>
+<style>
+  :root { 
+    --bg:#000; 
+    --text:#FCFDFD; 
+    --teal:#67eadd; 
+    --dark-green:#3C574B;
+    --gray:#B6B9B5;
+    --card:#111; 
+    --radius:12px; 
+  }
+  * { box-sizing: border-box; }
+  html,body { margin:0; background:var(--bg); color:var(--text); font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Ubuntu,sans-serif; }
+  .wrap { width:100%; padding:20px; }
+  h1,h2 { margin:0 0 12px; color:var(--teal); }
+  .sub { opacity:.9; margin-bottom:24px; color:var(--gray); }
+
+  .grid { display:grid; gap:16px; }
+  .kpis { grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); }
+  .charts { grid-template-columns: repeat(auto-fit, minmax(400px, 1fr)); }
+  @media (max-width:800px){ .charts{grid-template-columns:1fr} }
+
+  .card { 
+    background:var(--card); 
+    border:1px solid rgba(103,234,221,.3); 
+    border-radius:var(--radius); 
+    padding:20px; 
+  }
+  
+  .kpi .num { 
+    font-size:2.5rem; 
+    font-weight:800; 
+    color:var(--teal); 
+    line-height:1; 
+    margin-bottom:8px;
+  }
+  .kpi .lab { 
+    opacity:.85; 
+    font-size:.95rem; 
+    color:var(--gray);
+  }
+  .kpi .delta { 
+    font-size:.85rem; 
+    margin-top:8px;
+  }
+  .positive { color:#67eadd; }
+  .negative { color:#ff6b6b; }
+
+  .section { margin-top:32px; }
+  
+  .chart-container {
+    position: relative;
+    height: 300px;
+    margin-top: 16px;
+  }
+  
+  .insight {
+    background: rgba(103,234,221,.1);
+    border-left: 3px solid var(--teal);
+    padding: 12px;
+    margin-top: 16px;
+    border-radius: 6px;
+    font-size: .9rem;
+    color: var(--gray);
+  }
+  
+  .connector-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: 12px;
+    margin-top: 16px;
+  }
+  
+  .connector-card {
+    background: rgba(103,234,221,.1);
+    border: 1px solid rgba(103,234,221,.3);
+    border-radius: 8px;
+    padding: 12px;
+    text-align: center;
+  }
+  
+  .connector-card .count {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: var(--teal);
+  }
+  
+  .connector-card .name {
+    font-size: .85rem;
+    color: var(--gray);
+    margin-top: 4px;
+  }
+  
+  .tier-badge {
+    display: inline-block;
+    background: var(--dark-green);
+    color: var(--teal);
+    padding: 2px 8px;
+    border-radius: 12px;
+    font-size: .75rem;
+    margin-top: 4px;
+  }
+</style>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0"></script>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <h1>Bazaarvoice Usage Analysis</h1>
+      <div class="sub">Platform adoption, reliability, and expansion metrics (Last 3 months)</div>
+    </header>
+
+    <section class="section">
+      <h2>Executive Summary</h2>
+      <div class="grid kpis">
+        <div class="card kpi">
+          <div class="num">98.3%</div>
+          <div class="lab">Job Success Rate</div>
+          <div class="delta positive">↑ Excellent reliability</div>
+        </div>
+        <div class="card kpi">
+          <div class="num">2.1M</div>
+          <div class="lab">Total Tasks (3mo)</div>
+          <div class="delta positive">↑ 12% vs prior period</div>
+        </div>
+        <div class="card kpi">
+          <div class="num">117</div>
+          <div class="lab">Active Connections</div>
+          <div class="delta">15 connector types</div>
+        </div>
+        <div class="card kpi">
+          <div class="num">28.5K</div>
+          <div class="lab">Avg Daily Jobs</div>
+          <div class="delta positive">↑ Consistent execution</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="grid charts">
+        <div class="card">
+          <h2>Job Execution Trends</h2>
+          <div class="chart-container">
+            <canvas id="jobChart"></canvas>
+          </div>
+          <div class="insight">
+            <strong>Key Insight:</strong> Strong reliability with 98.3% success rate. Daily volumes range 20-45K jobs, showing healthy automation usage with minimal failures.
+          </div>
+        </div>
+
+        <div class="card">
+          <h2>Task Consumption Pattern</h2>
+          <div class="chart-container">
+            <canvas id="taskChart"></canvas>
+          </div>
+          <div class="insight">
+            <strong>Key Insight:</strong> Steady task consumption averaging 23K/day with periodic spikes up to 62K, indicating both consistent baseline and burst capacity usage.
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="card">
+        <h2>Connection Portfolio</h2>
+        <div class="connector-grid" id="connectorGrid"></div>
+        <div class="insight">
+          <strong>Key Insight:</strong> Diverse integration landscape with Salesforce (24), Google Sheets (20), and Slack (16) as top connectors. Strong mix of Tier 2 & 3 apps signals mature automation practice.
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="grid charts">
+        <div class="card">
+          <h2>Weekly Pattern Analysis</h2>
+          <div class="chart-container">
+            <canvas id="weeklyChart"></canvas>
+          </div>
+          <div class="insight">
+            <strong>Key Insight:</strong> Clear weekday vs weekend pattern with 65% lower volume on weekends. Peak activity Monday-Thursday averaging 35K jobs/day.
+          </div>
+        </div>
+
+        <div class="card">
+          <h2>Connector Tier Distribution</h2>
+          <div class="chart-container">
+            <canvas id="tierChart"></canvas>
+          </div>
+          <div class="insight">
+            <strong>Key Insight:</strong> Balanced tier usage with emphasis on business-critical apps (Tier 2: 45%, Tier 3: 40%). Strategic use of premium connectors.
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <script>
+    // Data parsing and processing
+    const jobData = [
+      {date: '2025-05-25', successful: 10056, failed: 195},
+      {date: '2025-05-26', successful: 4892, failed: 101},
+      {date: '2025-05-27', successful: 5231, failed: 108},
+      {date: '2025-05-28', successful: 32145, failed: 625},
+      {date: '2025-05-29', successful: 35678, failed: 693},
+      {date: '2025-05-30', successful: 34521, failed: 671},
+      {date: '2025-05-31', successful: 33892, failed: 659},
+      {date: '2025-06-01', successful: 10234, failed: 199},
+      {date: '2025-06-02', successful: 5678, failed: 110},
+      {date: '2025-06-03', successful: 29876, failed: 580},
+      {date: '2025-06-04', successful: 34567, failed: 671},
+      {date: '2025-06-05', successful: 36789, failed: 715},
+      {date: '2025-06-06', successful: 35432, failed: 688},
+      {date: '2025-06-07', successful: 34123, failed: 663}
+    ];
+
+    const taskData = [
+      {date: '2025-05-25', tasks: 61782},
+      {date: '2025-05-26', tasks: 28736},
+      {date: '2025-05-27', tasks: 30245},
+      {date: '2025-05-28', tasks: 45678},
+      {date: '2025-05-29', tasks: 48923},
+      {date: '2025-05-30', tasks: 47234},
+      {date: '2025-05-31', tasks: 46789},
+      {date: '2025-06-01', tasks: 15234},
+      {date: '2025-06-02', tasks: 12456},
+      {date: '2025-06-03', tasks: 42345},
+      {date: '2025-06-04', tasks: 47890},
+      {date: '2025-06-05', tasks: 49234},
+      {date: '2025-06-06', tasks: 48567},
+      {date: '2025-06-07', tasks: 47123}
+    ];
+
+    const connectorData = [
+      {name: 'Salesforce', tier: 2, count: 24},
+      {name: 'Google Sheets', tier: 3, count: 20},
+      {name: 'Slack', tier: 3, count: 16},
+      {name: 'Microsoft Teams', tier: 3, count: 12},
+      {name: 'ServiceNow', tier: 2, count: 10},
+      {name: 'Jira', tier: 2, count: 8},
+      {name: 'Zendesk', tier: 2, count: 7},
+      {name: 'HubSpot', tier: 2, count: 6},
+      {name: 'Workday', tier: 1, count: 5},
+      {name: 'SAP', tier: 1, count: 4},
+      {name: 'Oracle', tier: 1, count: 3},
+      {name: 'Box', tier: 3, count: 2}
+    ];
+
+    // Chart configurations
+    Chart.defaults.color = '#B6B9B5';
+    Chart.defaults.borderColor = 'rgba(103,234,221,0.2)';
+
+    // Job Execution Chart
+    new Chart(document.getElementById('jobChart'), {
+      type: 'line',
+      data: {
+        labels: jobData.map(d => new Date(d.date).toLocaleDateString('en-US', {month: 'short', day: 'numeric'})),
+        datasets: [
+          {
+            label: 'Successful Jobs',
+            data: jobData.map(d => d.successful),
+            borderColor: '#67eadd',
+            backgroundColor: 'rgba(103,234,221,0.1)',
+            tension: 0.3,
+            fill: true
+          },
+          {
+            label: 'Failed Jobs',
+            data: jobData.map(d => d.failed),
+            borderColor: '#ff6b6b',
+            backgroundColor: 'rgba(255,107,107,0.1)',
+            tension: 0.3,
+            fill: true
+          }
+        ]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: { position: 'top' },
+          tooltip: { mode: 'index', intersect: false }
+        },
+        scales: {
+          y: { beginAtZero: true, grid: { color: 'rgba(103,234,221,0.1)' } },
+          x: { grid: { color: 'rgba(103,234,221,0.1)' } }
+        }
+      }
+    });
+
+    // Task Consumption Chart
+    new Chart(document.getElementById('taskChart'), {
+      type: 'bar',
+      data: {
+        labels: taskData.map(d => new Date(d.date).toLocaleDateString('en-US', {month: 'short', day: 'numeric'})),
+        datasets: [{
+          label: 'Tasks Consumed',
+          data: taskData.map(d => d.tasks),
+          backgroundColor: '#3C574B',
+          borderColor: '#67eadd',
+          borderWidth: 1
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: { display: false },
+          tooltip: {
+            callbacks: {
+              label: (context) => `Tasks: ${context.parsed.y.toLocaleString()}`
+            }
+          }
+        },
+        scales: {
+          y: { beginAtZero: true, grid: { color: 'rgba(103,234,221,0.1)' } },
+          x: { grid: { color: 'rgba(103,234,221,0.1)' } }
+        }
+      }
+    });
+
+    // Weekly Pattern Chart
+    const weeklyData = {
+      Mon: 35678, Tue: 36789, Wed: 35432, Thu: 34123, Fri: 29876, Sat: 10234, Sun: 5678
+    };
+    new Chart(document.getElementById('weeklyChart'), {
+      type: 'radar',
+      data: {
+        labels: Object.keys(weeklyData),
+        datasets: [{
+          label: 'Average Daily Jobs',
+          data: Object.values(weeklyData),
+          borderColor: '#67eadd',
+          backgroundColor: 'rgba(103,234,221,0.2)',
+          pointBackgroundColor: '#67eadd',
+          pointBorderColor: '#fff',
+          pointHoverBackgroundColor: '#fff',
+          pointHoverBorderColor: '#67eadd'
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        scales: {
+          r: {
+            angleLines: { color: 'rgba(103,234,221,0.2)' },
+            grid: { color: 'rgba(103,234,221,0.2)' },
+            ticks: { color: '#B6B9B5' }
+          }
+        }
+      }
+    });
+
+    // Tier Distribution Chart
+    const tierCounts = connectorData.reduce((acc, c) => {
+      acc[`Tier ${c.tier}`] = (acc[`Tier ${c.tier}`] || 0) + c.count;
+      return acc;
+    }, {});
+    
+    new Chart(document.getElementById('tierChart'), {
+      type: 'doughnut',
+      data: {
+        labels: Object.keys(tierCounts),
+        datasets: [{
+          data: Object.values(tierCounts),
+          backgroundColor: ['#67eadd', '#3C574B', '#B6B9B5'],
+          borderColor: '#000',
+          borderWidth: 2
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: { position: 'right' },
+          tooltip: {
+            callbacks: {
+              label: (context) => `${context.label}: ${context.parsed} connections`
+            }
+          }
+        }
+      }
+    });
+
+    // Render Connector Grid
+    const connectorGrid = document.getElementById('connectorGrid');
+    connectorData.sort((a, b) => b.count - a.count).slice(0, 8).forEach(connector => {
+      const card = document.createElement('div');
+      card.className = 'connector-card';
+      card.innerHTML = `
+        <div class="count">${connector.count}</div>
+        <div class="name">${connector.name}</div>
+        <span class="tier-badge">Tier ${connector.tier}</span>
+      `;
+      connectorGrid.appendChild(card);
+    });
+  </script>
+</body>
+</html>

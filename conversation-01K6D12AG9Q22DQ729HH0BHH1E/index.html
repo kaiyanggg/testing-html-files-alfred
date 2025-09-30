@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Atlassian Recipe Capability Dashboard</title>
+<style>
+  :root { --bg:#000; --text:#FCFDFD; --teal:#67eadd; --card:#111; --radius:12px; --dark-green:#3C574B; --gray:#B6B9B5; }
+  * { box-sizing: border-box; }
+  html,body { margin:0; background:var(--bg); color:var(--text); font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Ubuntu,sans-serif; }
+  .wrap { width:100%; padding:20px; }
+  h1,h2 { margin:0 0 12px; color:var(--teal); }
+  .sub { opacity:.9; margin-bottom:24px; color:var(--gray); }
+
+  .grid { display:grid; gap:16px; }
+  .kpis { grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); }
+  
+  .card { background:var(--card); border:1px solid rgba(103,234,221,.3); border-radius:var(--radius); padding:20px; }
+  .kpi .num { font-size:2.5rem; font-weight:800; color:var(--teal); line-height:1; }
+  .kpi .lab { opacity:.85; font-size:.95rem; margin-top:8px; }
+  .kpi .percent { font-size:0.9rem; color:var(--gray); margin-top:4px; }
+
+  .chart-container { position:relative; height:400px; width:100%; }
+  .insights { margin-top:20px; padding:15px; background:rgba(103,234,221,.05); border-radius:8px; }
+  .insights h3 { color:var(--teal); font-size:1.1rem; margin-bottom:10px; }
+  .insights ul { margin:0; padding-left:20px; line-height:1.8; }
+  .insights li { color:var(--gray); }
+  
+  .section { margin-top:32px; }
+  
+  @media (max-width:600px) { 
+    .chart-container { height:300px; }
+    .kpis { grid-template-columns: repeat(2, 1fr); }
+  }
+</style>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <h1>Atlassian Recipe Capabilities</h1>
+      <div class="sub">Distribution of automation recipes across different capability types</div>
+    </header>
+
+    <section class="section">
+      <h2>Key Metrics</h2>
+      <div class="grid kpis">
+        <div class="card kpi">
+          <div class="num">3,108</div>
+          <div class="lab">Total Recipes</div>
+          <div class="percent">Across all capabilities</div>
+        </div>
+        <div class="card kpi">
+          <div class="num">2,537</div>
+          <div class="lab">iPaaS Recipes</div>
+          <div class="percent">81.6% of total</div>
+        </div>
+        <div class="card kpi">
+          <div class="num">337</div>
+          <div class="lab">API Recipes</div>
+          <div class="percent">10.8% of total</div>
+        </div>
+        <div class="card kpi">
+          <div class="num">135</div>
+          <div class="lab">ETL/ELT Recipes</div>
+          <div class="percent">4.3% of total</div>
+        </div>
+        <div class="card kpi">
+          <div class="num">99</div>
+          <div class="lab">Bot Recipes</div>
+          <div class="percent">3.2% of total</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>Capability Distribution</h2>
+      <div class="card">
+        <div class="chart-container">
+          <canvas id="capabilityChart"></canvas>
+        </div>
+      </div>
+      <div class="insights">
+        <h3>Key Insights</h3>
+        <ul>
+          <li><strong>Strong iPaaS Foundation:</strong> 81.6% of recipes are iPaaS, indicating broad integration coverage and mature foundational automation</li>
+          <li><strong>Custom Integration Presence:</strong> 337 API recipes (10.8%) show active custom integration development for advanced use cases</li>
+          <li><strong>Data Pipeline Activity:</strong> 135 ETL/ELT recipes suggest established data transformation and reporting workflows</li>
+          <li><strong>Emerging Bot Automation:</strong> 99 Bot recipes indicate early-stage user-driven automation with room for expansion</li>
+          <li><strong>Platform Maturity:</strong> Diversified capability mix across all four types demonstrates platform readiness for scaling</li>
+        </ul>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>Capability Breakdown</h2>
+      <div class="card">
+        <div class="chart-container" style="height:300px;">
+          <canvas id="barChart"></canvas>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <script>
+    const data = {
+      iPaaS: 2537,
+      API: 337,
+      'ETL/ELT': 135,
+      Bot: 99
+    };
+    
+    const total = Object.values(data).reduce((a, b) => a + b, 0);
+    
+    // Donut Chart
+    const ctx1 = document.getElementById('capabilityChart').getContext('2d');
+    new Chart(ctx1, {
+      type: 'doughnut',
+      data: {
+        labels: Object.keys(data),
+        datasets: [{
+          data: Object.values(data),
+          backgroundColor: ['#67eadd', '#3C574B', '#B6B9B5', '#FCFDFD'],
+          borderColor: '#000',
+          borderWidth: 2
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: {
+            position: 'right',
+            labels: {
+              color: '#FCFDFD',
+              font: { size: 14 },
+              padding: 20,
+              generateLabels: (chart) => {
+                const dataset = chart.data.datasets[0];
+                return chart.data.labels.map((label, i) => ({
+                  text: `${label}: ${dataset.data[i].toLocaleString()} (${(dataset.data[i]/total*100).toFixed(1)}%)`,
+                  fillStyle: dataset.backgroundColor[i],
+                  strokeStyle: dataset.borderColor,
+                  lineWidth: dataset.borderWidth,
+                  hidden: false,
+                  index: i
+                }));
+              }
+            }
+          },
+          tooltip: {
+            callbacks: {
+              label: (context) => {
+                const value = context.parsed;
+                const percentage = (value / total * 100).toFixed(1);
+                return `${context.label}: ${value.toLocaleString()} recipes (${percentage}%)`;
+              }
+            }
+          }
+        }
+      }
+    });
+    
+    // Horizontal Bar Chart
+    const ctx2 = document.getElementById('barChart').getContext('2d');
+    new Chart(ctx2, {
+      type: 'bar',
+      data: {
+        labels: Object.keys(data),
+        datasets: [{
+          label: 'Number of Recipes',
+          data: Object.values(data),
+          backgroundColor: '#67eadd',
+          borderColor: '#67eadd',
+          borderWidth: 1
+        }]
+      },
+      options: {
+        indexAxis: 'y',
+        responsive: true,
+        maintainAspectRatio: false,
+        scales: {
+          x: {
+            beginAtZero: true,
+            grid: { color: 'rgba(255,255,255,0.1)' },
+            ticks: { color: '#FCFDFD' }
+          },
+          y: {
+            grid: { display: false },
+            ticks: { color: '#FCFDFD', font: { size: 14 } }
+          }
+        },
+        plugins: {
+          legend: { display: false },
+          tooltip: {
+            callbacks: {
+              label: (context) => {
+                const value = context.parsed.x;
+                const percentage = (value / total * 100).toFixed(1);
+                return `${value.toLocaleString()} recipes (${percentage}% of total)`;
+              }
+            }
+          }
+        }
+      }
+    });
+  </script>
+</body>
+</html>

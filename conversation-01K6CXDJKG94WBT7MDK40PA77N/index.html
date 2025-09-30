@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Atlassian Usage Summary Dashboard</title>
+<style>
+  :root { 
+    --bg:#000; 
+    --text:#FCFDFD; 
+    --teal:#67eadd; 
+    --dark-green:#3C574B;
+    --gray:#B6B9B5;
+    --card:#0a0a0a; 
+    --radius:12px; 
+  }
+  * { box-sizing: border-box; }
+  html,body { margin:0; background:var(--bg); color:var(--text); font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Ubuntu,sans-serif; }
+  .wrap { width:100%; max-width:1400px; margin:0 auto; padding:20px; }
+  h1,h2,h3 { margin:0 0 12px; color:var(--teal); }
+  .sub { opacity:.9; margin-bottom:24px; color:var(--gray); }
+
+  .grid { display:grid; gap:16px; }
+  .kpis { grid-template-columns: repeat(5, minmax(0, 1fr)); }
+  .charts { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  @media (max-width:900px){ 
+    .kpis{grid-template-columns:repeat(2,1fr)} 
+    .charts{grid-template-columns:1fr} 
+  }
+
+  .card { 
+    background:var(--card); 
+    border:1px solid rgba(103,234,221,.3); 
+    border-radius:var(--radius); 
+    padding:20px; 
+    transition: all 0.3s ease;
+  }
+  .card:hover { border-color:var(--teal); }
+  
+  .kpi .num { font-size:2.5rem; font-weight:800; color:var(--teal); line-height:1; }
+  .kpi .lab { opacity:.85; font-size:.95rem; margin-top:8px; }
+  .kpi .delta { font-size:0.9rem; color:var(--dark-green); margin-top:4px; }
+  
+  .chart-container { position:relative; height:300px; }
+  .section { margin-top:32px; }
+  
+  .tag { 
+    display:inline-block; 
+    font-size:.75rem; 
+    font-weight:700; 
+    color:#003b36; 
+    background:var(--teal); 
+    padding:4px 10px; 
+    border-radius:999px; 
+    margin-bottom:12px; 
+  }
+  
+  .insight-list { 
+    list-style:none; 
+    padding:0; 
+    margin:16px 0; 
+  }
+  .insight-list li { 
+    padding:8px 0; 
+    border-left:3px solid var(--teal); 
+    padding-left:16px; 
+    margin-bottom:8px;
+    color:var(--gray);
+  }
+  
+  .status-good { color:#4ade80; }
+  .status-warn { color:#fbbf24; }
+  .status-bad { color:#f87171; }
+  
+  canvas { max-height:280px; }
+</style>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <h1>Atlassian Usage Summary</h1>
+      <div class="sub">Platform adoption and performance metrics over the last 3 months</div>
+    </header>
+
+    <section class="section">
+      <h2>Executive Summary</h2>
+      <div class="grid kpis">
+        <div class="card kpi">
+          <div class="num">6,593</div>
+          <div class="lab">Total Recipes</div>
+          <div class="delta">↑ 7.4% growth</div>
+        </div>
+        <div class="card kpi">
+          <div class="num">122</div>
+          <div class="lab">Active Builders</div>
+          <div class="delta">↑ 8.9% growth</div>
+        </div>
+        <div class="card kpi">
+          <div class="num">4/6</div>
+          <div class="lab">Capabilities Used</div>
+          <div class="delta">AI & WFA unused</div>
+        </div>
+        <div class="card kpi">
+          <div class="num">105M</div>
+          <div class="lab">Avg Monthly Tasks</div>
+          <div class="delta">Peak: 210M</div>
+        </div>
+        <div class="card kpi">
+          <div class="num">0.57</div>
+          <div class="lab">Automation Index</div>
+          <div class="delta">Stable range</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>Usage Trends & Performance</h2>
+      <div class="grid charts">
+        <div class="card">
+          <h3>User Growth Trajectory</h3>
+          <div class="chart-container">
+            <canvas id="userChart"></canvas>
+          </div>
+          <ul class="insight-list">
+            <li>Active users increased 34.9% (43→58)</li>
+            <li>Power builders stable at 16-21 range</li>
+          </ul>
+        </div>
+
+        <div class="card">
+          <h3>Job Execution Performance</h3>
+          <div class="chart-container">
+            <canvas id="jobChart"></canvas>
+          </div>
+          <ul class="insight-list">
+            <li>Daily job volume: 400K-600K consistent</li>
+            <li>Failed jobs: 30K-45K typical range</li>
+          </ul>
+        </div>
+
+        <div class="card">
+          <h3>Capability Adoption</h3>
+          <div class="chart-container">
+            <canvas id="capChart"></canvas>
+          </div>
+          <ul class="insight-list">
+            <li>Strong usage: API, ETL/ELT, iPaaS, Workbot</li>
+            <li>Opportunity: AI and WFA capabilities unused</li>
+          </ul>
+        </div>
+
+        <div class="card">
+          <h3>Automation Metrics</h3>
+          <div class="chart-container">
+            <canvas id="autoChart"></canvas>
+          </div>
+          <ul class="insight-list">
+            <li>Recipe count grew steadily by 457 (7.4%)</li>
+            <li>Automation index stable between 0.54-0.59</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>Key Insights & Recommendations</h2>
+      <div class="grid charts">
+        <div class="card">
+          <div class="tag">Expansion Opportunity</div>
+          <h3>🚀 Activate AI & Workflow Automation</h3>
+          <p style="color:var(--gray)">With 4 of 6 capabilities actively used and strong recipe growth, Atlassian is ready to expand into AI and WFA capabilities for enhanced automation.</p>
+        </div>
+
+        <div class="card">
+          <div class="tag">Performance Focus</div>
+          <h3>⚡ Optimize Job Reliability</h3>
+          <p style="color:var(--gray)">Daily failed jobs (30K-45K range) suggest opportunity for troubleshooting support. Consider targeted training on error handling and recipe optimization.</p>
+        </div>
+
+        <div class="card">
+          <div class="tag">Growth Signal</div>
+          <h3>📈 Strong User Adoption</h3>
+          <p style="color:var(--gray)">34.9% active user growth with stable power builder count indicates healthy platform adoption. Focus on converting users to builders for scalability.</p>
+        </div>
+
+        <div class="card">
+          <div class="tag">Capacity Available</div>
+          <h3>💪 Task Volume Headroom</h3>
+          <p style="color:var(--gray)">Current average of 105M monthly tasks vs 210M peak shows significant capacity for expansion. Platform can handle 2x current load.</p>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <script>
+    Chart.defaults.color = '#B6B9B5';
+    Chart.defaults.borderColor = 'rgba(103,234,221,0.2)';
+    const chartOptions = {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: {
+          display: true,
+          position: 'top',
+          labels: { color: '#B6B9B5' }
+        }
+      },
+      scales: {
+        y: {
+          grid: { color: 'rgba(103,234,221,0.1)' },
+          ticks: { color: '#B6B9B5' }
+        },
+        x: {
+          grid: { color: 'rgba(103,234,221,0.1)' },
+          ticks: { color: '#B6B9B5' }
+        }
+      }
+    };
+
+    // User Growth Chart
+    new Chart(document.getElementById('userChart'), {
+      type: 'line',
+      data: {
+        labels: ['Month 1', 'Month 2', 'Month 3'],
+        datasets: [
+          {
+            label: 'Active Users',
+            data: [43, 50, 58],
+            borderColor: '#67eadd',
+            backgroundColor: 'rgba(103,234,221,0.1)',
+            tension: 0.3
+          },
+          {
+            label: 'Builders',
+            data: [112, 117, 122],
+            borderColor: '#3C574B',
+            backgroundColor: 'rgba(60,87,75,0.1)',
+            tension: 0.3
+          },
+          {
+            label: 'Power Builders',
+            data: [16, 19, 21],
+            borderColor: '#B6B9B5',
+            backgroundColor: 'rgba(182,185,181,0.1)',
+            tension: 0.3
+          }
+        ]
+      },
+      options: chartOptions
+    });
+
+    // Job Performance Chart
+    new Chart(document.getElementById('jobChart'), {
+      type: 'bar',
+      data: {
+        labels: ['Typical Day', 'Peak Day'],
+        datasets: [
+          {
+            label: 'Successful Jobs',
+            data: [455000, 755000],
+            backgroundColor: '#67eadd'
+          },
+          {
+            label: 'Failed Jobs',
+            data: [45000, 95000],
+            backgroundColor: '#f87171'
+          }
+        ]
+      },
+      options: {
+        ...chartOptions,
+        scales: {
+          ...chartOptions.scales,
+          y: {
+            ...chartOptions.scales.y,
+            ticks: {
+              ...chartOptions.scales.y.ticks,
+              callback: value => value/1000 + 'K'
+            }
+          }
+        }
+      }
+    });
+
+    // Capability Chart
+    new Chart(document.getElementById('capChart'), {
+      type: 'doughnut',
+      data: {
+        labels: ['API', 'ETL/ELT', 'iPaaS', 'Workbot', 'AI (Unused)', 'WFA (Unused)'],
+        datasets: [{
+          data: [25, 25, 25, 25, 0, 0],
+          backgroundColor: ['#67eadd', '#3C574B', '#B6B9B5', '#4ade80', '#1a1a1a', '#1a1a1a'],
+          borderWidth: 2,
+          borderColor: '#000'
+        }]
+      },
+      options: {
+        ...chartOptions,
+        scales: undefined
+      }
+    });
+
+    // Automation Metrics Chart
+    new Chart(document.getElementById('autoChart'), {
+      type: 'line',
+      data: {
+        labels: ['Month 1', 'Month 2', 'Month 3'],
+        datasets: [
+          {
+            label: 'Recipe Count',
+            data: [6136, 6350, 6593],
+            borderColor: '#67eadd',
+            backgroundColor: 'rgba(103,234,221,0.1)',
+            tension: 0.3,
+            yAxisID: 'y'
+          },
+          {
+            label: 'Automation Index',
+            data: [0.54, 0.57, 0.59],
+            borderColor: '#3C574B',
+            backgroundColor: 'rgba(60,87,75,0.1)',
+            tension: 0.3,
+            yAxisID: 'y1'
+          }
+        ]
+      },
+      options: {
+        ...chartOptions,
+        scales: {
+          x: chartOptions.scales.x,
+          y: {
+            type: 'linear',
+            position: 'left',
+            grid: { color: 'rgba(103,234,221,0.1)' },
+            ticks: { color: '#B6B9B5' }
+          },
+          y1: {
+            type: 'linear',
+            position: 'right',
+            grid: { drawOnChartArea: false },
+            ticks: { color: '#B6B9B5' },
+            min: 0.5,
+            max: 0.65
+          }
+        }
+      }
+    });
+  </script>
+</body>
+</html>

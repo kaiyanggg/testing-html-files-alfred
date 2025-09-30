@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Atlassian Recipe Capability Distribution</title>
+<style>
+  :root { --bg:#000; --text:#FCFDFD; --teal:#67eadd; --dark-green:#3C574B; --gray:#B6B9B5; --card:#111; --radius:12px; }
+  * { box-sizing: border-box; }
+  html,body { margin:0; background:var(--bg); color:var(--text); font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Ubuntu,sans-serif; }
+  .wrap { width:100%; max-width:1200px; margin:0 auto; padding:20px; }
+  h1,h2 { margin:0 0 12px; color:var(--teal); }
+  .sub { opacity:.9; margin-bottom:24px; color:var(--gray); }
+
+  .grid { display:grid; gap:16px; }
+  .kpis { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+  .charts { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  @media (max-width:800px){ .kpis{grid-template-columns:repeat(2,1fr)} .charts{grid-template-columns:1fr} }
+
+  .card { background:var(--card); border:1px solid rgba(103,234,221,.3); border-radius:var(--radius); padding:20px; }
+  .kpi .num { font-size:2.2rem; font-weight:800; color:var(--teal); line-height:1; }
+  .kpi .lab { opacity:.85; font-size:.95rem; margin-top:8px; }
+  .kpi .pct { font-size:0.9rem; color:var(--gray); margin-top:4px; }
+
+  .section { margin-top:32px; }
+  
+  .chart-container { position:relative; height:350px; }
+  .insight { margin-top:16px; padding-top:16px; border-top:1px solid rgba(103,234,221,.2); }
+  .insight h4 { color:var(--teal); margin:0 0 8px; font-size:1.1rem; }
+  .insight ul { margin:0; padding-left:20px; color:var(--gray); }
+  .insight li { margin:4px 0; }
+
+  .capability-bar { display:flex; align-items:center; margin:12px 0; }
+  .capability-label { width:100px; font-size:0.9rem; color:var(--gray); }
+  .capability-meter { flex:1; background:rgba(103,234,221,.1); border-radius:4px; height:32px; position:relative; overflow:hidden; margin:0 12px; }
+  .capability-fill { background:linear-gradient(90deg, var(--teal), var(--dark-green)); height:100%; transition:width 0.5s ease; }
+  .capability-value { font-weight:700; color:var(--teal); min-width:50px; text-align:right; }
+</style>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <h1>Atlassian Recipe Capability Dashboard</h1>
+      <div class="sub">Distribution of eligible recipes across automation capabilities</div>
+    </header>
+
+    <section class="section">
+      <h2>Executive Summary</h2>
+      <div class="grid kpis">
+        <div class="card kpi">
+          <div class="num">3,108</div>
+          <div class="lab">Total Eligible Recipes</div>
+          <div class="pct">Across all capabilities</div>
+        </div>
+        <div class="card kpi">
+          <div class="num">2,537</div>
+          <div class="lab">iPaaS Recipes</div>
+          <div class="pct">81.6% of total</div>
+        </div>
+        <div class="card kpi">
+          <div class="num">4</div>
+          <div class="lab">Active Capabilities</div>
+          <div class="pct">iPaaS, API, ETL/ELT, Bot</div>
+        </div>
+        <div class="card kpi">
+          <div class="num">99</div>
+          <div class="lab">Bot Recipes</div>
+          <div class="pct">3.2% - Lowest usage</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="grid charts">
+        <div class="card">
+          <h2>Recipe Distribution by Capability</h2>
+          <div class="chart-container">
+            <canvas id="pieChart"></canvas>
+          </div>
+        </div>
+        
+        <div class="card">
+          <h2>Capability Breakdown</h2>
+          <div style="margin-top:24px;">
+            <div class="capability-bar">
+              <div class="capability-label">iPaaS</div>
+              <div class="capability-meter">
+                <div class="capability-fill" style="width:100%"></div>
+              </div>
+              <div class="capability-value">2,537</div>
+            </div>
+            <div class="capability-bar">
+              <div class="capability-label">API</div>
+              <div class="capability-meter">
+                <div class="capability-fill" style="width:13.3%"></div>
+              </div>
+              <div class="capability-value">337</div>
+            </div>
+            <div class="capability-bar">
+              <div class="capability-label">ETL/ELT</div>
+              <div class="capability-meter">
+                <div class="capability-fill" style="width:5.3%"></div>
+              </div>
+              <div class="capability-value">135</div>
+            </div>
+            <div class="capability-bar">
+              <div class="capability-label">Bot</div>
+              <div class="capability-meter">
+                <div class="capability-fill" style="width:3.9%"></div>
+              </div>
+              <div class="capability-value">99</div>
+            </div>
+          </div>
+          
+          <div class="insight">
+            <h4>Key Insights</h4>
+            <ul>
+              <li>Heavy concentration in iPaaS (81.6%) indicates strong integration focus</li>
+              <li>API recipes (10.8%) suggest moderate system connectivity automation</li>
+              <li>Low Bot usage (3.2%) represents opportunity for conversational automation expansion</li>
+              <li>ETL/ELT at 4.3% shows data movement automation is emerging</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="card">
+        <h2>Strategic Recommendations</h2>
+        <div class="insight">
+          <ul>
+            <li><strong>Leverage iPaaS Strength:</strong> With 2,537 iPaaS recipes, focus on optimizing and scaling existing integration patterns</li>
+            <li><strong>Expand Bot Capabilities:</strong> Only 99 Bot recipes indicate untapped potential in Workbot and conversational automation - target for enablement</li>
+            <li><strong>Grow API & ETL/ELT:</strong> Combined 472 recipes (15.2%) in data movement - opportunity to enhance data pipeline automation</li>
+            <li><strong>Resource Allocation:</strong> Consider shifting training resources to underrepresented capabilities while maintaining iPaaS excellence</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <script>
+    const data = [
+      { capability: 'iPaaS', count: 2537 },
+      { capability: 'API', count: 337 },
+      { capability: 'ETL/ELT', count: 135 },
+      { capability: 'Bot', count: 99 }
+    ];
+
+    const ctx = document.getElementById('pieChart').getContext('2d');
+    new Chart(ctx, {
+      type: 'doughnut',
+      data: {
+        labels: data.map(d => d.capability),
+        datasets: [{
+          data: data.map(d => d.count),
+          backgroundColor: [
+            '#67eadd',
+            '#3C574B',
+            '#B6B9B5',
+            'rgba(103,234,221,0.3)'
+          ],
+          borderColor: '#67eadd',
+          borderWidth: 1
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: {
+            position: 'bottom',
+            labels: {
+              color: '#FCFDFD',
+              padding: 12,
+              font: { size: 12 }
+            }
+          },
+          tooltip: {
+            callbacks: {
+              label: function(context) {
+                const total = context.dataset.data.reduce((a,b) => a+b, 0);
+                const pct = ((context.parsed / total) * 100).toFixed(1);
+                return `${context.label}: ${context.parsed} (${pct}%)`;
+              }
+            }
+          }
+        }
+      }
+    });
+  </script>
+</body>
+</html>

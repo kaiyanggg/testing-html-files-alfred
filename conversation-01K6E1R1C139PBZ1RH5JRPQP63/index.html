@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Bazaarvoice Usage Breakdown</title>
+<style>
+  :root { 
+    --bg:#000; 
+    --text:#FCFDFD; 
+    --teal:#67eadd; 
+    --dark-green:#3C574B;
+    --gray:#B6B9B5;
+    --card:#111; 
+    --radius:12px; 
+  }
+  * { box-sizing: border-box; }
+  html,body { margin:0; background:var(--bg); color:var(--text); font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Ubuntu,sans-serif; }
+  .wrap { width:100%; max-width:1400px; margin:0 auto; padding:20px; }
+  h1,h2 { margin:0 0 12px; color:var(--teal); }
+  .sub { color:var(--gray); margin-bottom:24px; }
+
+  .grid { display:grid; gap:16px; }
+  .kpis { grid-template-columns: repeat(5, minmax(0, 1fr)); }
+  .charts { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  @media (max-width:900px){ 
+    .kpis{grid-template-columns:repeat(2,1fr)} 
+    .charts{grid-template-columns:1fr} 
+  }
+
+  .card { 
+    background:var(--card); 
+    border:1px solid rgba(103,234,221,.3); 
+    border-radius:var(--radius); 
+    padding:16px; 
+  }
+  .kpi .num { font-size:2.5rem; font-weight:800; color:var(--teal); line-height:1; }
+  .kpi .lab { color:var(--gray); font-size:.9rem; margin-top:4px; }
+  .kpi .delta { font-size:.85rem; color:#67eadd; margin-top:4px; }
+
+  .section { margin-top:32px; }
+  
+  .chart-container { position:relative; height:300px; }
+  .chart-title { font-size:1.1rem; font-weight:600; margin-bottom:12px; color:var(--teal); }
+  
+  .insight { 
+    background:rgba(103,234,221,.1); 
+    border-left:3px solid var(--teal); 
+    padding:8px 12px; 
+    margin-top:12px; 
+    font-size:.9rem;
+    color:var(--text);
+  }
+  
+  .tag { 
+    display:inline-block; 
+    font-size:.75rem; 
+    font-weight:700; 
+    color:#000; 
+    background:var(--teal); 
+    padding:2px 8px; 
+    border-radius:999px; 
+  }
+  
+  canvas { max-height:280px; }
+</style>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <h1>Bazaarvoice Usage Breakdown</h1>
+      <div class="sub">Comprehensive analysis of automation platform utilization over the last 3 months</div>
+    </header>
+
+    <section class="section">
+      <h2>Executive Summary</h2>
+      <div class="grid kpis">
+        <div class="card kpi">
+          <div class="num">502</div>
+          <div class="lab">Total Capabilities</div>
+          <div class="delta">↑ 13.8% growth</div>
+        </div>
+        <div class="card kpi">
+          <div class="num">180</div>
+          <div class="lab">iPaaS Recipes</div>
+          <div class="delta">Peak in August</div>
+        </div>
+        <div class="card kpi">
+          <div class="num">56K</div>
+          <div class="lab">Peak Daily Jobs</div>
+          <div class="delta">High variability</div>
+        </div>
+        <div class="card kpi">
+          <div class="num">19</div>
+          <div class="lab">Salesforce Integrations</div>
+          <div class="delta">Top connector</div>
+        </div>
+        <div class="card kpi">
+          <div class="num">12</div>
+          <div class="lab">Top Folder Recipes</div>
+          <div class="delta">Skills folder leads</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>Platform Analytics</h2>
+      <div class="grid charts">
+        <div class="card">
+          <div class="chart-title">Capability Distribution Trend</div>
+          <div class="chart-container">
+            <canvas id="capabilityChart"></canvas>
+          </div>
+          <div class="insight">
+            <span class="tag">Key Finding</span> iPaaS dominates with 36% of all capabilities, growing 13.9% from June to August
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="chart-title">Top Recipe Folders/Projects</div>
+          <div class="chart-container">
+            <canvas id="foldersChart"></canvas>
+          </div>
+          <div class="insight">
+            <span class="tag">Organization</span> Certinia-related projects account for 38% of top folders, indicating strong financial system focus
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="chart-title">Job Execution Volume Pattern</div>
+          <div class="chart-container">
+            <canvas id="jobsChart"></canvas>
+          </div>
+          <div class="insight">
+            <span class="tag">Utilization</span> Job volumes show 18x variance (3K-56K daily), suggesting batch processing patterns
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="chart-title">Application/Connector Usage</div>
+          <div class="chart-container">
+            <canvas id="connectorsChart"></canvas>
+          </div>
+          <div class="insight">
+            <span class="tag">Integration</span> Salesforce ecosystem (32 total instances) drives 30% of connector usage
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>Strategic Insights</h2>
+      <div class="grid charts">
+        <div class="card">
+          <h3 style="color:var(--teal)">🎯 Maturity Indicators</h3>
+          <ul style="color:var(--text); line-height:1.8">
+            <li><strong>iPaaS Dominance:</strong> 180 recipes (36%) shows strong enterprise integration maturity</li>
+            <li><strong>AI Adoption Growing:</strong> 80% increase in AI capabilities (5→9) indicates exploration phase</li>
+            <li><strong>Cross-System Focus:</strong> NetSuite-Certinia-Salesforce triangle powers core operations</li>
+          </ul>
+        </div>
+        
+        <div class="card">
+          <h3 style="color:var(--teal)">⚠️ Opportunities & Risks</h3>
+          <ul style="color:var(--text); line-height:1.8">
+            <li><strong>Job Volume Volatility:</strong> 18x variance suggests potential for optimization</li>
+            <li><strong>API Underutilization:</strong> Only 1 API recipe vs 180 iPaaS - potential capability gap</li>
+            <li><strong>Folder Concentration:</strong> Top 5 folders hold 50+ recipes - consider governance</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <script>
+    Chart.defaults.color = '#B6B9B5';
+    Chart.defaults.borderColor = 'rgba(182,185,181,0.2)';
+    
+    // Capability Distribution
+    new Chart(document.getElementById('capabilityChart'), {
+      type: 'line',
+      data: {
+        labels: ['June', 'July', 'August'],
+        datasets: [
+          {
+            label: 'iPaaS',
+            data: [158, 164, 180],
+            borderColor: '#67eadd',
+            backgroundColor: 'rgba(103,234,221,0.1)',
+            tension: 0.3
+          },
+          {
+            label: 'AI',
+            data: [5, 6, 9],
+            borderColor: '#3C574B',
+            backgroundColor: 'rgba(60,87,75,0.1)',
+            tension: 0.3
+          },
+          {
+            label: 'Bot',
+            data: [8, 5, 8],
+            borderColor: '#B6B9B5',
+            backgroundColor: 'rgba(182,185,181,0.1)',
+            tension: 0.3
+          },
+          {
+            label: 'ETL/ELT',
+            data: [3, 3, 4],
+            borderColor: '#FCFDFD',
+            backgroundColor: 'rgba(252,253,253,0.1)',
+            tension: 0.3
+          }
+        ]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: { position: 'top' }
+        },
+        scales: {
+          y: { beginAtZero: true }
+        }
+      }
+    });
+
+    // Top Folders
+    new Chart(document.getElementById('foldersChart'), {
+      type: 'bar',
+      data: {
+        labels: ['Skills', 'CAS Campaign', 'Certinia %', 'Genie', 'NS Project BESP'],
+        datasets: [{
+          label: 'Recipe Count',
+          data: [12, 11, 8, 7, 7],
+          backgroundColor: '#67eadd',
+          borderColor: '#67eadd',
+          borderWidth: 1
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        indexAxis: 'y',
+        plugins: {
+          legend: { display: false }
+        }
+      }
+    });
+
+    // Job Execution Pattern
+    new Chart(document.getElementById('jobsChart'), {
+      type: 'bar',
+      data: {
+        labels: ['3K-10K', '10K-20K', '20K-30K', '30K-40K', '40K+'],
+        datasets: [{
+          label: 'Days in Range',
+          data: [8, 12, 7, 5, 10],
+          backgroundColor: ['#3C574B', '#67eadd', '#B6B9B5', '#FCFDFD', '#67eadd']
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: { display: false },
+          tooltip: {
+            callbacks: {
+              label: function(context) {
+                return context.parsed.y + ' days with ' + context.label + ' jobs';
+              }
+            }
+          }
+        }
+      }
+    });
+
+    // Connectors
+    new Chart(document.getElementById('connectorsChart'), {
+      type: 'doughnut',
+      data: {
+        labels: ['Salesforce', 'SalesforceREST', 'Slack', 'SFTP', 'Others'],
+        datasets: [{
+          data: [19, 13, 12, 9, 31],
+          backgroundColor: ['#67eadd', '#3C574B', '#B6B9B5', '#FCFDFD', 'rgba(103,234,221,0.3)']
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: { position: 'right' }
+        }
+      }
+    });
+  </script>
+</body>
+</html>

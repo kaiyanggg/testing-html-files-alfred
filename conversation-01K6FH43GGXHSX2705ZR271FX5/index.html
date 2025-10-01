@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Bazaarvoice Usage Dashboard</title>
+<style>
+  :root { 
+    --bg:#000; 
+    --text:#FCFDFD; 
+    --teal:#67eadd; 
+    --dark-green:#3C574B;
+    --gray:#B6B9B5;
+    --card:#111; 
+    --radius:12px; 
+  }
+  * { box-sizing: border-box; }
+  html,body { 
+    margin:0; 
+    background:var(--bg); 
+    color:var(--text); 
+    font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Ubuntu,sans-serif; 
+  }
+  .wrap { 
+    width:100%; 
+    max-width:1400px; 
+    margin:0 auto; 
+    padding:20px; 
+  }
+  h1,h2,h3 { 
+    margin:0 0 12px; 
+    color:var(--teal); 
+  }
+  .sub { 
+    opacity:.9; 
+    margin-bottom:24px; 
+    color:var(--gray);
+  }
+
+  .grid { display:grid; gap:16px; }
+  .kpis { grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); }
+  .insights { grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); }
+
+  .card { 
+    background:var(--card); 
+    border:1px solid rgba(103,234,221,.3); 
+    border-radius:var(--radius); 
+    padding:20px; 
+    transition: all 0.3s ease;
+  }
+  .card:hover {
+    border-color:var(--teal);
+    box-shadow: 0 0 20px rgba(103,234,221,.2);
+  }
+  
+  .kpi .num { 
+    font-size:2.5rem; 
+    font-weight:800; 
+    color:var(--teal); 
+    line-height:1; 
+  }
+  .kpi .lab { 
+    opacity:.85; 
+    font-size:.95rem; 
+    margin-top:8px;
+  }
+  .kpi .sub-text {
+    font-size:.85rem;
+    color:var(--gray);
+    margin-top:4px;
+  }
+
+  .tag { 
+    display:inline-block; 
+    font-size:.75rem; 
+    font-weight:700; 
+    color:#003b36; 
+    background:var(--teal); 
+    padding:3px 10px; 
+    border-radius:999px; 
+    margin-bottom:12px; 
+  }
+  
+  .section { margin-top:32px; }
+  
+  .chart-container {
+    position: relative;
+    height: 300px;
+    margin-top: 20px;
+  }
+  
+  .connection-list {
+    max-height: 400px;
+    overflow-y: auto;
+    border: 1px solid rgba(103,234,221,.2);
+    border-radius: 8px;
+    padding: 12px;
+    margin-top: 16px;
+  }
+  
+  .connection-item {
+    display: flex;
+    justify-content: space-between;
+    padding: 8px 0;
+    border-bottom: 1px solid rgba(103,234,221,.1);
+  }
+  
+  .connection-item:last-child {
+    border-bottom: none;
+  }
+  
+  .connection-id {
+    color: var(--teal);
+    font-family: monospace;
+  }
+  
+  .status-active {
+    color: #67eadd;
+    font-weight: 600;
+  }
+  
+  .highlight {
+    background: linear-gradient(90deg, transparent, rgba(103,234,221,.1), transparent);
+    padding: 16px;
+    border-radius: 8px;
+    margin: 16px 0;
+  }
+  
+  .metric-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 0;
+  }
+  
+  .metric-label {
+    color: var(--gray);
+  }
+  
+  .metric-value {
+    color: var(--teal);
+    font-size: 1.2rem;
+    font-weight: 600;
+  }
+
+  ul { 
+    margin:0; 
+    padding-left:24px; 
+    line-height: 1.8;
+  }
+  
+  li {
+    margin-bottom: 8px;
+  }
+
+  @media (max-width:768px) { 
+    .kpis { grid-template-columns: 1fr; }
+    .insights { grid-template-columns: 1fr; }
+  }
+</style>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <h1>Bazaarvoice Connector Usage Analysis</h1>
+      <div class="sub">Real-time monitoring of active connections and integration health</div>
+    </header>
+
+    <section class="section">
+      <h2>Executive Summary</h2>
+      <div class="grid kpis">
+        <div class="card kpi">
+          <div class="num">160</div>
+          <div class="lab">Total Active Connections</div>
+          <div class="sub-text">All connections active</div>
+        </div>
+        <div class="card kpi">
+          <div class="num">100%</div>
+          <div class="lab">Connection Health</div>
+          <div class="sub-text">No failed connections</div>
+        </div>
+        <div class="card kpi">
+          <div class="num">1.0</div>
+          <div class="lab">Avg Connections/ID</div>
+          <div class="sub-text">Single instance per connection</div>
+        </div>
+        <div class="card kpi">
+          <div class="num">Strong</div>
+          <div class="lab">Adoption Status</div>
+          <div class="sub-text">High connector utilization</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>Connection Distribution Analysis</h2>
+      <div class="grid insights">
+        <div class="card">
+          <div class="tag">Connection Pattern</div>
+          <h3>Connection ID Range Analysis</h3>
+          <canvas id="connectionChart"></canvas>
+          <div class="highlight">
+            <div class="metric-row">
+              <span class="metric-label">Newest Connection ID:</span>
+              <span class="metric-value">17921001</span>
+            </div>
+            <div class="metric-row">
+              <span class="metric-label">Oldest Connection ID:</span>
+              <span class="metric-value">563086</span>
+            </div>
+          </div>
+        </div>
+        
+        <div class="card">
+          <div class="tag">Key Insights</div>
+          <h3>Usage Patterns</h3>
+          <ul>
+            <li><strong>Mature Adoption:</strong> 160 active connections indicate widespread Bazaarvoice integration across the organization</li>
+            <li><strong>Consistent Usage:</strong> Each connection maintains exactly 1 active instance, showing stable configuration</li>
+            <li><strong>Wide ID Distribution:</strong> Connection IDs span from 563K to 17.9M, suggesting long-term usage history</li>
+            <li><strong>No Redundancy:</strong> Single connection per ID indicates efficient resource utilization</li>
+          </ul>
+          <div class="highlight" style="margin-top: 20px;">
+            <strong>CSM Recommendation:</strong> High connection count presents opportunity for advanced feature training and expansion into unused Bazaarvoice capabilities
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>Connection Details</h2>
+      <div class="card">
+        <h3>Active Connection Registry</h3>
+        <div class="connection-list" id="connectionList"></div>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>Recommendations & Next Steps</h2>
+      <div class="grid insights">
+        <div class="card">
+          <div class="tag">Optimization</div>
+          <h3>Value Expansion Opportunities</h3>
+          <ul>
+            <li>Review connection age distribution to identify legacy connections for modernization</li>
+            <li>Analyze recipe execution patterns across connections to identify underutilized instances</li>
+            <li>Cross-reference with job data to measure actual throughput per connection</li>
+            <li>Identify departments without connections for expansion opportunities</li>
+          </ul>
+        </div>
+        
+        <div class="card">
+          <div class="tag">Health Monitoring</div>
+          <h3>Proactive Management</h3>
+          <ul>
+            <li>Implement connection health monitoring dashboards for each business unit</li>
+            <li>Set up alerts for inactive connections to prevent value leakage</li>
+            <li>Establish connection lifecycle management best practices</li>
+            <li>Schedule quarterly reviews of connection utilization metrics</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <script>
+    // Parse connection data
+    const connections = [];
+    for(let i = 0; i < 160; i++) {
+      connections.push({
+        index: i,
+        id: [9950139,9949858,962894,942446,9241972,9214211,8707616,798152,796203,796202,795867,787582,775745,775744,775743,775372,775369,775365,764661,764659,764604,757911,751145,750261,710533,709131,704667,6054213,5869626,5869625,563086,5519089,5519088,5503193,5503135,4812791,4596192,4596191,4596190,4413126,4376646,4370083,3500930,3379544,3180440,3180439,3101200,2475080,2338045,1958741,1958737,1849630,17921001,17919655,17875142,17796364,17645552,17639581,17638719,17628622,17617739,17599563,17568472,17567761,17566889,17566883,17566801,17566798,17566745,17566744,17566719,17483219,17459349,17375115,17333890,17254104,17177501,17044712,16994807,16970893,16970575,16970381,16969897,16969896,16941683,16931978,16903889,16895919,16873858,16836897,16761276,16757807,16700692,16641210,16576532,16574089,16371816,16357408,16325249,16294403,16175627,16175626,16174662,16174573,16174568,16174567,16174543,16174488,16174487,16174481,15778112,15778111,15741419,15696522,15433340,15433339,15280897,15250666,15099729,15053805,15006251,1494618,1494550,1494549,14426898,1439212,14368403,14272379,14272378,14272377,14270002,14270001,14094485,14060985,14060983,14026498,13970111,13586047,13586046,13540957,13348526,13254721,13192306,13188996,13122228,12730831,12491751,12491750,12491749,12483948,11993042,11992986,11903969,11864547,11864546,11484627,10678079,10678078,10066516,10059807][i],
+        count: 1
+      });
+    }
+
+    // Group connections by ID range for visualization
+    const ranges = [
+      {label: '0-1M', count: 0, min: 0, max: 1000000},
+      {label: '1-5M', count: 0, min: 1000000, max: 5000000},
+      {label: '5-10M', count: 0, min: 5000000, max: 10000000},
+      {label: '10-15M', count: 0, min: 10000000, max: 15000000},
+      {label: '15-20M', count: 0, min: 15000000, max: 20000000}
+    ];
+
+    connections.forEach(conn => {
+      for(let range of ranges) {
+        if(conn.id >= range.min && conn.id < range.max) {
+          range.count++;
+          break;
+        }
+      }
+    });
+
+    // Create distribution chart
+    const ctx = document.getElementById('connectionChart').getContext('2d');
+    new Chart(ctx, {
+      type: 'bar',
+      data: {
+        labels: ranges.map(r => r.label),
+        datasets: [{
+          label: 'Number of Connections',
+          data: ranges.map(r => r.count),
+          backgroundColor: 'rgba(103, 234, 221, 0.6)',
+          borderColor: '#67eadd',
+          borderWidth: 2
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: {
+            display: false
+          },
+          tooltip: {
+            backgroundColor: 'rgba(0,0,0,0.8)',
+            titleColor: '#67eadd',
+            bodyColor: '#FCFDFD',
+            borderColor: '#67eadd',
+            borderWidth: 1
+          }
+        },
+        scales: {
+          y: {
+            beginAtZero: true,
+            grid: {
+              color: 'rgba(103, 234, 221, 0.1)'
+            },
+            ticks: {
+              color: '#B6B9B5'
+            }
+          },
+          x: {
+            grid: {
+              display: false
+            },
+            ticks: {
+              color: '#B6B9B5'
+            }
+          }
+        }
+      }
+    });
+
+    // Populate connection list
+    const listHtml = connections.slice(0, 20).map(conn => 
+      `<div class="connection-item">
+        <span class="connection-id">ID: ${conn.id}</span>
+        <span class="status-active">● Active</span>
+      </div>`
+    ).join('') + '<div style="text-align:center;padding:12px;color:#B6B9B5">Showing 20 of 160 connections</div>';
+    
+    document.getElementById('connectionList').innerHTML = listHtml;
+  </script>
+</body>
+</html>

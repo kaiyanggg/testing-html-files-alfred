@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Bazaarvoice Workato Usage Dashboard</title>
+<style>
+  :root { --bg:#000; --text:#FCFDFD; --teal:#67eadd; --card:#111; --radius:12px; --gray:#B6B9B5; --darkgreen:#3C574B; }
+  * { box-sizing: border-box; }
+  html,body { margin:0; background:var(--bg); color:var(--text); font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Ubuntu,sans-serif; }
+  .wrap { width:100%; max-width:1400px; margin:0 auto; padding:20px; }
+  h1,h2,h3 { margin:0 0 12px; color:var(--teal); }
+  .sub { color:var(--gray); margin-bottom:24px; }
+
+  .grid { display:grid; gap:16px; }
+  .kpis { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+  .charts { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  @media (max-width:900px){ .kpis{grid-template-columns:repeat(2,1fr)} .charts{grid-template-columns:1fr} }
+
+  .card { background:var(--card); border:1px solid rgba(103,234,221,.3); border-radius:var(--radius); padding:20px; }
+  .kpi .num { font-size:2.2rem; font-weight:800; color:var(--teal); line-height:1; }
+  .kpi .lab { opacity:.85; font-size:.95rem; margin-top:8px; }
+  .kpi .sub-text { font-size:0.85rem; color:var(--gray); margin-top:4px; }
+
+  .section { margin-top:32px; }
+  .chart-container { position:relative; height:300px; }
+  
+  .tag { display:inline-block; font-size:.75rem; font-weight:700; color:#003b36; background:var(--teal); padding:3px 10px; border-radius:999px; margin-bottom:10px; }
+  .insight-list { list-style:none; padding:0; margin:12px 0; }
+  .insight-list li { padding:8px 0; border-bottom:1px solid rgba(103,234,221,.1); font-size:0.95rem; }
+  .insight-list li:last-child { border-bottom:none; }
+  .insight-list li::before { content:"→ "; color:var(--teal); font-weight:bold; }
+
+  .progress-bar { width:100%; height:24px; background:rgba(103,234,221,.1); border-radius:12px; overflow:hidden; margin-top:8px; }
+  .progress-fill { height:100%; background:linear-gradient(90deg, var(--teal), var(--darkgreen)); transition:width 0.3s; }
+  .progress-label { font-size:0.85rem; color:var(--gray); margin-top:4px; }
+
+  .alert { background:rgba(103,234,221,.1); border-left:4px solid var(--teal); padding:12px; margin-top:16px; border-radius:4px; }
+  .alert-title { font-weight:bold; color:var(--teal); margin-bottom:4px; }
+</style>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <h1>Bazaarvoice Workato Platform Usage</h1>
+      <div class="sub">Automation platform adoption analysis and growth opportunities</div>
+    </header>
+
+    <section class="section">
+      <h2>Executive Summary</h2>
+      <div class="grid kpis">
+        <div class="card kpi">
+          <div class="num">243</div>
+          <div class="lab">Active Recipes</div>
+          <div class="sub-text">Across 6 capabilities</div>
+        </div>
+        <div class="card kpi">
+          <div class="num">~2.4M</div>
+          <div class="lab">Jobs/Month</div>
+          <div class="sub-text">3-month average</div>
+        </div>
+        <div class="card kpi">
+          <div class="num">28%</div>
+          <div class="lab">Task Utilization</div>
+          <div class="sub-text">25.7M of 92M used</div>
+        </div>
+        <div class="card kpi">
+          <div class="num">5</div>
+          <div class="lab">Active Departments</div>
+          <div class="sub-text">Cross-functional adoption</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>Platform Adoption Analysis</h2>
+      <div class="grid charts">
+        <div class="card">
+          <h3>Recipe Distribution by Capability</h3>
+          <div class="chart-container">
+            <canvas id="capabilityChart"></canvas>
+          </div>
+          <ul class="insight-list">
+            <li>iPaaS dominates with 87% (212) of all recipes - strong integration focus</li>
+            <li>Low AI adoption (9 recipes, 3.7%) indicates significant growth opportunity</li>
+            <li>Minimal WFA usage (2 recipes) suggests workflow automation untapped</li>
+          </ul>
+        </div>
+        
+        <div class="card">
+          <h3>Department Engagement (Last 3 Months)</h3>
+          <div class="chart-container">
+            <canvas id="departmentChart"></canvas>
+          </div>
+          <ul class="insight-list">
+            <li>Data Ops & Product leads with 42% of activity - mature automation team</li>
+            <li>Finance & RevOps showing strong adoption (20% and 17% respectively)</li>
+            <li>HR underutilized at 6% - expansion opportunity</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>Operational Performance</h2>
+      <div class="grid charts">
+        <div class="card">
+          <h3>Monthly Job Execution Trend</h3>
+          <div class="chart-container">
+            <canvas id="jobsChart"></canvas>
+          </div>
+          <ul class="insight-list">
+            <li>Consistent 2M+ jobs monthly shows stable production usage</li>
+            <li>40% growth potential from 2M to 2.8M peak indicates scalability</li>
+            <li>No test jobs in metrics confirms mature production environment</li>
+          </ul>
+        </div>
+        
+        <div class="card">
+          <h3>Task Consumption Analysis</h3>
+          <div style="margin-top:20px;">
+            <div style="display:flex; justify-content:space-between; margin-bottom:8px;">
+              <span>Current Usage: 25.7M tasks</span>
+              <span style="color:var(--teal); font-weight:bold;">28%</span>
+            </div>
+            <div class="progress-bar">
+              <div class="progress-fill" style="width:28%"></div>
+            </div>
+            <div class="progress-label">66.3M tasks remaining (72% capacity)</div>
+          </div>
+          
+          <div class="alert" style="margin-top:24px;">
+            <div class="alert-title">⚡ Underutilization Alert</div>
+            <div>72% unused capacity indicates significant room for expansion. Consider:</div>
+            <ul style="margin:8px 0 0 20px; padding:0;">
+              <li>Migrating more processes from manual to automated</li>
+              <li>Expanding AI and WFA capabilities</li>
+              <li>Onboarding additional departments</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>Growth Opportunities & Recommendations</h2>
+      <div class="grid charts">
+        <div class="card">
+          <div class="tag">High Impact</div>
+          <h3>🚀 Expand Beyond iPaaS</h3>
+          <p>With 87% concentration in iPaaS, diversify into AI (currently 3.7%) and WFA (0.8%) capabilities to unlock advanced automation scenarios and increase ROI.</p>
+        </div>
+        
+        <div class="card">
+          <div class="tag">Quick Win</div>
+          <h3>📈 Scale Task Utilization</h3>
+          <p>At 28% utilization, there's immediate capacity for 3.5x growth. Target 60-70% utilization through department expansion and process migration.</p>
+        </div>
+        
+        <div class="card">
+          <div class="tag">Department Focus</div>
+          <h3>👥 Engage HR & IT Teams</h3>
+          <p>HR (6%) and IT (14%) show lower engagement. Implement targeted enablement programs to match Data Ops' maturity level.</p>
+        </div>
+        
+        <div class="card">
+          <div class="tag">Platform Maturity</div>
+          <h3>🎯 Cross-Functional Excellence</h3>
+          <p>5 active departments indicate good spread. Focus on cross-department workflows to maximize platform value and break down silos.</p>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <script>
+    Chart.defaults.color = '#B6B9B5';
+    Chart.defaults.borderColor = 'rgba(103,234,221,0.1)';
+    
+    // Capability Distribution
+    new Chart(document.getElementById('capabilityChart'), {
+      type: 'doughnut',
+      data: {
+        labels: ['iPaaS', 'Bot', 'AI', 'ETL/ELT', 'API', 'WFA'],
+        datasets: [{
+          data: [212, 15, 9, 3, 2, 2],
+          backgroundColor: ['#67eadd', '#3C574B', '#B6B9B5', '#4A7766', '#2E4A3F', '#1F3329'],
+          borderWidth: 0
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: {
+            position: 'bottom',
+            labels: { padding: 15 }
+          },
+          tooltip: {
+            callbacks: {
+              label: (context) => {
+                const value = context.parsed;
+                const total = 243;
+                const percentage = ((value / total) * 100).toFixed(1);
+                return `${context.label}: ${value} recipes (${percentage}%)`;
+              }
+            }
+          }
+        }
+      }
+    });
+
+    // Department Engagement
+    new Chart(document.getElementById('departmentChart'), {
+      type: 'bar',
+      data: {
+        labels: ['Data Ops & Product', 'Finance & Accounting', 'RevOps & CS Ops', 'IT', 'Human Resources'],
+        datasets: [{
+          data: [27, 13, 11, 9, 4],
+          backgroundColor: '#67eadd',
+          borderRadius: 8
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        indexAxis: 'y',
+        plugins: {
+          legend: { display: false },
+          tooltip: {
+            callbacks: {
+              label: (context) => {
+                const total = 64;
+                const percentage = ((context.parsed.x / total) * 100).toFixed(1);
+                return `Active usage: ${context.parsed.x} (${percentage}%)`;
+              }
+            }
+          }
+        },
+        scales: {
+          x: {
+            grid: { color: 'rgba(103,234,221,0.1)' },
+            ticks: { color: '#B6B9B5' }
+          },
+          y: {
+            grid: { display: false },
+            ticks: { color: '#FCFDFD' }
+          }
+        }
+      }
+    });
+
+    // Job Execution Trend
+    new Chart(document.getElementById('jobsChart'), {
+      type: 'line',
+      data: {
+        labels: ['Month 1', 'Month 2', 'Month 3'],
+        datasets: [{
+          label: 'Jobs Executed (Millions)',
+          data: [2.0, 2.8, 2.4],
+          borderColor: '#67eadd',
+          backgroundColor: 'rgba(103,234,221,0.1)',
+          tension: 0.4,
+          fill: true
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: { display: false }
+        },
+        scales: {
+          y: {
+            beginAtZero: true,
+            max: 3,
+            grid: { color: 'rgba(103,234,221,0.1)' },
+            ticks: { 
+              color: '#B6B9B5',
+              callback: (value) => value + 'M'
+            }
+          },
+          x: {
+            grid: { display: false },
+            ticks: { color: '#B6B9B5' }
+          }
+        }
+      }
+    });
+  </script>
+</body>
+</html>

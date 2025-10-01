@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Bazaarvoice Usage Dashboard</title>
+<style>
+  :root { --bg:#000; --text:#FCFDFD; --teal:#67eadd; --card:#111; --dark-green:#3C574B; --gray:#B6B9B5; --radius:12px; }
+  * { box-sizing: border-box; }
+  html,body { margin:0; background:var(--bg); color:var(--text); font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Ubuntu,sans-serif; }
+  .wrap { width:100%; max-width:1400px; margin:0 auto; padding:20px; }
+  h1,h2,h3 { margin:0 0 12px; color:var(--teal); }
+  .sub { opacity:.9; margin-bottom:24px; color:var(--gray); }
+
+  .grid { display:grid; gap:16px; }
+  .kpis { grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); }
+  .charts { grid-template-columns: repeat(auto-fit, minmax(400px, 1fr)); }
+  .insights { grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); }
+  @media (max-width:800px){ .charts{grid-template-columns:1fr} }
+
+  .card { background:var(--card); border:1px solid rgba(103,234,221,.3); border-radius:var(--radius); padding:20px; }
+  .kpi .num { font-size:2.5rem; font-weight:800; color:var(--teal); line-height:1; }
+  .kpi .lab { opacity:.85; font-size:.95rem; margin-top:8px; }
+  .kpi .delta { font-size:.85rem; color:var(--teal); margin-top:4px; }
+
+  .tag { display:inline-block; font-size:.75rem; font-weight:700; color:#000; background:var(--teal); padding:3px 10px; border-radius:999px; margin-bottom:10px; }
+  .alert { background:rgba(255,100,100,.1); border-color:rgba(255,100,100,.5); }
+  .success { background:rgba(103,234,221,.1); }
+  
+  .chart-container { position:relative; height:300px; margin-top:20px; }
+  .section { margin-top:32px; }
+  ul { margin:10px 0; padding-left:20px; color:var(--gray); }
+  li { margin:8px 0; }
+  
+  .metric-row { display:flex; justify-content:space-between; align-items:center; padding:12px 0; border-bottom:1px solid rgba(103,234,221,.2); }
+  .metric-row:last-child { border:0; }
+  .metric-label { color:var(--gray); }
+  .metric-value { color:var(--teal); font-weight:600; font-size:1.1rem; }
+  
+  .progress-bar { width:100%; height:8px; background:rgba(103,234,221,.2); border-radius:4px; overflow:hidden; margin-top:8px; }
+  .progress-fill { height:100%; background:var(--teal); transition:width 0.3s ease; }
+</style>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <h1>Bazaarvoice Usage Breakdown</h1>
+      <div class="sub">Automation Platform Performance & Opportunities • Last 3 Months</div>
+    </header>
+
+    <section class="section">
+      <h2>Key Performance Indicators</h2>
+      <div class="grid kpis">
+        <div class="card kpi">
+          <div class="num">523</div>
+          <div class="lab">Active Recipes</div>
+          <div class="delta">↑ 42% growth</div>
+        </div>
+        <div class="card kpi">
+          <div class="num">28%</div>
+          <div class="lab">Task Utilization</div>
+          <div class="delta">↑ from 19%</div>
+        </div>
+        <div class="card kpi">
+          <div class="num">2.7M</div>
+          <div class="lab">Monthly Tasks</div>
+          <div class="delta">↑ 50% in 3 months</div>
+        </div>
+        <div class="card kpi">
+          <div class="num">2</div>
+          <div class="lab">Power Builders</div>
+          <div class="delta">Small team</div>
+        </div>
+        <div class="card kpi">
+          <div class="num">352</div>
+          <div class="lab">Billable Recipes</div>
+          <div class="delta">67% of active</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>Growth Trends</h2>
+      <div class="grid charts">
+        <div class="card">
+          <h3>Recipe Volume Growth</h3>
+          <canvas id="recipeChart"></canvas>
+          <ul>
+            <li>Steady month-over-month growth: 367 → 470 recipes</li>
+            <li>Current active recipes at 523 shows continued momentum</li>
+          </ul>
+        </div>
+        <div class="card">
+          <h3>Task Usage Acceleration</h3>
+          <canvas id="taskChart"></canvas>
+          <ul>
+            <li>Task volume increased 50% over 3 months</li>
+            <li>Sharp acceleration from 1.8M to 2.7M monthly tasks</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>Utilization Metrics</h2>
+      <div class="grid charts">
+        <div class="card">
+          <h3>Task Utilization Progress</h3>
+          <div class="metric-row">
+            <span class="metric-label">Current Utilization</span>
+            <span class="metric-value">28%</span>
+          </div>
+          <div class="progress-bar">
+            <div class="progress-fill" style="width:28%"></div>
+          </div>
+          <div class="metric-row">
+            <span class="metric-label">3-Month Improvement</span>
+            <span class="metric-value">+47% relative</span>
+          </div>
+          <div class="metric-row">
+            <span class="metric-label">Expansion Threshold</span>
+            <span class="metric-value">80% (52% to go)</span>
+          </div>
+        </div>
+        <div class="card">
+          <h3>Recipe Distribution</h3>
+          <canvas id="recipeDistChart"></canvas>
+          <ul>
+            <li>Majority still in development phase</li>
+            <li>Production recipes growing slower than overall volume</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>CSM Opportunities & Actions</h2>
+      <div class="grid insights">
+        <div class="card alert">
+          <div class="tag">RISK SIGNAL</div>
+          <h3>🚨 Limited Builder Capacity</h3>
+          <p>Only 1-2 active users and 2 power builders limits scaling potential. Team size hasn't grown with recipe volume.</p>
+          <div class="metric-row">
+            <span class="metric-label">Recommended Action</span>
+            <span class="metric-value">Builder enablement</span>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="tag">TRAINING NEED</div>
+          <h3>📚 Production Maturity Gap</h3>
+          <p>Slow production recipe growth vs development indicates deployment challenges or confidence issues.</p>
+          <div class="metric-row">
+            <span class="metric-label">Recommended Action</span>
+            <span class="metric-value">Production best practices</span>
+          </div>
+        </div>
+
+        <div class="card success">
+          <div class="tag">GROWTH OPPORTUNITY</div>
+          <h3>🚀 Task Usage Momentum</h3>
+          <p>50% task growth shows strong automation adoption. Utilization at 28% has room for 3x expansion.</p>
+          <div class="metric-row">
+            <span class="metric-label">Recommended Action</span>
+            <span class="metric-value">Scale use cases</span>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="tag">CAPABILITY GAP</div>
+          <h3>🔧 Underutilized Capabilities</h3>
+          <p>All 6 capabilities adopted but only 1-2 actively used. Major opportunity to leverage full platform.</p>
+          <div class="metric-row">
+            <span class="metric-label">Recommended Action</span>
+            <span class="metric-value">Capability workshops</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>Strategic Recommendations</h2>
+      <div class="card">
+        <h3>Immediate Actions for CSM</h3>
+        <ul>
+          <li><strong>Builder Enablement:</strong> Expand team from 2 to 5+ power builders to support 42% recipe growth</li>
+          <li><strong>Production Acceleration:</strong> Implement deployment framework to convert development recipes to production</li>
+          <li><strong>Capability Activation:</strong> Schedule workshops for unused capabilities (4 of 6 underutilized)</li>
+          <li><strong>Scale Preparation:</strong> With 28% utilization, prepare infrastructure for 3x growth potential</li>
+        </ul>
+        <h3 style="margin-top:20px">Success Metrics to Track</h3>
+        <ul>
+          <li>Target 80% task utilization for expansion readiness (currently 28%)</li>
+          <li>Increase production recipe ratio from current low percentage</li>
+          <li>Activate at least 4 capabilities in production (currently 1-2)</li>
+          <li>Scale to 5+ active builders to support growth trajectory</li>
+        </ul>
+      </div>
+    </section>
+  </div>
+
+  <script>
+    Chart.defaults.color = '#B6B9B5';
+    Chart.defaults.borderColor = 'rgba(103,234,221,0.2)';
+    
+    // Recipe Growth Chart
+    new Chart(document.getElementById('recipeChart'), {
+      type: 'line',
+      data: {
+        labels: ['June', 'July', 'August', 'Current'],
+        datasets: [{
+          label: 'Total Recipes',
+          data: [367, 398, 470, 523],
+          borderColor: '#67eadd',
+          backgroundColor: 'rgba(103,234,221,0.1)',
+          tension: 0.4,
+          fill: true
+        }, {
+          label: 'Billable Recipes',
+          data: [null, null, null, 352],
+          borderColor: '#3C574B',
+          backgroundColor: 'rgba(60,87,75,0.1)',
+          tension: 0.4,
+          fill: true
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: { position: 'top' }
+        },
+        scales: {
+          y: { beginAtZero: true, grid: { color: 'rgba(103,234,221,0.1)' } },
+          x: { grid: { color: 'rgba(103,234,221,0.1)' } }
+        }
+      }
+    });
+
+    // Task Usage Chart
+    new Chart(document.getElementById('taskChart'), {
+      type: 'bar',
+      data: {
+        labels: ['June', 'July', 'August'],
+        datasets: [{
+          label: 'Monthly Tasks (Millions)',
+          data: [1.8, 2.0, 2.7],
+          backgroundColor: ['rgba(103,234,221,0.3)', 'rgba(103,234,221,0.5)', 'rgba(103,234,221,0.8)'],
+          borderColor: '#67eadd',
+          borderWidth: 1
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: { display: false }
+        },
+        scales: {
+          y: { beginAtZero: true, grid: { color: 'rgba(103,234,221,0.1)' } },
+          x: { grid: { color: 'rgba(103,234,221,0.1)' } }
+        }
+      }
+    });
+
+    // Recipe Distribution Chart
+    new Chart(document.getElementById('recipeDistChart'), {
+      type: 'doughnut',
+      data: {
+        labels: ['Production', 'Development', 'Other'],
+        datasets: [{
+          data: [30, 60, 10],
+          backgroundColor: ['#67eadd', '#3C574B', '#B6B9B5'],
+          borderWidth: 0
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: { position: 'bottom' }
+        }
+      }
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Bazaarvoice Automation Usage Dashboard</title>
+<style>
+  :root { --bg:#000; --text:#FCFDFD; --teal:#67eadd; --card:#111; --radius:12px; --dark-green:#3C574B; --gray:#B6B9B5; }
+  * { box-sizing: border-box; }
+  html,body { margin:0; background:var(--bg); color:var(--text); font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Ubuntu,sans-serif; }
+  .wrap { width:100%; max-width:1400px; margin:0 auto; padding:20px; }
+  h1,h2 { margin:0 0 12px; color:var(--teal); }
+  h3 { color:var(--text); margin:0 0 8px; font-size:1.1rem; }
+  .sub { opacity:.9; margin-bottom:24px; color:var(--gray); }
+
+  .grid { display:grid; gap:16px; }
+  .kpis { grid-template-columns: repeat(5, minmax(0, 1fr)); }
+  .insights { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .charts { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  @media (max-width:900px){ .kpis{grid-template-columns:repeat(2,1fr)} .insights{grid-template-columns:1fr} .charts{grid-template-columns:1fr} }
+
+  .card { background:var(--card); border:1px solid rgba(103,234,221,.3); border-radius:var(--radius); padding:16px; }
+  .kpi .num { font-size:2.2rem; font-weight:800; color:var(--teal); line-height:1; }
+  .kpi .lab { opacity:.85; font-size:.9rem; margin-top:4px; }
+  .kpi .delta { font-size:.85rem; color:var(--dark-green); margin-top:4px; }
+
+  .tag { display:inline-block; font-size:.75rem; font-weight:700; color:#003b36; background:var(--teal); padding:2px 8px; border-radius:999px; margin-bottom:8px; }
+  .alert { color:#ff9800; }
+  .success { color:#4caf50; }
+  
+  .section { margin-top:32px; }
+  ul { margin:8px 0; padding-left:20px; }
+  li { margin:4px 0; }
+  
+  .chart-container { position:relative; height:300px; padding:8px; }
+  .apps-list { display:flex; flex-wrap:wrap; gap:8px; margin-top:12px; }
+  .app-chip { background:var(--dark-green); color:var(--teal); padding:4px 12px; border-radius:16px; font-size:.85rem; border:1px solid var(--teal); }
+  
+  .progress-bar { width:100%; height:8px; background:var(--dark-green); border-radius:4px; overflow:hidden; margin:8px 0; }
+  .progress-fill { height:100%; background:var(--teal); transition:width 0.3s; }
+  
+  .metric-row { display:flex; justify-content:space-between; align-items:center; padding:8px 0; border-bottom:1px solid rgba(103,234,221,.1); }
+  .metric-label { color:var(--gray); }
+  .metric-value { color:var(--teal); font-weight:600; }
+</style>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <h1>Bazaarvoice Automation Usage Dashboard</h1>
+      <div class="sub">Real-time insights into platform adoption, growth trajectory, and optimization opportunities</div>
+    </header>
+
+    <section class="section">
+      <h2>Key Performance Metrics</h2>
+      <div class="grid kpis">
+        <div class="card kpi">
+          <div class="num">523</div>
+          <div class="lab">Active Recipes</div>
+          <div class="delta">↑ 42.5% growth</div>
+        </div>
+        <div class="card kpi">
+          <div class="num">28%</div>
+          <div class="lab">Task Utilization</div>
+          <div class="delta">↑ 9pp increase</div>
+        </div>
+        <div class="card kpi">
+          <div class="num">4/5</div>
+          <div class="lab">Active Departments</div>
+          <div class="delta">80% adoption</div>
+        </div>
+        <div class="card kpi">
+          <div class="num">2-3</div>
+          <div class="lab">Active Builders</div>
+          <div class="delta">Stable capacity</div>
+        </div>
+        <div class="card kpi">
+          <div class="num">0.13</div>
+          <div class="lab">Automation Index</div>
+          <div class="delta">Steady state</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>Growth & Adoption Trends</h2>
+      <div class="grid charts">
+        <div class="card">
+          <h3>Recipe & Task Growth Trajectory</h3>
+          <div class="chart-container">
+            <canvas id="growthChart"></canvas>
+          </div>
+          <ul style="font-size:0.9rem; color:var(--gray);">
+            <li>Recipe count increased <span style="color:var(--teal)">42.5%</span> (367→523) in 3 months</li>
+            <li>Task utilization improved by <span style="color:var(--teal)">47%</span> (19%→28%)</li>
+          </ul>
+        </div>
+        
+        <div class="card">
+          <h3>Capability Adoption Status</h3>
+          <div class="chart-container">
+            <canvas id="capabilityChart"></canvas>
+          </div>
+          <ul style="font-size:0.9rem; color:var(--gray);">
+            <li><span style="color:var(--teal)">6 capabilities</span> adopted total</li>
+            <li><span style="color:#ff9800">Only 2 actively used</span> in last 3 months</li>
+            <li>Opportunity to activate <span style="color:var(--teal)">4 dormant capabilities</span></li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>Application Ecosystem</h2>
+      <div class="card">
+        <h3>Connected Applications (25+ Active)</h3>
+        <div class="apps-list">
+          <span class="app-chip">Salesforce</span>
+          <span class="app-chip">NetSuite</span>
+          <span class="app-chip">Okta</span>
+          <span class="app-chip">Slack</span>
+          <span class="app-chip">Snowflake</span>
+          <span class="app-chip">JIRA</span>
+          <span class="app-chip">Amazon S3</span>
+          <span class="app-chip">+18 more</span>
+        </div>
+        <div style="margin-top:16px;">
+          <div class="metric-row">
+            <span class="metric-label">Business Critical Apps</span>
+            <span class="metric-value">7 Core Systems</span>
+          </div>
+          <div class="metric-row">
+            <span class="metric-label">Integration Diversity</span>
+            <span class="metric-value">High (25+ apps)</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>Growth Opportunities & Recommendations</h2>
+      <div class="grid insights">
+        <article class="card">
+          <div class="tag">High Impact</div>
+          <h3>🚀 Accelerate Recipe Momentum</h3>
+          <p style="color:var(--gray);">42.5% recipe growth shows strong momentum. Focus on converting this into higher automation index by increasing complexity and cross-app workflows.</p>
+          <div class="progress-bar"><div class="progress-fill" style="width:42.5%"></div></div>
+          <small style="color:var(--teal);">Current Growth Rate: 42.5%</small>
+        </article>
+
+        <article class="card">
+          <div class="tag" style="background:#ff9800;">Risk</div>
+          <h3>⚠️ Capability Underutilization</h3>
+          <p style="color:var(--gray);">Only 2 of 6 adopted capabilities actively used. Risk of feature stagnation and missed ROI on 67% of available functionality.</p>
+          <div class="progress-bar"><div class="progress-fill" style="width:33%"></div></div>
+          <small style="color:var(--teal);">Utilization: 33% (2/6)</small>
+        </article>
+
+        <article class="card">
+          <div class="tag">Quick Win</div>
+          <h3>👥 Scale Builder Capacity</h3>
+          <p style="color:var(--gray);">With only 2-3 builders supporting 523 recipes, enablement and training could unlock broader adoption and reduce bottlenecks.</p>
+          <div class="progress-bar"><div class="progress-fill" style="width:60%"></div></div>
+          <small style="color:var(--teal);">Builder Ratio: Low</small>
+        </article>
+
+        <article class="card">
+          <div class="tag">Expansion</div>
+          <h3>🏢 Complete Department Coverage</h3>
+          <p style="color:var(--gray);">1 department remains inactive. Target this for expansion to achieve 100% organizational coverage and maximize automation value.</p>
+          <div class="progress-bar"><div class="progress-fill" style="width:80%"></div></div>
+          <small style="color:var(--teal);">Department Coverage: 80%</small>
+        </article>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>Strategic Next Steps</h2>
+      <div class="card">
+        <ul>
+          <li>Activate dormant capabilities through targeted training workshops - potential to <span style="color:var(--teal)">3x capability usage</span></li>
+          <li>Increase builder enablement to support <span style="color:var(--teal)">523+ active recipes</span> and maintain growth trajectory</li>
+          <li>Leverage high app diversity (25+ connections) to create more <span style="color:var(--teal)">complex cross-system workflows</span></li>
+          <li>Focus on the inactive department to achieve <span style="color:var(--teal)">100% organizational adoption</span></li>
+          <li>Convert task utilization gains (28%) into higher automation index through <span style="color:var(--teal)">advanced use cases</span></li>
+        </ul>
+      </div>
+    </section>
+  </div>
+
+  <script>
+    Chart.defaults.color = '#B6B9B5';
+    Chart.defaults.borderColor = 'rgba(103,234,221,0.2)';
+    
+    // Growth Chart
+    new Chart(document.getElementById('growthChart'), {
+      type: 'line',
+      data: {
+        labels: ['Month 1', 'Month 2', 'Month 3'],
+        datasets: [{
+          label: 'Active Recipes',
+          data: [367, 445, 523],
+          borderColor: '#67eadd',
+          backgroundColor: 'rgba(103,234,221,0.1)',
+          tension: 0.4,
+          fill: true
+        }, {
+          label: 'Task Utilization (%)',
+          data: [19, 23.5, 28],
+          borderColor: '#3C574B',
+          backgroundColor: 'rgba(60,87,75,0.1)',
+          tension: 0.4,
+          fill: true,
+          yAxisID: 'y1'
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        scales: {
+          y: {
+            beginAtZero: true,
+            position: 'left',
+            title: { display: true, text: 'Recipe Count' }
+          },
+          y1: {
+            beginAtZero: true,
+            position: 'right',
+            title: { display: true, text: 'Utilization %' },
+            grid: { drawOnChartArea: false }
+          }
+        },
+        plugins: {
+          legend: { position: 'top' }
+        }
+      }
+    });
+
+    // Capability Chart
+    new Chart(document.getElementById('capabilityChart'), {
+      type: 'doughnut',
+      data: {
+        labels: ['Actively Used', 'Dormant', 'Not Adopted'],
+        datasets: [{
+          data: [2, 4, 0],
+          backgroundColor: ['#67eadd', '#3C574B', '#B6B9B5'],
+          borderWidth: 0
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: { position: 'bottom' }
+        }
+      }
+    });
+  </script>
+</body>
+</html>

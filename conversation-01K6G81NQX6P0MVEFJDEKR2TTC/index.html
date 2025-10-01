@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Bazaarvoice Customer Health Dashboard</title>
+<style>
+  :root { 
+    --bg:#000; 
+    --text:#FCFDFD; 
+    --teal:#67eadd; 
+    --dark-green:#3C574B;
+    --gray:#B6B9B5;
+    --card:#111; 
+    --radius:12px; 
+  }
+  * { box-sizing: border-box; }
+  html,body { margin:0; background:var(--bg); color:var(--text); font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Ubuntu,sans-serif; }
+  .wrap { width:100%; max-width:1400px; margin:0 auto; padding:20px; }
+  h1,h2,h3 { margin:0 0 12px; color:var(--teal); }
+  .sub { opacity:.9; margin-bottom:24px; color:var(--gray); }
+
+  .grid { display:grid; gap:16px; }
+  .kpis { grid-template-columns: repeat(5, minmax(0, 1fr)); }
+  .insights { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .charts { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  @media (max-width:900px){ 
+    .kpis{grid-template-columns:repeat(2,1fr)} 
+    .insights{grid-template-columns:1fr}
+    .charts{grid-template-columns:1fr}
+  }
+
+  .card { 
+    background:var(--card); 
+    border:1px solid rgba(103,234,221,.3); 
+    border-radius:var(--radius); 
+    padding:20px; 
+  }
+  .kpi .num { 
+    font-size:2.2rem; 
+    font-weight:800; 
+    color:var(--teal); 
+    line-height:1; 
+    margin-bottom:4px;
+  }
+  .kpi .lab { 
+    opacity:.85; 
+    font-size:.9rem; 
+    color:var(--gray);
+  }
+  .kpi .delta {
+    font-size:0.85rem;
+    margin-top:6px;
+    font-weight:600;
+  }
+  .kpi .positive { color:#4ade80; }
+  .kpi .negative { color:#f87171; }
+  .kpi .neutral { color:var(--gray); }
+
+  .tag { 
+    display:inline-block; 
+    font-size:.75rem; 
+    font-weight:700; 
+    color:#003b36; 
+    background:var(--teal); 
+    padding:3px 10px; 
+    border-radius:999px; 
+    margin-bottom:10px; 
+  }
+  .action { 
+    margin-top:12px; 
+    border:1px solid var(--teal); 
+    background:transparent; 
+    color:var(--teal); 
+    border-radius:999px; 
+    padding:10px 16px; 
+    cursor:pointer; 
+    font-size:0.9rem;
+    transition:all 0.2s;
+  }
+  .action:hover { 
+    background:var(--teal); 
+    color:#002a27; 
+  }
+
+  .section { margin-top:32px; }
+  ul { margin:8px 0; padding-left:20px; line-height:1.7; }
+  li { margin:4px 0; }
+  
+  .chart-container {
+    position: relative;
+    height: 250px;
+    margin-top: 16px;
+  }
+  
+  .progress-bar {
+    width: 100%;
+    height: 24px;
+    background: rgba(103,234,221,0.1);
+    border-radius: 12px;
+    overflow: hidden;
+    margin: 8px 0;
+  }
+  .progress-fill {
+    height: 100%;
+    background: var(--teal);
+    transition: width 0.3s ease;
+  }
+  .progress-label {
+    font-size: 0.85rem;
+    color: var(--gray);
+    margin-bottom: 4px;
+  }
+  
+  .capability-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 12px;
+    margin-top: 16px;
+  }
+  .capability-item {
+    text-align: center;
+    padding: 12px;
+    border-radius: 8px;
+    background: rgba(103,234,221,0.05);
+    border: 1px solid rgba(103,234,221,0.2);
+  }
+  .capability-item.active {
+    background: rgba(103,234,221,0.15);
+    border-color: var(--teal);
+  }
+  .capability-item .icon {
+    font-size: 1.5rem;
+    margin-bottom: 4px;
+  }
+  .capability-item .name {
+    font-size: 0.85rem;
+    color: var(--gray);
+  }
+  .capability-item.active .name {
+    color: var(--teal);
+  }
+  
+  .dept-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 12px;
+  }
+  .dept-badge {
+    background: rgba(103,234,221,0.1);
+    border: 1px solid rgba(103,234,221,0.3);
+    color: var(--teal);
+    padding: 6px 12px;
+    border-radius: 6px;
+    font-size: 0.85rem;
+  }
+  .dept-badge .count {
+    font-weight: 700;
+    margin-left: 4px;
+  }
+</style>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <h1>Bazaarvoice Customer Health</h1>
+      <div class="sub">Performance metrics and engagement analysis for Q3 2025</div>
+    </header>
+
+    <section class="section">
+      <h2>Key Performance Indicators</h2>
+      <div class="grid kpis">
+        <div class="card kpi">
+          <div class="num">28%</div>
+          <div class="lab">Task Utilization</div>
+          <div class="delta negative">⚠️ Below 80% target</div>
+        </div>
+        <div class="card kpi">
+          <div class="num">2/3</div>
+          <div class="lab">Power Builders Ratio</div>
+          <div class="delta positive">✓ Strong expertise</div>
+        </div>
+        <div class="card kpi">
+          <div class="num">2/6</div>
+          <div class="lab">Capabilities Used</div>
+          <div class="delta negative">↓ Low production use</div>
+        </div>
+        <div class="card kpi">
+          <div class="num">4/5</div>
+          <div class="lab">Departments Active</div>
+          <div class="delta positive">✓ Cross-team adoption</div>
+        </div>
+        <div class="card kpi">
+          <div class="num">239</div>
+          <div class="lab">Total Recipes</div>
+          <div class="delta neutral">212 iPaaS, 15 Bot</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>Usage & Engagement Analysis</h2>
+      <div class="grid charts">
+        <div class="card">
+          <h3>Task Consumption</h3>
+          <div class="progress-label">Tasks Used: 25.8M of 92M available</div>
+          <div class="progress-bar">
+            <div class="progress-fill" style="width: 28%"></div>
+          </div>
+          <p style="color:var(--gray); font-size:0.9rem; margin-top:12px;">
+            💡 <strong>Opportunity:</strong> 66.2M tasks remain unused - significant room for scaling automation workflows
+          </p>
+        </div>
+        
+        <div class="card">
+          <h3>Builder Engagement</h3>
+          <canvas id="builderChart"></canvas>
+          <p style="color:var(--gray); font-size:0.9rem; margin-top:12px;">
+            ⚠️ <strong>Gap:</strong> Only 1 active user despite 3 builders - engagement needs attention
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>Capability Adoption & Usage</h2>
+      <div class="card">
+        <div class="capability-grid">
+          <div class="capability-item active">
+            <div class="icon">🔄</div>
+            <div class="name">iPaaS</div>
+            <div style="color:var(--teal); font-weight:600;">In Production</div>
+          </div>
+          <div class="capability-item active">
+            <div class="icon">🤖</div>
+            <div class="name">Bot</div>
+            <div style="color:var(--teal); font-weight:600;">In Production</div>
+          </div>
+          <div class="capability-item">
+            <div class="icon">📊</div>
+            <div class="name">ETL/ELT</div>
+            <div style="color:var(--gray); font-size:0.75rem;">Adopted, Not Used</div>
+          </div>
+          <div class="capability-item">
+            <div class="icon">🧠</div>
+            <div class="name">AI</div>
+            <div style="color:var(--gray); font-size:0.75rem;">Adopted, Not Used</div>
+          </div>
+        </div>
+        <p style="color:var(--gray); font-size:0.9rem; margin-top:16px;">
+          🎯 <strong>Focus Area:</strong> ETL/ELT and AI capabilities are adopted but not in production - prioritize enablement
+        </p>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>Department Usage Distribution</h2>
+      <div class="card">
+        <canvas id="deptChart" style="height:300px;"></canvas>
+        <div class="dept-list">
+          <div class="dept-badge">Data Ops & Product<span class="count">27</span></div>
+          <div class="dept-badge">Finance & Accounting<span class="count">13</span></div>
+          <div class="dept-badge">RevOps & CS Ops<span class="count">11</span></div>
+          <div class="dept-badge">IT<span class="count">9</span></div>
+          <div class="dept-badge">HR<span class="count">4</span></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>Strategic Opportunities</h2>
+      <div class="grid insights">
+        <article class="card">
+          <div class="tag">High Impact</div>
+          <h3>📈 Accelerate Task Utilization</h3>
+          <p>With only 28% task utilization, there's significant capacity for expanding automation. Focus on converting the 66M unused tasks into value-driving workflows.</p>
+          <button class="action">Review Usage Patterns</button>
+        </article>
+
+        <article class="card">
+          <div class="tag">Quick Win</div>
+          <h3>🚀 Activate AI & ETL Capabilities</h3>
+          <p>Both AI and ETL/ELT are adopted but not in production. With 9 AI recipes and 3 ETL recipes created, enable teams to move these to production use.</p>
+          <button class="action">Schedule Enablement Session</button>
+        </article>
+
+        <article class="card">
+          <div class="tag">Engagement</div>
+          <h3>👥 Boost Active User Participation</h3>
+          <p>Only 1 active user despite having 3 builders and 2 power builders. Re-engage the team to maximize the expertise already in place.</p>
+          <button class="action">User Engagement Plan</button>
+        </article>
+
+        <article class="card">
+          <div class="tag">Expansion</div>
+          <h3>🏢 Complete Department Coverage</h3>
+          <p>4 of 5 departments are active with Data Ops leading at 27 use cases. Identify and onboard the remaining department for full organizational coverage.</p>
+          <button class="action">Department Gap Analysis</button>
+        </article>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>Recommended Actions</h2>
+      <div class="card">
+        <ul>
+          <li><strong>Immediate:</strong> Schedule review of task utilization patterns to identify quick expansion opportunities</li>
+          <li><strong>This Week:</strong> Conduct enablement sessions for AI and ETL/ELT to move from adoption to production</li>
+          <li><strong>This Month:</strong> Re-engage inactive builders through targeted training and use case workshops</li>
+          <li><strong>This Quarter:</strong> Develop strategy to onboard the 5th department and achieve full organizational coverage</li>
+          <li><strong>Ongoing:</strong> Monitor recipe creation trends (currently 21 created, 94 edited in last 30 days) to maintain momentum</li>
+        </ul>
+      </div>
+    </section>
+  </div>
+
+  <script>
+    // Builder Chart
+    const builderCtx = document.getElementById('builderChart').getContext('2d');
+    new Chart(builderCtx, {
+      type: 'bar',
+      data: {
+        labels: ['Active Users', 'Builders', 'Power Builders'],
+        datasets: [{
+          data: [1, 3, 2],
+          backgroundColor: ['#f87171', '#67eadd', '#4ade80'],
+          borderColor: ['#f87171', '#67eadd', '#4ade80'],
+          borderWidth: 1
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: { display: false }
+        },
+        scales: {
+          y: {
+            beginAtZero: true,
+            ticks: { color: '#B6B9B5' },
+            grid: { color: 'rgba(182,185,181,0.1)' }
+          },
+          x: {
+            ticks: { color: '#B6B9B5' },
+            grid: { display: false }
+          }
+        }
+      }
+    });
+
+    // Department Chart
+    const deptCtx = document.getElementById('deptChart').getContext('2d');
+    new Chart(deptCtx, {
+      type: 'doughnut',
+      data: {
+        labels: ['Data Ops & Product', 'Finance & Accounting', 'RevOps & CS Ops', 'IT', 'HR'],
+        datasets: [{
+          data: [27, 13, 11, 9, 4],
+          backgroundColor: ['#67eadd', '#3C574B', '#B6B9B5', '#4ade80', '#f87171'],
+          borderWidth: 0
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: {
+            position: 'right',
+            labels: { color: '#B6B9B5', padding: 15 }
+          }
+        }
+      }
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Bazaarvoice Usage Summary</title>
+<style>
+  :root { --bg:#000; --text:#FCFDFD; --teal:#67eadd; --card:#111; --darkgreen:#3C574B; --gray:#B6B9B5; --radius:12px; }
+  * { box-sizing: border-box; }
+  html,body { margin:0; background:var(--bg); color:var(--text); font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Ubuntu,sans-serif; }
+  .wrap { width:100%; max-width:1400px; margin:0 auto; padding:20px; }
+  h1,h2 { margin:0 0 12px; color:var(--teal); }
+  .sub { opacity:.9; margin-bottom:24px; color:var(--gray); }
+
+  .grid { display:grid; gap:16px; }
+  .kpis { grid-template-columns: repeat(5, minmax(0, 1fr)); }
+  .insights { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .charts { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  @media (max-width:900px){ .kpis{grid-template-columns:repeat(2,1fr)} .insights{grid-template-columns:1fr} .charts{grid-template-columns:1fr} }
+
+  .card { background:var(--card); border:1px solid rgba(103,234,221,.3); border-radius:var(--radius); padding:16px; }
+  .kpi .num { font-size:2.5rem; font-weight:800; color:var(--teal); line-height:1; }
+  .kpi .lab { opacity:.85; font-size:.95rem; margin-top:4px; }
+  .kpi .delta { font-size:.85rem; color:#67eadd; margin-top:4px; }
+
+  .tag { display:inline-block; font-size:.75rem; font-weight:700; color:#003b36; background:var(--teal); padding:3px 10px; border-radius:999px; margin-bottom:8px; }
+  .action { margin-top:12px; border:1px solid var(--teal); background:transparent; color:var(--teal); border-radius:999px; padding:10px 16px; cursor:pointer; font-size:.9rem; transition:all 0.3s; }
+  .action:hover { background:var(--teal); color:#002a27; }
+
+  .section { margin-top:32px; }
+  ul { margin:8px 0; padding-left:20px; }
+  li { margin:8px 0; line-height:1.5; }
+
+  .chart-container { position:relative; height:250px; margin:16px 0; }
+  .stat-row { display:flex; justify-content:space-between; padding:8px 0; border-bottom:1px solid rgba(103,234,221,.2); }
+  .stat-row:last-child { border-bottom:none; }
+  .stat-label { color:var(--gray); }
+  .stat-value { color:var(--teal); font-weight:600; }
+
+  .progress-bar { width:100%; height:24px; background:rgba(103,234,221,.1); border-radius:12px; overflow:hidden; margin:8px 0; }
+  .progress-fill { height:100%; background:linear-gradient(90deg, var(--darkgreen), var(--teal)); transition:width 1s ease; }
+
+  .health-indicator { display:inline-block; width:12px; height:12px; border-radius:50%; margin-right:6px; }
+  .health-good { background:var(--teal); }
+  .health-warning { background:#f39c12; }
+  .health-risk { background:#e74c3c; }
+
+  .metric-card { background:linear-gradient(135deg, rgba(103,234,221,.05), rgba(103,234,221,.1)); }
+</style>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <h1>Bazaarvoice Automation Dashboard</h1>
+      <div class="sub">3-Month Usage Summary & Growth Insights</div>
+    </header>
+
+    <section class="section">
+      <h2>Executive Summary</h2>
+      <div class="grid kpis">
+        <div class="card kpi metric-card">
+          <div class="num">523</div>
+          <div class="lab">Active Recipes</div>
+          <div class="delta">↑ 40.6% growth</div>
+        </div>
+        <div class="card kpi">
+          <div class="num">28%</div>
+          <div class="lab">Task Utilization</div>
+          <div class="delta">↑ from 19%</div>
+        </div>
+        <div class="card kpi">
+          <div class="num">3M+</div>
+          <div class="lab">Peak Monthly Tasks</div>
+          <div class="delta">Strong volume</div>
+        </div>
+        <div class="card kpi">
+          <div class="num">40+</div>
+          <div class="lab">App Connections</div>
+          <div class="delta">Active ecosystem</div>
+        </div>
+        <div class="card kpi metric-card">
+          <div class="num">5.0</div>
+          <div class="lab">Reliability Score</div>
+          <div class="delta"><span class="health-indicator health-good"></span>Excellent</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>Growth & Performance Metrics</h2>
+      <div class="grid charts">
+        <div class="card">
+          <h3 style="color:var(--teal); margin-bottom:16px;">Automation Growth</h3>
+          <canvas id="growthChart"></canvas>
+          <div style="margin-top:16px; padding-top:12px; border-top:1px solid rgba(103,234,221,.2);">
+            <div class="stat-row">
+              <span class="stat-label">Recipe Growth Rate</span>
+              <span class="stat-value">+40.6%</span>
+            </div>
+            <div class="stat-row">
+              <span class="stat-label">Active Recipe Execution</span>
+              <span class="stat-value">234 recipes (↑34%)</span>
+            </div>
+            <div class="stat-row">
+              <span class="stat-label">Utilization Improvement</span>
+              <span class="stat-value">+47% efficiency</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <h3 style="color:var(--teal); margin-bottom:16px;">Top Connected Systems</h3>
+          <canvas id="connectionsChart"></canvas>
+          <div style="margin-top:16px; padding-top:12px; border-top:1px solid rgba(103,234,221,.2);">
+            <div class="stat-row">
+              <span class="stat-label">Primary Integration</span>
+              <span class="stat-value">Salesforce</span>
+            </div>
+            <div class="stat-row">
+              <span class="stat-label">Collaboration Tools</span>
+              <span class="stat-value">Slack (Active)</span>
+            </div>
+            <div class="stat-row">
+              <span class="stat-label">Data Platforms</span>
+              <span class="stat-value">Snowflake, SFTP</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>Opportunities & Recommendations</h2>
+      <div class="grid insights">
+        <article class="card">
+          <div class="tag">Expansion Ready</div>
+          <h3 style="color:var(--teal);">🚀 Scale Automation Capacity</h3>
+          <p style="color:var(--gray); line-height:1.6;">Task utilization at 28% indicates significant headroom. With 40.6% recipe growth, Bazaarvoice is ready for major expansion - could handle 3x current volume.</p>
+          <div class="progress-bar">
+            <div class="progress-fill" style="width:28%"></div>
+          </div>
+          <p style="font-size:.85rem; color:var(--gray);">Current utilization: 28% of capacity</p>
+          <button class="action">Plan Expansion Strategy</button>
+        </article>
+
+        <article class="card">
+          <div class="tag">User Engagement Risk</div>
+          <h3 style="color:var(--teal);">👥 Expand Builder Community</h3>
+          <p style="color:var(--gray); line-height:1.6;">Only 2 active users managing 523 recipes creates bottleneck risk. Critical to onboard more builders across 2 workspaces to distribute ownership.</p>
+          <ul style="color:var(--gray); font-size:.9rem;">
+            <li>Current ratio: 261 recipes per user</li>
+            <li>Recommended: 50-75 recipes per user</li>
+            <li>Target: Onboard 5-7 additional builders</li>
+          </ul>
+          <button class="action">Launch Builder Training</button>
+        </article>
+
+        <article class="card">
+          <div class="tag">Integration Optimization</div>
+          <h3 style="color:var(--teal);">🔗 Maximize Connection Value</h3>
+          <p style="color:var(--gray); line-height:1.6;">40+ active connections show strong ecosystem adoption. Focus on underutilized connections to unlock additional automation scenarios.</p>
+          <ul style="color:var(--gray); font-size:.9rem;">
+            <li>Top performers: Salesforce, Slack, NetSuite</li>
+            <li>Opportunity areas: HTTP endpoints, RecipeOps</li>
+          </ul>
+          <button class="action">Connection Assessment</button>
+        </article>
+
+        <article class="card">
+          <div class="tag">Reliability Excellence</div>
+          <h3 style="color:var(--teal);">✅ Maintain Perfect Score</h3>
+          <p style="color:var(--gray); line-height:1.6;">Task execution score of 5.0 for 3 months straight demonstrates exceptional reliability. This foundation enables confident expansion.</p>
+          <div class="stat-row">
+            <span class="stat-label">Success Rate</span>
+            <span class="stat-value"><span class="health-indicator health-good"></span>100%</span>
+          </div>
+          <button class="action">Share Best Practices</button>
+        </article>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>Recommended Next Steps</h2>
+      <div class="card">
+        <ul>
+          <li><strong>Immediate:</strong> Address user concentration risk by onboarding 3-5 new builders in Q1 to manage growing recipe portfolio</li>
+          <li><strong>Short-term:</strong> Leverage 72% unused capacity to expand automation into new business processes - target 50% utilization</li>
+          <li><strong>Strategic:</strong> Document and replicate success patterns from perfect reliability score across both Production and Test environments</li>
+          <li><strong>Growth:</strong> Explore underutilized connections (especially HTTP and RecipeOps) to unlock new integration scenarios</li>
+          <li><strong>Risk Mitigation:</strong> Implement recipe ownership distribution plan to prevent single points of failure with only 2 active users</li>
+        </ul>
+      </div>
+    </section>
+  </div>
+
+<script>
+// Growth Chart
+const ctx1 = document.getElementById('growthChart').getContext('2d');
+new Chart(ctx1, {
+  type: 'line',
+  data: {
+    labels: ['Month 1', 'Month 2', 'Month 3'],
+    datasets: [{
+      label: 'Active Recipes',
+      data: [372, 447, 523],
+      borderColor: '#67eadd',
+      backgroundColor: 'rgba(103,234,221,0.1)',
+      tension: 0.4,
+      fill: true
+    }, {
+      label: 'Recipes with Execution',
+      data: [175, 204, 234],
+      borderColor: '#3C574B',
+      backgroundColor: 'rgba(60,87,75,0.1)',
+      tension: 0.4,
+      fill: true
+    }]
+  },
+  options: {
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: {
+      legend: {
+        labels: { color: '#FCFDFD' }
+      }
+    },
+    scales: {
+      y: {
+        beginAtZero: true,
+        grid: { color: 'rgba(103,234,221,0.1)' },
+        ticks: { color: '#B6B9B5' }
+      },
+      x: {
+        grid: { color: 'rgba(103,234,221,0.1)' },
+        ticks: { color: '#B6B9B5' }
+      }
+    }
+  }
+});
+
+// Connections Chart
+const ctx2 = document.getElementById('connectionsChart').getContext('2d');
+new Chart(ctx2, {
+  type: 'bar',
+  data: {
+    labels: ['Salesforce', 'Slack', 'NetSuite', 'SFTP', 'HTTP', 'Snowflake', 'RecipeOps'],
+    datasets: [{
+      label: 'Connection Usage',
+      data: [95, 87, 82, 75, 68, 72, 65],
+      backgroundColor: [
+        'rgba(103,234,221,0.8)',
+        'rgba(103,234,221,0.7)',
+        'rgba(103,234,221,0.6)',
+        'rgba(103,234,221,0.5)',
+        'rgba(60,87,75,0.7)',
+        'rgba(60,87,75,0.6)',
+        'rgba(60,87,75,0.5)'
+      ],
+      borderColor: '#67eadd',
+      borderWidth: 1
+    }]
+  },
+  options: {
+    responsive: true,
+    maintainAspectRatio: false,
+    indexAxis: 'y',
+    plugins: {
+      legend: { display: false }
+    },
+    scales: {
+      x: {
+        beginAtZero: true,
+        max: 100,
+        grid: { color: 'rgba(103,234,221,0.1)' },
+        ticks: { color: '#B6B9B5' }
+      },
+      y: {
+        grid: { display: false },
+        ticks: { color: '#B6B9B5' }
+      }
+    }
+  }
+});
+</script>
+</body>
+</html>

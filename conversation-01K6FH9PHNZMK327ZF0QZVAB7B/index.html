@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Bazaarvoice Usage Dashboard</title>
+<style>
+  :root { 
+    --bg:#000; 
+    --text:#FCFDFD; 
+    --teal:#67eadd; 
+    --dark-green:#3C574B;
+    --gray:#B6B9B5;
+    --card:#111; 
+    --radius:12px; 
+  }
+  * { box-sizing: border-box; }
+  html,body { margin:0; background:var(--bg); color:var(--text); font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Ubuntu,sans-serif; }
+  .wrap { width:100%; max-width:1400px; margin:0 auto; padding:20px; }
+  h1,h2,h3 { margin:0 0 12px; color:var(--teal); }
+  .sub { opacity:.9; margin-bottom:24px; color:var(--gray); }
+
+  .grid { display:grid; gap:16px; }
+  .kpis { grid-template-columns: repeat(5, minmax(0, 1fr)); }
+  .charts { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .insights { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  @media (max-width:900px){ 
+    .kpis{grid-template-columns:repeat(2,1fr)} 
+    .charts{grid-template-columns:1fr}
+    .insights{grid-template-columns:1fr} 
+  }
+
+  .card { 
+    background:var(--card); 
+    border:1px solid rgba(103,234,221,.3); 
+    border-radius:var(--radius); 
+    padding:20px; 
+  }
+  .kpi .num { font-size:2.2rem; font-weight:800; color:var(--teal); line-height:1; }
+  .kpi .lab { opacity:.85; font-size:.9rem; margin-top:4px; }
+  .kpi .delta { font-size:.8rem; color:var(--dark-green); margin-top:4px; }
+
+  .tag { 
+    display:inline-block; 
+    font-size:.75rem; 
+    font-weight:700; 
+    color:#003b36; 
+    background:var(--teal); 
+    padding:3px 10px; 
+    border-radius:999px; 
+    margin-bottom:10px; 
+  }
+  
+  .section { margin-top:32px; }
+  ul { margin:8px 0; padding-left:20px; color:var(--gray); }
+  li { margin:6px 0; }
+  
+  .chart-container { position:relative; height:300px; margin-top:12px; }
+  .stats-grid { display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-top:12px; }
+  .stat { padding:8px; background:rgba(103,234,221,.1); border-radius:8px; }
+  .stat-label { font-size:.85rem; color:var(--gray); }
+  .stat-value { font-size:1.2rem; font-weight:700; color:var(--teal); }
+  
+  .progress-bar {
+    height:24px;
+    background:rgba(103,234,221,.1);
+    border-radius:12px;
+    overflow:hidden;
+    position:relative;
+    margin:8px 0;
+  }
+  .progress-fill {
+    height:100%;
+    background:var(--teal);
+    display:flex;
+    align-items:center;
+    padding:0 10px;
+    font-size:.8rem;
+    font-weight:700;
+    color:#003b36;
+  }
+  
+  .badge-success { color:#67eadd; }
+  .badge-warning { color:#ffb366; }
+  .badge-danger { color:#ff6b6b; }
+</style>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <h1>Bazaarvoice Platform Usage Analytics</h1>
+      <div class="sub">Production environment showing strong iPaaS adoption with expansion opportunities in AI and advanced capabilities</div>
+    </header>
+
+    <section class="section">
+      <h2>Executive Summary</h2>
+      <div class="grid kpis">
+        <div class="card kpi">
+          <div class="num">268</div>
+          <div class="lab">Total Active Recipes</div>
+          <div class="delta">Production Maturity ✓</div>
+        </div>
+        <div class="card kpi">
+          <div class="num">56.3K</div>
+          <div class="lab">Peak Daily Jobs</div>
+          <div class="delta">Trending Upward</div>
+        </div>
+        <div class="card kpi">
+          <div class="num">93%</div>
+          <div class="lab">Success Rate</div>
+          <div class="delta">Low Failure Trend</div>
+        </div>
+        <div class="card kpi">
+          <div class="num">40+</div>
+          <div class="lab">Connected Apps</div>
+          <div class="delta">Tier 1/2 Focus</div>
+        </div>
+        <div class="card kpi">
+          <div class="num">5/6</div>
+          <div class="lab">Capabilities Used</div>
+          <div class="delta">WFA Gap</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>Capability Distribution & Recipe Adoption</h2>
+      <div class="grid charts">
+        <div class="card">
+          <h3>Recipe Distribution by Capability</h3>
+          <canvas id="capabilityChart"></canvas>
+          <ul>
+            <li><strong class="badge-success">iPaaS dominates with 88.4%</strong> of recipes - strong integration maturity</li>
+            <li><strong class="badge-warning">AI adoption at 3.4%</strong> - significant expansion opportunity</li>
+            <li>Bot and API showing balanced usage at 4.5% and 2.2%</li>
+          </ul>
+        </div>
+        <div class="card">
+          <h3>Production Maturity Analysis</h3>
+          <div style="margin-top:20px;">
+            <div>
+              <div style="display:flex;justify-content:space-between;margin-bottom:4px;">
+                <span>iPaaS</span>
+                <span style="color:var(--teal);font-weight:700;">237 recipes</span>
+              </div>
+              <div class="progress-bar">
+                <div class="progress-fill" style="width:100%;">Production Mature</div>
+              </div>
+            </div>
+            <div style="margin-top:16px;">
+              <div style="display:flex;justify-content:space-between;margin-bottom:4px;">
+                <span>Bot</span>
+                <span style="color:var(--teal);font-weight:700;">12 recipes</span>
+              </div>
+              <div class="progress-bar">
+                <div class="progress-fill" style="width:50%;">Growing</div>
+              </div>
+            </div>
+            <div style="margin-top:16px;">
+              <div style="display:flex;justify-content:space-between;margin-bottom:4px;">
+                <span>AI</span>
+                <span style="color:var(--gray);font-weight:700;">9 recipes</span>
+              </div>
+              <div class="progress-bar">
+                <div class="progress-fill" style="width:37%;">Early Stage</div>
+              </div>
+            </div>
+            <div style="margin-top:16px;">
+              <div style="display:flex;justify-content:space-between;margin-bottom:4px;">
+                <span>API</span>
+                <span style="color:var(--gray);font-weight:700;">6 recipes</span>
+              </div>
+              <div class="progress-bar">
+                <div class="progress-fill" style="width:25%;">Early Stage</div>
+              </div>
+            </div>
+            <div style="margin-top:16px;">
+              <div style="display:flex;justify-content:space-between;margin-bottom:4px;">
+                <span>ETL/ELT</span>
+                <span style="color:var(--gray);font-weight:700;">4 recipes</span>
+              </div>
+              <div class="progress-bar">
+                <div class="progress-fill" style="width:17%;">Pilot</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>Execution Performance & App Ecosystem</h2>
+      <div class="grid charts">
+        <div class="card">
+          <h3>Job Execution Trends (3 Months)</h3>
+          <canvas id="executionChart"></canvas>
+          <div class="stats-grid">
+            <div class="stat">
+              <div class="stat-label">Success Trend</div>
+              <div class="stat-value">↑ Upward</div>
+            </div>
+            <div class="stat">
+              <div class="stat-label">Max Failures</div>
+              <div class="stat-value">3,814</div>
+            </div>
+          </div>
+        </div>
+        <div class="card">
+          <h3>Top Connected Applications</h3>
+          <canvas id="appsChart"></canvas>
+          <ul>
+            <li><strong class="badge-success">Salesforce leading</strong> with 19 connections</li>
+            <li>Strong presence in <strong>Tier 1/2 business critical apps</strong></li>
+            <li>Opportunity to expand underutilized connections</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>Growth Opportunities & Recommendations</h2>
+      <div class="grid insights">
+        <article class="card">
+          <div class="tag">Expansion Ready</div>
+          <h3>🚀 Scale AI & Advanced Capabilities</h3>
+          <p style="color:var(--gray);">With 88% iPaaS task concentration and only 9 AI recipes, Bazaarvoice is primed for AI expansion. Their strong foundation (268 recipes, 93% success rate) indicates readiness for more sophisticated automation.</p>
+          <ul>
+            <li>Launch AI pilot programs leveraging existing Salesforce/Snowflake data</li>
+            <li>Introduce WFA capabilities (currently unused)</li>
+            <li>Target 30+ AI recipes in next quarter</li>
+          </ul>
+        </article>
+
+        <article class="card">
+          <div class="tag">Quick Win</div>
+          <h3>💡 Optimize Underutilized Connections</h3>
+          <p style="color:var(--gray);">Multiple Tier 1/2 apps show low connection counts despite being business-critical. This represents immediate value realization opportunities.</p>
+          <ul>
+            <li>Expand NetSuite and Okta integrations</li>
+            <li>Develop cross-app workflows between Snowflake and business apps</li>
+            <li>Create reusable templates for common patterns</li>
+          </ul>
+        </article>
+
+        <article class="card">
+          <div class="tag">Reliability Focus</div>
+          <h3>⚡ Address Failure Spikes</h3>
+          <p style="color:var(--gray);">While overall success rate is 93%, occasional spikes up to 3,814 failures indicate specific bottlenecks worth investigating.</p>
+          <ul>
+            <li>Analyze failure patterns by app and time</li>
+            <li>Implement proactive monitoring for high-volume recipes</li>
+            <li>Consider error handling improvements in critical workflows</li>
+          </ul>
+        </article>
+
+        <article class="card">
+          <div class="tag">Strategic Growth</div>
+          <h3>📈 Leverage Success for Platform Expansion</h3>
+          <p style="color:var(--gray);">Strong upward trend in job execution and mature iPaaS adoption positions Bazaarvoice for strategic platform expansion.</p>
+          <ul>
+            <li>Document ROI from current 56K daily job peaks</li>
+            <li>Build business case for enterprise-wide adoption</li>
+            <li>Target 400+ recipes across all capabilities</li>
+          </ul>
+        </article>
+      </div>
+    </section>
+
+  </div>
+
+  <script>
+    // Capability Distribution Chart
+    const capCtx = document.getElementById('capabilityChart').getContext('2d');
+    new Chart(capCtx, {
+      type: 'doughnut',
+      data: {
+        labels: ['iPaaS', 'Bot', 'AI', 'API', 'ETL/ELT'],
+        datasets: [{
+          data: [237, 12, 9, 6, 4],
+          backgroundColor: ['#67eadd', '#3C574B', '#B6B9B5', '#4a8078', '#2a4840'],
+          borderColor: '#000',
+          borderWidth: 2
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: {
+            position: 'bottom',
+            labels: { color: '#FCFDFD', padding: 15 }
+          },
+          tooltip: {
+            callbacks: {
+              label: function(context) {
+                const total = 268;
+                const value = context.raw;
+                const percent = ((value / total) * 100).toFixed(1);
+                return context.label + ': ' + value + ' recipes (' + percent + '%)';
+              }
+            }
+          }
+        }
+      }
+    });
+
+    // Execution Trends Chart
+    const execCtx = document.getElementById('executionChart').getContext('2d');
+    new Chart(execCtx, {
+      type: 'line',
+      data: {
+        labels: ['Month 1', 'Month 2', 'Month 3'],
+        datasets: [{
+          label: 'Successful Jobs (Peak)',
+          data: [42000, 48000, 56268],
+          borderColor: '#67eadd',
+          backgroundColor: 'rgba(103, 234, 221, 0.1)',
+          tension: 0.4,
+          fill: true
+        }, {
+          label: 'Failed Jobs (Peak)',
+          data: [2100, 3814, 2800],
+          borderColor: '#ff6b6b',
+          backgroundColor: 'rgba(255, 107, 107, 0.1)',
+          tension: 0.4,
+          fill: true
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        scales: {
+          y: {
+            beginAtZero: true,
+            ticks: { color: '#B6B9B5' },
+            grid: { color: 'rgba(182, 185, 181, 0.1)' }
+          },
+          x: {
+            ticks: { color: '#B6B9B5' },
+            grid: { color: 'rgba(182, 185, 181, 0.1)' }
+          }
+        },
+        plugins: {
+          legend: {
+            labels: { color: '#FCFDFD' }
+          }
+        }
+      }
+    });
+
+    // Top Apps Chart
+    const appsCtx = document.getElementById('appsChart').getContext('2d');
+    new Chart(appsCtx, {
+      type: 'bar',
+      data: {
+        labels: ['Salesforce', 'Slack', 'SFTP', 'Snowflake', 'NetSuite', 'Okta', 'Amazon SQS'],
+        datasets: [{
+          label: 'Connections',
+          data: [19, 12, 9, 6, 5, 4, 4],
+          backgroundColor: '#67eadd',
+          borderColor: '#67eadd',
+          borderWidth: 1
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        indexAxis: 'y',
+        scales: {
+          x: {
+            beginAtZero: true,
+            ticks: { color: '#B6B9B5' },
+            grid: { color: 'rgba(182, 185, 181, 0.1)' }
+          },
+          y: {
+            ticks: { color: '#B6B9B5' },
+            grid: { display: false }
+          }
+        },
+        plugins: {
+          legend: { display: false }
+        }
+      }
+    });
+  </script>
+</body>
+</html>

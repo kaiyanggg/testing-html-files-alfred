@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Bazaarvoice Usage Dashboard</title>
+<style>
+  :root { 
+    --bg:#000; 
+    --text:#FCFDFD; 
+    --teal:#67eadd; 
+    --dark-green:#3C574B;
+    --gray:#B6B9B5;
+    --card:#111; 
+    --radius:12px; 
+  }
+  * { box-sizing: border-box; }
+  html,body { margin:0; background:var(--bg); color:var(--text); font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Ubuntu,sans-serif; }
+  .wrap { width:100%; margin:0 auto; padding:20px; }
+  h1,h2,h3 { margin:0 0 12px; color:var(--teal); }
+  .sub { opacity:.9; margin-bottom:24px; color:var(--gray); }
+
+  .grid { display:grid; gap:16px; }
+  .kpis { grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); }
+  .charts { grid-template-columns: repeat(auto-fit, minmax(400px, 1fr)); }
+  @media (max-width:800px){ .charts{grid-template-columns:1fr} }
+
+  .card { background:var(--card); border:1px solid rgba(103,234,221,.3); border-radius:var(--radius); padding:20px; }
+  .kpi .num { font-size:2.5rem; font-weight:800; color:var(--teal); line-height:1; }
+  .kpi .lab { opacity:.85; font-size:.95rem; margin-top:8px; }
+  .kpi .delta { font-size:0.9rem; color:var(--dark-green); margin-top:4px; }
+
+  .tag { display:inline-block; font-size:.75rem; font-weight:700; color:#000; background:var(--teal); padding:4px 10px; border-radius:999px; margin-bottom:12px; }
+  .insight { margin-top:12px; padding:12px; background:rgba(103,234,221,.1); border-left:3px solid var(--teal); border-radius:6px; }
+  .insight ul { margin:8px 0; padding-left:20px; }
+  .insight li { margin:4px 0; opacity:0.9; }
+
+  .section { margin-top:32px; }
+  canvas { max-height:300px; }
+  .chart-container { position:relative; height:300px; }
+  
+  .alert { background:rgba(252,253,253,.1); border:1px solid var(--teal); padding:12px; border-radius:8px; margin-top:12px; }
+  .alert-title { color:var(--teal); font-weight:600; margin-bottom:8px; }
+</style>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <h1>Bazaarvoice Platform Usage Analysis</h1>
+      <div class="sub">Comprehensive breakdown of platform adoption, execution patterns, and growth opportunities (June - August 2024)</div>
+    </header>
+
+    <section class="section">
+      <h2>Executive Summary</h2>
+      <div class="grid kpis">
+        <div class="card kpi">
+          <div class="num">202</div>
+          <div class="lab">Active Recipes</div>
+          <div class="delta">↑ 14% growth from June</div>
+        </div>
+        <div class="card kpi">
+          <div class="num">27</div>
+          <div class="lab">Active Users</div>
+          <div class="delta">8.8% platform engagement</div>
+        </div>
+        <div class="card kpi">
+          <div class="num">3-59K</div>
+          <div class="lab">Daily Jobs</div>
+          <div class="delta">High volume sustained</div>
+        </div>
+        <div class="card kpi">
+          <div class="num">69</div>
+          <div class="lab">Unique Connectors</div>
+          <div class="delta">244 total connections</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>Recipe Growth & Capability Distribution</h2>
+      <div class="grid charts">
+        <div class="card">
+          <h3>Recipe Growth Trend</h3>
+          <div class="chart-container">
+            <canvas id="recipeGrowth"></canvas>
+          </div>
+          <div class="insight">
+            <strong>Key Insights:</strong>
+            <ul>
+              <li>Total recipes grew from 175 (June) to 202 (August) - 15.4% increase</li>
+              <li>iPaaS dominates with 89% of all recipes, showing strong integration focus</li>
+              <li>AI recipes doubled from 5 to 9, indicating emerging adoption</li>
+            </ul>
+          </div>
+        </div>
+        <div class="card">
+          <h3>Capability Distribution (August)</h3>
+          <div class="chart-container">
+            <canvas id="capabilityDist"></canvas>
+          </div>
+          <div class="insight">
+            <strong>Opportunities:</strong>
+            <ul>
+              <li>API usage minimal (0.5%) - potential for API management expansion</li>
+              <li>Bot recipes at 4% - room for workflow automation growth</li>
+              <li>ETL/ELT at 2% - data pipeline capabilities underutilized</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>User Engagement & Workspace Activity</h2>
+      <div class="grid charts">
+        <div class="card">
+          <h3>User Engagement Metrics</h3>
+          <div class="chart-container">
+            <canvas id="userEngagement"></canvas>
+          </div>
+          <div class="insight">
+            <strong>Analysis:</strong>
+            <ul>
+              <li>27 active users out of 306 total (8.8% activation rate)</li>
+              <li>Critical opportunity: Enable 279 inactive users for 10x growth potential</li>
+              <li>Average 7.5 recipes per active user shows strong builder productivity</li>
+            </ul>
+          </div>
+        </div>
+        <div class="card">
+          <h3>Workspace Distribution</h3>
+          <div class="chart-container">
+            <canvas id="workspaceActivity"></canvas>
+          </div>
+          <div class="insight">
+            <strong>Workspace Patterns:</strong>
+            <ul>
+              <li>4 consistently active workspaces across 3 months</li>
+              <li>Production and Test environments properly separated</li>
+              <li>Workato Genie workspace indicates AI/automation exploration</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>Connector & Connection Intelligence</h2>
+      <div class="grid charts">
+        <div class="card">
+          <h3>Connectors by App Tier</h3>
+          <div class="chart-container">
+            <canvas id="connectorTiers"></canvas>
+          </div>
+          <div class="insight">
+            <strong>Connector Strategy:</strong>
+            <ul>
+              <li>26 undefined tier connectors need classification for proper governance</li>
+              <li>Strong business-critical focus (17 connectors)</li>
+              <li>Balanced portfolio across tiers indicates mature integration strategy</li>
+            </ul>
+          </div>
+        </div>
+        <div class="card">
+          <h3>Connections by App Tier</h3>
+          <div class="chart-container">
+            <canvas id="connectionTiers"></canvas>
+          </div>
+          <div class="insight">
+            <strong>Connection Insights:</strong>
+            <ul>
+              <li>81 business-critical connections show mission-critical dependency</li>
+              <li>3.5 connections per connector average indicates good reusability</li>
+              <li>72 undefined connections need tier classification for risk assessment</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>Strategic Recommendations</h2>
+      <div class="grid">
+        <div class="card">
+          <div class="tag">High Priority</div>
+          <h3>🎯 User Activation Campaign</h3>
+          <div class="alert">
+            <div class="alert-title">Impact Potential: 10x Growth</div>
+            <p>With only 8.8% user activation (27/306), launching targeted enablement for the 279 inactive users could dramatically scale platform value. Each active user averages 7.5 recipes - unlocking even 50 more users would add 375+ automated workflows.</p>
+          </div>
+        </div>
+        <div class="card">
+          <div class="tag">Quick Win</div>
+          <h3>📊 Expand Beyond iPaaS</h3>
+          <div class="alert">
+            <div class="alert-title">Capability Diversification</div>
+            <p>While iPaaS excellence (89% of recipes) shows integration maturity, API (0.5%), Bot (4%), and ETL/ELT (2%) capabilities are underutilized. Target: Increase non-iPaaS recipes by 50% to unlock full platform value.</p>
+          </div>
+        </div>
+        <div class="card">
+          <div class="tag">Risk Mitigation</div>
+          <h3>🔍 Classify Undefined Connectors</h3>
+          <div class="alert">
+            <div class="alert-title">Governance Gap</div>
+            <p>26 connectors and 72 connections lack tier classification. Immediate action needed to assess criticality, establish SLAs, and ensure proper monitoring for these undefined integrations.</p>
+          </div>
+        </div>
+        <div class="card">
+          <div class="tag">Growth Opportunity</div>
+          <h3>🤖 Scale AI Adoption</h3>
+          <div class="alert">
+            <div class="alert-title">Emerging Momentum</div>
+            <p>AI recipes grew 80% (5→9) over 3 months. With Workato Genie workspace active, accelerate AI use cases across all workspaces. Target: 25 AI recipes by Q4 for competitive advantage.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <script>
+    Chart.defaults.color = '#B6B9B5';
+    Chart.defaults.borderColor = 'rgba(103,234,221,0.2)';
+    
+    // Recipe Growth Chart
+    new Chart(document.getElementById('recipeGrowth'), {
+      type: 'line',
+      data: {
+        labels: ['June', 'July', 'August'],
+        datasets: [
+          {
+            label: 'iPaaS',
+            data: [158, 164, 180],
+            borderColor: '#67eadd',
+            backgroundColor: 'rgba(103,234,221,0.1)',
+            tension: 0.3
+          },
+          {
+            label: 'Bot',
+            data: [8, 5, 8],
+            borderColor: '#3C574B',
+            backgroundColor: 'rgba(60,87,75,0.1)',
+            tension: 0.3
+          },
+          {
+            label: 'AI',
+            data: [5, 6, 9],
+            borderColor: '#B6B9B5',
+            backgroundColor: 'rgba(182,185,181,0.1)',
+            tension: 0.3
+          },
+          {
+            label: 'ETL/ELT',
+            data: [3, 3, 4],
+            borderColor: '#FCFDFD',
+            backgroundColor: 'rgba(252,253,253,0.1)',
+            tension: 0.3
+          }
+        ]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: { position: 'bottom' }
+        },
+        scales: {
+          y: { beginAtZero: true }
+        }
+      }
+    });
+
+    // Capability Distribution
+    new Chart(document.getElementById('capabilityDist'), {
+      type: 'doughnut',
+      data: {
+        labels: ['iPaaS', 'Bot', 'AI', 'ETL/ELT', 'API'],
+        datasets: [{
+          data: [180, 8, 9, 4, 1],
+          backgroundColor: ['#67eadd', '#3C574B', '#B6B9B5', '#FCFDFD', 'rgba(103,234,221,0.3)']
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: { position: 'bottom' }
+        }
+      }
+    });
+
+    // User Engagement
+    new Chart(document.getElementById('userEngagement'), {
+      type: 'bar',
+      data: {
+        labels: ['Active Users', 'Inactive Users'],
+        datasets: [{
+          label: 'User Count',
+          data: [27, 279],
+          backgroundColor: ['#67eadd', 'rgba(103,234,221,0.2)']
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: { display: false }
+        },
+        scales: {
+          y: { beginAtZero: true }
+        }
+      }
+    });
+
+    // Workspace Activity
+    new Chart(document.getElementById('workspaceActivity'), {
+      type: 'radar',
+      data: {
+        labels: ['Bazaarvoice', 'Workato Genie', 'Environment Test', 'Environment Production'],
+        datasets: [{
+          label: 'Activity Level',
+          data: [2, 1, 1, 1],
+          backgroundColor: 'rgba(103,234,221,0.2)',
+          borderColor: '#67eadd',
+          pointBackgroundColor: '#67eadd'
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: { display: false }
+        },
+        scales: {
+          r: {
+            beginAtZero: true,
+            max: 3
+          }
+        }
+      }
+    });
+
+    // Connector Tiers
+    new Chart(document.getElementById('connectorTiers'), {
+      type: 'bar',
+      data: {
+        labels: ['Undefined', 'Business Critical', 'Advanced', 'Standard', 'Specialized', 'Niche'],
+        datasets: [{
+          label: 'Connectors',
+          data: [26, 17, 15, 6, 5, 2],
+          backgroundColor: '#67eadd'
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        indexAxis: 'y',
+        plugins: {
+          legend: { display: false }
+        },
+        scales: {
+          x: { beginAtZero: true }
+        }
+      }
+    });
+
+    // Connection Tiers
+    new Chart(document.getElementById('connectionTiers'), {
+      type: 'bar',
+      data: {
+        labels: ['Business Critical', 'Undefined', 'Advanced', 'Standard', 'Specialized', 'Niche'],
+        datasets: [{
+          label: 'Connections',
+          data: [81, 72, 51, 23, 13, 4],
+          backgroundColor: '#3C574B'
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        indexAxis: 'y',
+        plugins: {
+          legend: { display: false }
+        },
+        scales: {
+          x: { beginAtZero: true }
+        }
+      }
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>BazaarVoice Usage Analytics</title>
+<style>
+  :root { 
+    --bg:#000; 
+    --text:#FCFDFD; 
+    --teal:#67eadd; 
+    --dark-green:#3C574B;
+    --soft-gray:#B6B9B5;
+    --card:#111; 
+    --radius:12px; 
+  }
+  * { box-sizing: border-box; }
+  html,body { margin:0; background:var(--bg); color:var(--text); font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Ubuntu,sans-serif; }
+  .wrap { width:100%; max-width:1400px; margin:0 auto; padding:20px; }
+  h1,h2,h3 { margin:0 0 12px; color:var(--teal); }
+  .sub { opacity:.9; margin-bottom:24px; color:var(--soft-gray); }
+
+  .grid { display:grid; gap:16px; }
+  .kpis { grid-template-columns: repeat(5, minmax(0, 1fr)); }
+  .charts { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  @media (max-width:900px){ .kpis{grid-template-columns:repeat(2,1fr)} .charts{grid-template-columns:1fr} }
+
+  .card { 
+    background:var(--card); 
+    border:1px solid rgba(103,234,221,.2); 
+    border-radius:var(--radius); 
+    padding:20px; 
+  }
+  .kpi .num { font-size:2.5rem; font-weight:800; color:var(--teal); line-height:1; }
+  .kpi .lab { opacity:.85; font-size:.95rem; margin-top:8px; color:var(--soft-gray); }
+  .kpi .delta { font-size:.85rem; margin-top:4px; }
+  .positive { color:#4ade80; }
+  .negative { color:#f87171; }
+
+  .chart-container { position:relative; height:300px; }
+  .section { margin-top:32px; }
+  
+  .insights-box {
+    background: linear-gradient(135deg, rgba(103,234,221,.1), transparent);
+    border: 1px solid var(--teal);
+    border-radius: var(--radius);
+    padding: 16px;
+    margin-top: 16px;
+  }
+  .insight-item {
+    display: flex;
+    align-items: flex-start;
+    margin-bottom: 12px;
+    font-size: 0.95rem;
+  }
+  .insight-icon {
+    color: var(--teal);
+    margin-right: 8px;
+    font-size: 1.2rem;
+  }
+  
+  .tab-nav {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 20px;
+    border-bottom: 2px solid var(--dark-green);
+  }
+  .tab-btn {
+    background: transparent;
+    border: none;
+    color: var(--soft-gray);
+    padding: 12px 24px;
+    cursor: pointer;
+    font-size: 1rem;
+    transition: all 0.3s;
+  }
+  .tab-btn.active {
+    color: var(--teal);
+    border-bottom: 3px solid var(--teal);
+    margin-bottom: -2px;
+  }
+  .tab-content { display: none; }
+  .tab-content.active { display: block; }
+</style>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <h1>BazaarVoice Usage Dashboard</h1>
+      <div class="sub">Comprehensive automation platform usage analysis - Last 3 Months</div>
+    </header>
+
+    <section class="section">
+      <h2>Executive Summary</h2>
+      <div class="grid kpis">
+        <div class="card kpi">
+          <div class="num">177</div>
+          <div class="lab">Active Recipes</div>
+          <div class="delta positive">▲ 91% iPaaS dominated</div>
+        </div>
+        <div class="card kpi">
+          <div class="num">94.7%</div>
+          <div class="lab">Success Rate</div>
+          <div class="delta positive">▲ Strong reliability</div>
+        </div>
+        <div class="card kpi">
+          <div class="num">45.3K</div>
+          <div class="lab">Daily Tasks Avg</div>
+          <div class="delta negative">▼ Weekend dips</div>
+        </div>
+        <div class="card kpi">
+          <div class="num">73</div>
+          <div class="lab">Active Connections</div>
+          <div class="delta">27% Tier 3 apps</div>
+        </div>
+        <div class="card kpi">
+          <div class="num">5/6</div>
+          <div class="lab">Capabilities Used</div>
+          <div class="delta negative">WFA not utilized</div>
+        </div>
+      </div>
+    </section>
+
+    <div class="tab-nav">
+      <button class="tab-btn active" onclick="switchTab('adoption')">Adoption & Capabilities</button>
+      <button class="tab-btn" onclick="switchTab('reliability')">Reliability & Performance</button>
+      <button class="tab-btn" onclick="switchTab('trends')">Usage Trends</button>
+    </div>
+
+    <div id="adoption" class="tab-content active">
+      <section class="section">
+        <div class="grid charts">
+          <div class="card">
+            <h3>Recipe Distribution by Capability</h3>
+            <div class="chart-container">
+              <canvas id="capabilityChart"></canvas>
+            </div>
+            <div class="insights-box">
+              <div class="insight-item">
+                <span class="insight-icon">⚡</span>
+                <span><strong>iPaaS dominance:</strong> 161 of 177 recipes (91%) focus on integration automation</span>
+              </div>
+              <div class="insight-item">
+                <span class="insight-icon">🤖</span>
+                <span><strong>AI emerging:</strong> 4 AI recipes indicate early adoption phase</span>
+              </div>
+              <div class="insight-item">
+                <span class="insight-icon">⚠️</span>
+                <span><strong>WFA gap:</strong> No Workflow Automation recipes - potential expansion opportunity</span>
+              </div>
+            </div>
+          </div>
+          
+          <div class="card">
+            <h3>Connection Distribution by App Tier</h3>
+            <div class="chart-container">
+              <canvas id="tierChart"></canvas>
+            </div>
+            <div class="insights-box">
+              <div class="insight-item">
+                <span class="insight-icon">🔗</span>
+                <span><strong>Tier distribution:</strong> 73% connections are untiered, suggesting custom/niche integrations</span>
+              </div>
+              <div class="insight-item">
+                <span class="insight-icon">📊</span>
+                <span><strong>Enterprise apps:</strong> 20 Tier 3 connections indicate enterprise-grade integration maturity</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <div id="reliability" class="tab-content">
+      <section class="section">
+        <div class="card">
+          <h3>Job Execution Success vs Failures (Daily)</h3>
+          <div class="chart-container" style="height:400px">
+            <canvas id="jobsChart"></canvas>
+          </div>
+          <div class="insights-box">
+            <div class="insight-item">
+              <span class="insight-icon">✅</span>
+              <span><strong>High reliability:</strong> 94.7% average success rate with 7,474 daily successful jobs avg</span>
+            </div>
+            <div class="insight-item">
+              <span class="insight-icon">📉</span>
+              <span><strong>Weekend pattern:</strong> Job volume drops 51% on weekends (business hour alignment)</span>
+            </div>
+            <div class="insight-item">
+              <span class="insight-icon">⚡</span>
+              <span><strong>Failure stability:</strong> Consistent ~550 daily failures suggest systematic issues vs random errors</span>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <div id="trends" class="tab-content">
+      <section class="section">
+        <div class="card">
+          <h3>Task Consumption Trend</h3>
+          <div class="chart-container" style="height:400px">
+            <canvas id="tasksChart"></canvas>
+          </div>
+          <div class="insights-box">
+            <div class="insight-item">
+              <span class="insight-icon">📈</span>
+              <span><strong>Volume scale:</strong> Processing 45.3K tasks daily average indicates mature automation usage</span>
+            </div>
+            <div class="insight-item">
+              <span class="insight-icon">📊</span>
+              <span><strong>Business alignment:</strong> Clear weekday peaks (61K) vs weekend lows (29K) - 53% variance</span>
+            </div>
+            <div class="insight-item">
+              <span class="insight-icon">🚀</span>
+              <span><strong>Growth potential:</strong> Consistent patterns suggest stable base for scaling new use cases</span>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <section class="section">
+      <h2>Strategic Recommendations</h2>
+      <div class="insights-box">
+        <div class="insight-item">
+          <span class="insight-icon">1️⃣</span>
+          <span><strong>Diversify beyond iPaaS:</strong> Explore WFA capabilities to expand automation footprint beyond integrations</span>
+        </div>
+        <div class="insight-item">
+          <span class="insight-icon">2️⃣</span>
+          <span><strong>Scale AI adoption:</strong> Build on existing 4 AI recipes with training and use case workshops</span>
+        </div>
+        <div class="insight-item">
+          <span class="insight-icon">3️⃣</span>
+          <span><strong>Address systematic failures:</strong> Investigate consistent ~550 daily failures for reliability improvements</span>
+        </div>
+        <div class="insight-item">
+          <span class="insight-icon">4️⃣</span>
+          <span><strong>Weekend automation opportunity:</strong> 53% task drop on weekends suggests untapped batch processing potential</span>
+        </div>
+      </div>
+    </section>
+  </div>
+
+<script>
+// Data parsing
+const capabilityData = [
+  {capability: 'iPaaS', count: 161},
+  {capability: 'Bot', count: 8},
+  {capability: 'AI', count: 4},
+  {capability: 'ETL/ELT', count: 3},
+  {capability: 'API', count: 1}
+];
+
+const tierData = [
+  {tier: 'Untiered', count: 53},
+  {tier: 'Tier 3', count: 20}
+];
+
+const jobsData = [
+  {date: '2025-05-25', successful: 10056, failed: 535},
+  {date: '2025-05-26', successful: 4892, failed: 573}
+];
+
+const tasksData = [
+  {date: '2025-05-25', tasks: 61782},
+  {date: '2025-05-26', tasks: 28736}
+];
+
+// Chart configurations
+const chartDefaults = {
+  responsive: true,
+  maintainAspectRatio: false,
+  plugins: {
+    legend: {
+      labels: { color: '#FCFDFD' }
+    }
+  },
+  scales: {
+    x: { 
+      ticks: { color: '#B6B9B5' },
+      grid: { color: 'rgba(182, 185, 181, 0.1)' }
+    },
+    y: { 
+      ticks: { color: '#B6B9B5' },
+      grid: { color: 'rgba(182, 185, 181, 0.1)' }
+    }
+  }
+};
+
+// Capability Chart
+new Chart(document.getElementById('capabilityChart'), {
+  type: 'doughnut',
+  data: {
+    labels: capabilityData.map(d => d.capability),
+    datasets: [{
+      data: capabilityData.map(d => d.count),
+      backgroundColor: ['#67eadd', '#3C574B', '#B6B9B5', '#4ade80', '#f87171'],
+      borderColor: '#000',
+      borderWidth: 2
+    }]
+  },
+  options: {
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: {
+      legend: {
+        position: 'bottom',
+        labels: { color: '#FCFDFD', padding: 20 }
+      },
+      tooltip: {
+        callbacks: {
+          label: function(context) {
+            const total = context.dataset.data.reduce((a,b) => a+b, 0);
+            const pct = ((context.parsed / total) * 100).toFixed(1);
+            return `${context.label}: ${context.parsed} (${pct}%)`;
+          }
+        }
+      }
+    }
+  }
+});
+
+// Tier Chart
+new Chart(document.getElementById('tierChart'), {
+  type: 'bar',
+  data: {
+    labels: tierData.map(d => d.tier),
+    datasets: [{
+      label: 'Connections',
+      data: tierData.map(d => d.count),
+      backgroundColor: '#67eadd',
+      borderColor: '#67eadd',
+      borderWidth: 1
+    }]
+  },
+  options: {
+    ...chartDefaults,
+    indexAxis: 'y',
+    plugins: {
+      legend: { display: false }
+    }
+  }
+});
+
+// Jobs Chart
+new Chart(document.getElementById('jobsChart'), {
+  type: 'line',
+  data: {
+    labels: jobsData.map(d => d.date),
+    datasets: [
+      {
+        label: 'Successful Jobs',
+        data: jobsData.map(d => d.successful),
+        borderColor: '#67eadd',
+        backgroundColor: 'rgba(103, 234, 221, 0.1)',
+        tension: 0.4
+      },
+      {
+        label: 'Failed Jobs',
+        data: jobsData.map(d => d.failed),
+        borderColor: '#f87171',
+        backgroundColor: 'rgba(248, 113, 113, 0.1)',
+        tension: 0.4
+      }
+    ]
+  },
+  options: chartDefaults
+});
+
+// Tasks Chart
+new Chart(document.getElementById('tasksChart'), {
+  type: 'bar',
+  data: {
+    labels: tasksData.map(d => d.date),
+    datasets: [{
+      label: 'Daily Tasks',
+      data: tasksData.map(d => d.tasks),
+      backgroundColor: '#3C574B',
+      borderColor: '#67eadd',
+      borderWidth: 1
+    }]
+  },
+  options: {
+    ...chartDefaults,
+    plugins: {
+      legend: { display: false }
+    }
+  }
+});
+
+// Tab switching
+function switchTab(tabName) {
+  document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+  document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+  
+  event.target.classList.add('active');
+  document.getElementById(tabName).classList.add('active');
+}
+</script>
+</body>
+</html>

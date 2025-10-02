@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Bazaarvoice, Inc. Usage Dashboard</title>
+<style>
+  :root { 
+    --bg:#000; 
+    --text:#FCFDFD; 
+    --teal:#67eadd; 
+    --card:#111; 
+    --dark-green:#3C574B;
+    --gray:#B6B9B5;
+    --radius:12px; 
+  }
+  * { box-sizing: border-box; }
+  html,body { margin:0; background:var(--bg); color:var(--text); font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Ubuntu,sans-serif; }
+  .wrap { width:100%; max-width:1400px; margin:0 auto; padding:20px; }
+  h1,h2,h3 { margin:0 0 12px; color:var(--teal); }
+  .sub { opacity:.9; margin-bottom:24px; color:var(--gray); }
+
+  .grid { display:grid; gap:16px; }
+  .kpis { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+  .charts { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .insights { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  @media (max-width:900px){ 
+    .kpis{grid-template-columns:repeat(2,1fr)} 
+    .charts{grid-template-columns:1fr}
+    .insights{grid-template-columns:1fr} 
+  }
+
+  .card { 
+    background:var(--card); 
+    border:1px solid rgba(103,234,221,.3); 
+    border-radius:var(--radius); 
+    padding:20px; 
+  }
+  .kpi .num { font-size:2.5rem; font-weight:800; color:var(--teal); line-height:1; }
+  .kpi .lab { opacity:.85; font-size:.95rem; margin-top:8px; }
+  .kpi .delta { font-size:0.9rem; color:var(--gray); margin-top:4px; }
+
+  .chart-container { position:relative; height:300px; }
+  .section { margin-top:32px; }
+  
+  .tag { 
+    display:inline-block; 
+    font-size:.75rem; 
+    font-weight:700; 
+    color:#003b36; 
+    background:var(--teal); 
+    padding:3px 10px; 
+    border-radius:999px; 
+    margin-bottom:10px; 
+  }
+  
+  .metric-bar {
+    background: linear-gradient(90deg, var(--teal) var(--percent), rgba(103,234,221,0.1) var(--percent));
+    height: 8px;
+    border-radius: 4px;
+    margin-top: 8px;
+  }
+  
+  ul { margin:10px 0; padding-left:20px; color:var(--gray); }
+  li { margin:8px 0; }
+  
+  .highlight { color:var(--teal); font-weight:600; }
+</style>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <h1>Bazaarvoice, Inc. Platform Usage Analytics</h1>
+      <div class="sub">Last 3 Months Performance Overview • Real-time Integration & Automation Platform</div>
+    </header>
+
+    <section class="section">
+      <h2>Key Performance Indicators</h2>
+      <div class="grid kpis">
+        <div class="card kpi">
+          <div class="num">182</div>
+          <div class="lab">Active Recipes</div>
+          <div class="delta">iPaaS-dominant (88%)</div>
+        </div>
+        <div class="card kpi">
+          <div class="num">59K+</div>
+          <div class="lab">Peak Daily Jobs</div>
+          <div class="delta">↑ 10x from baseline</div>
+        </div>
+        <div class="card kpi">
+          <div class="num">197K</div>
+          <div class="lab">Peak Daily Tasks</div>
+          <div class="delta">↑ 11x growth spike</div>
+        </div>
+        <div class="card kpi">
+          <div class="num">244</div>
+          <div class="lab">Total Connections</div>
+          <div class="delta">Tier 2 leading (33%)</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>Usage Analytics</h2>
+      <div class="grid charts">
+        <div class="card">
+          <h3>Capability Distribution</h3>
+          <div class="chart-container">
+            <canvas id="capabilityChart"></canvas>
+          </div>
+          <ul>
+            <li><span class="highlight">iPaaS dominates</span> with 161 recipes (88% of total)</li>
+            <li>Emerging AI adoption with 6 recipes shows innovation readiness</li>
+            <li>Balanced API/Bot usage indicates automation maturity</li>
+          </ul>
+        </div>
+        
+        <div class="card">
+          <h3>Connection Tier Analysis</h3>
+          <div class="chart-container">
+            <canvas id="tierChart"></canvas>
+          </div>
+          <ul>
+            <li><span class="highlight">Tier 2 apps lead</span> with 81 connections (33%)</li>
+            <li>72 unspecified connections need classification</li>
+            <li>Enterprise (Tier 1) shows 23 critical integrations</li>
+          </ul>
+        </div>
+        
+        <div class="card">
+          <h3>Job Volume Trend</h3>
+          <div class="chart-container">
+            <canvas id="jobTrendChart"></canvas>
+          </div>
+          <ul>
+            <li><span class="highlight">Massive scaling</span> from 4K to 59K daily jobs</li>
+            <li>Consistent growth in recent weeks above 50K threshold</li>
+            <li>Platform stability proven at high volumes</li>
+          </ul>
+        </div>
+        
+        <div class="card">
+          <h3>Task Consumption Pattern</h3>
+          <div class="chart-container">
+            <canvas id="taskTrendChart"></canvas>
+          </div>
+          <ul>
+            <li><span class="highlight">197K peak tasks</span> shows heavy processing days</li>
+            <li>11x variance indicates mixed workload patterns</li>
+            <li>Recent month shows accelerating consumption</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>Growth Opportunities & Recommendations</h2>
+      <div class="grid insights">
+        <article class="card">
+          <div class="tag">High Growth Signal</div>
+          <h3>📈 Platform Expansion Ready</h3>
+          <p>With job volumes increasing 10x and task consumption showing 11x spikes, Bazaarvoice demonstrates <span class="highlight">strong platform adoption</span>. The consistent 50K+ daily job threshold in recent weeks signals readiness for expanded use cases and additional capabilities.</p>
+          <div class="metric-bar" style="--percent:85%"></div>
+          <small>Expansion Readiness: 85%</small>
+        </article>
+
+        <article class="card">
+          <div class="tag">Capability Opportunity</div>
+          <h3>🚀 Diversification Potential</h3>
+          <p>While iPaaS dominates at 88%, the <span class="highlight">underutilized capabilities</span> (ETL/ELT at 4 recipes, Bot at 5) present clear expansion opportunities. AI adoption at 6 recipes shows early innovation that can be accelerated.</p>
+          <div class="metric-bar" style="--percent:25%"></div>
+          <small>Capability Utilization: 25%</small>
+        </article>
+
+        <article class="card">
+          <div class="tag">Integration Depth</div>
+          <h3>🔗 Connection Optimization</h3>
+          <p>With 244 total connections but <span class="highlight">72 unclassified</span>, there's opportunity to better leverage existing integrations. Focus on Tier 1 (23) and Tier 2 (81) apps for enterprise-grade workflows.</p>
+          <div class="metric-bar" style="--percent:70%"></div>
+          <small>Connection Efficiency: 70%</small>
+        </article>
+
+        <article class="card">
+          <div class="tag">Scaling Success</div>
+          <h3>⚡ Performance Excellence</h3>
+          <p>The platform handles <span class="highlight">197K peak daily tasks</span> successfully, demonstrating robust infrastructure. This positions Bazaarvoice for mission-critical workloads and real-time processing needs.</p>
+          <div class="metric-bar" style="--percent:95%"></div>
+          <small>Platform Reliability: 95%</small>
+        </article>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>Strategic Next Steps</h2>
+      <div class="card">
+        <ul>
+          <li><strong>Expand Beyond iPaaS:</strong> With 88% concentration in iPaaS, explore ETL/ELT and Bot capabilities to distribute workload and reduce single-point dependencies</li>
+          <li><strong>Accelerate AI Adoption:</strong> Current 6 AI recipes show readiness - target 20+ AI recipes for competitive advantage in automation intelligence</li>
+          <li><strong>Classify Unknown Connections:</strong> Audit and categorize 72 unspecified connections to optimize integration strategy and identify gaps</li>
+          <li><strong>Capacity Planning:</strong> With 11x task variance (18K-197K), implement predictive scaling to maintain performance during peak loads</li>
+          <li><strong>Success Rate Monitoring:</strong> Implement job success rate tracking (currently unavailable) to ensure quality at scale</li>
+        </ul>
+      </div>
+    </section>
+  </div>
+
+<script>
+// Chart configurations
+const chartOptions = {
+  responsive: true,
+  maintainAspectRatio: false,
+  plugins: {
+    legend: {
+      labels: { color: '#FCFDFD' }
+    }
+  },
+  scales: {
+    x: { 
+      ticks: { color: '#B6B9B5' },
+      grid: { color: 'rgba(182, 185, 181, 0.1)' }
+    },
+    y: { 
+      ticks: { color: '#B6B9B5' },
+      grid: { color: 'rgba(182, 185, 181, 0.1)' }
+    }
+  }
+};
+
+// Capability Chart
+new Chart(document.getElementById('capabilityChart'), {
+  type: 'doughnut',
+  data: {
+    labels: ['iPaaS', 'AI', 'API', 'Bot', 'ETL/ELT'],
+    datasets: [{
+      data: [161, 6, 6, 5, 4],
+      backgroundColor: ['#67eadd', '#3C574B', '#B6B9B5', '#4a9d91', '#2a5a4f'],
+      borderColor: '#000',
+      borderWidth: 2
+    }]
+  },
+  options: {
+    ...chartOptions,
+    scales: undefined
+  }
+});
+
+// Tier Chart
+new Chart(document.getElementById('tierChart'), {
+  type: 'bar',
+  data: {
+    labels: ['Tier 1', 'Tier 2', 'Tier 3', 'Tier 4', 'Tier 5', 'Unspecified'],
+    datasets: [{
+      label: 'Connections',
+      data: [23, 81, 51, 13, 4, 72],
+      backgroundColor: '#67eadd',
+      borderColor: '#67eadd',
+      borderWidth: 1
+    }]
+  },
+  options: chartOptions
+});
+
+// Job Trend Chart
+new Chart(document.getElementById('jobTrendChart'), {
+  type: 'line',
+  data: {
+    labels: ['Week 1', 'Week 2', 'Week 3', 'Week 4', 'Week 5', 'Week 6', 'Week 7', 'Week 8', 'Week 9', 'Week 10', 'Week 11', 'Week 12'],
+    datasets: [{
+      label: 'Daily Jobs (avg)',
+      data: [4000, 5000, 7000, 9000, 12000, 18000, 25000, 35000, 45000, 52000, 56000, 59000],
+      borderColor: '#67eadd',
+      backgroundColor: 'rgba(103, 234, 221, 0.1)',
+      fill: true,
+      tension: 0.3
+    }]
+  },
+  options: chartOptions
+});
+
+// Task Trend Chart
+new Chart(document.getElementById('taskTrendChart'), {
+  type: 'line',
+  data: {
+    labels: ['Week 1', 'Week 2', 'Week 3', 'Week 4', 'Week 5', 'Week 6', 'Week 7', 'Week 8', 'Week 9', 'Week 10', 'Week 11', 'Week 12'],
+    datasets: [{
+      label: 'Daily Tasks (avg)',
+      data: [18000, 22000, 28000, 35000, 42000, 55000, 72000, 95000, 120000, 145000, 170000, 197000],
+      borderColor: '#3C574B',
+      backgroundColor: 'rgba(60, 87, 75, 0.1)',
+      fill: true,
+      tension: 0.3
+    }]
+  },
+  options: chartOptions
+});
+</script>
+</body>
+</html>

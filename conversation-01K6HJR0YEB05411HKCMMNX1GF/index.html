@@ -1,0 +1,241 @@
+Looking at the data, I need to create a dashboard showing Bazaarvoice usage metrics over the last 3 months. The data shows weekly snapshots of active recipes and connections from July to September 2025, with clear growth trends that indicate expansion opportunities.
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Bazaarvoice Usage Dashboard</title>
+<style>
+  :root { --bg:#000; --text:#FCFDFD; --teal:#67eadd; --card:#111; --dark-green:#3C574B; --gray:#B6B9B5; --radius:12px; }
+  * { box-sizing: border-box; }
+  html,body { margin:0; background:var(--bg); color:var(--text); font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Ubuntu,sans-serif; }
+  .wrap { width:100%; margin:0 auto; padding:20px; }
+  h1,h2 { margin:0 0 12px; color:var(--teal); }
+  .sub { opacity:.9; margin-bottom:24px; color:var(--gray); }
+
+  .grid { display:grid; gap:16px; }
+  .kpis { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+  .charts { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .insights { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  @media (max-width:900px){ .kpis{grid-template-columns:repeat(2,1fr)} .charts{grid-template-columns:1fr} .insights{grid-template-columns:1fr} }
+
+  .card { background:var(--card); border:1px solid rgba(103,234,221,.3); border-radius:var(--radius); padding:20px; }
+  .kpi .num { font-size:2.5rem; font-weight:800; color:var(--teal); line-height:1; margin-bottom:4px; }
+  .kpi .lab { opacity:.85; font-size:.95rem; color:var(--gray); }
+  .kpi .delta { font-size:.9rem; margin-top:8px; }
+  .kpi .up { color:#67eadd; }
+  .kpi .down { color:#ff6b6b; }
+
+  .tag { display:inline-block; font-size:.75rem; font-weight:700; color:#003b36; background:var(--teal); padding:3px 10px; border-radius:999px; margin-bottom:8px; }
+  .action { margin-top:12px; border:1px solid var(--teal); background:transparent; color:var(--teal); border-radius:999px; padding:10px 16px; cursor:pointer; font-size:.9rem; transition:all .2s; }
+  .action:hover { background:var(--teal); color:#002a27; }
+
+  .section { margin-top:32px; }
+  ul { margin:0; padding-left:20px; line-height:1.6; }
+  li { margin-bottom:8px; }
+  
+  canvas { max-height:300px; }
+  .chart-container { position:relative; height:280px; margin-top:16px; }
+  
+  .trend-indicator { display:inline-flex; align-items:center; gap:4px; }
+  .trend-arrow { font-size:1.2rem; }
+</style>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <h1>Bazaarvoice Usage Dashboard</h1>
+      <div class="sub">Customer health metrics and engagement trends • Last 3 months</div>
+    </header>
+
+    <section class="section">
+      <h2>Executive Summary</h2>
+      <div class="grid kpis">
+        <div class="card kpi">
+          <div class="num">534</div>
+          <div class="lab">Active Recipes</div>
+          <div class="delta up">↑ 9.4% (3-month)</div>
+        </div>
+        <div class="card kpi">
+          <div class="num">181</div>
+          <div class="lab">Active Connections</div>
+          <div class="delta up">↑ 14.5% (3-month)</div>
+        </div>
+        <div class="card kpi">
+          <div class="num">2.95</div>
+          <div class="lab">Recipes per Connection</div>
+          <div class="delta down">↓ 4.5% (3-month)</div>
+        </div>
+        <div class="card kpi">
+          <div class="num">+45</div>
+          <div class="lab">New Recipes (Month)</div>
+          <div class="delta up">↑ Accelerating</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>Usage Trends</h2>
+      <div class="grid charts">
+        <div class="card">
+          <h3 style="color:var(--teal);font-size:1.1rem;margin-bottom:8px;">Active Recipes Growth</h3>
+          <div class="chart-container">
+            <canvas id="recipesChart"></canvas>
+          </div>
+          <ul style="margin-top:16px;font-size:.9rem;">
+            <li>Strong growth acceleration in September (+45 recipes)</li>
+            <li>Consistent week-over-week increases since August</li>
+          </ul>
+        </div>
+        <div class="card">
+          <h3 style="color:var(--teal);font-size:1.1rem;margin-bottom:8px;">Connection Expansion</h3>
+          <div class="chart-container">
+            <canvas id="connectionsChart"></canvas>
+          </div>
+          <ul style="margin-top:16px;font-size:.9rem;">
+            <li>24 new connections added in 3 months</li>
+            <li>September shows highest growth rate (+7 connections)</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>Growth Opportunities</h2>
+      <div class="grid insights">
+        <article class="card">
+          <div class="tag">High Impact</div>
+          <h3 style="color:var(--teal);margin:8px 0;">📈 Recipe Velocity Increasing</h3>
+          <p style="color:var(--gray);line-height:1.5;">Recipe creation accelerated 92% in September vs July. This signals strong adoption momentum - perfect timing for advanced automation training and best practice workshops.</p>
+          <button class="action">Schedule Advanced Training</button>
+        </article>
+
+        <article class="card">
+          <div class="tag">Expansion</div>
+          <h3 style="color:var(--teal);margin:8px 0;">🔗 Connection Utilization Gap</h3>
+          <p style="color:var(--gray);line-height:1.5;">Recipes per connection declined from 3.09 to 2.95, while connections grew 14.5%. Opportunity to maximize value from existing integrations through optimization sessions.</p>
+          <button class="action">Connection Health Check</button>
+        </article>
+
+        <article class="card">
+          <div class="tag">Quick Win</div>
+          <h3 style="color:var(--teal);margin:8px 0;">🚀 September Growth Spike</h3>
+          <p style="color:var(--gray);line-height:1.5;">20 new connections and 45 new recipes in last month alone. Capitalize on this momentum with success story documentation and peer learning sessions.</p>
+          <button class="action">Capture Success Stories</button>
+        </article>
+
+        <article class="card">
+          <div class="tag">Strategic</div>
+          <h3 style="color:var(--teal);margin:8px 0;">🎯 Scale Automation Maturity</h3>
+          <p style="color:var(--gray);line-height:1.5;">With 534 active recipes, customer is ready for enterprise-grade patterns. Consider AI-powered automation, error handling frameworks, and cross-team collaboration.</p>
+          <button class="action">Maturity Assessment</button>
+        </article>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>Recommended Actions</h2>
+      <div class="card">
+        <ul>
+          <li><strong>Immediate:</strong> Document and share the success factors driving September's 45-recipe growth to maintain momentum</li>
+          <li><strong>Short-term:</strong> Analyze underutilized connections to identify optimization opportunities (target: increase recipes per connection to 3.5)</li>
+          <li><strong>Strategic:</strong> Develop a roadmap to reach 600+ active recipes by Q4, focusing on high-value automation use cases</li>
+          <li><strong>Training:</strong> Schedule advanced workshops for power users to leverage the full potential of 181 active connections</li>
+        </ul>
+      </div>
+    </section>
+  </div>
+
+<script>
+const data = [
+  {date: '2025-07-07', recipes: 451, connections: 157},
+  {date: '2025-07-14', recipes: 451, connections: 156},
+  {date: '2025-07-21', recipes: 464, connections: 157},
+  {date: '2025-07-28', recipes: 470, connections: 157},
+  {date: '2025-08-04', recipes: 475, connections: 157},
+  {date: '2025-08-11', recipes: 478, connections: 157},
+  {date: '2025-08-18', recipes: 489, connections: 158},
+  {date: '2025-08-25', recipes: 488, connections: 159},
+  {date: '2025-09-01', recipes: 488, connections: 161},
+  {date: '2025-09-08', recipes: 516, connections: 172},
+  {date: '2025-09-15', recipes: 517, connections: 172},
+  {date: '2025-09-22', recipes: 523, connections: 174},
+  {date: '2025-09-29', recipes: 534, connections: 181}
+].reverse();
+
+const labels = data.map(d => {
+  const date = new Date(d.date);
+  return date.toLocaleDateString('en-US', {month: 'short', day: 'numeric'});
+});
+
+const chartDefaults = {
+  responsive: true,
+  maintainAspectRatio: false,
+  plugins: {
+    legend: { display: false },
+    tooltip: {
+      backgroundColor: 'rgba(0,0,0,0.8)',
+      borderColor: '#67eadd',
+      borderWidth: 1,
+      titleColor: '#67eadd',
+      bodyColor: '#FCFDFD',
+      padding: 12,
+      displayColors: false
+    }
+  },
+  scales: {
+    x: {
+      grid: { color: 'rgba(182,185,181,0.1)' },
+      ticks: { color: '#B6B9B5' }
+    },
+    y: {
+      grid: { color: 'rgba(182,185,181,0.1)' },
+      ticks: { color: '#B6B9B5' }
+    }
+  }
+};
+
+new Chart(document.getElementById('recipesChart'), {
+  type: 'line',
+  data: {
+    labels: labels,
+    datasets: [{
+      data: data.map(d => d.recipes),
+      borderColor: '#67eadd',
+      backgroundColor: 'rgba(103,234,221,0.1)',
+      borderWidth: 2,
+      tension: 0.3,
+      fill: true,
+      pointRadius: 4,
+      pointBackgroundColor: '#67eadd',
+      pointBorderColor: '#000',
+      pointBorderWidth: 2
+    }]
+  },
+  options: chartDefaults
+});
+
+new Chart(document.getElementById('connectionsChart'), {
+  type: 'line',
+  data: {
+    labels: labels,
+    datasets: [{
+      data: data.map(d => d.connections),
+      borderColor: '#3C574B',
+      backgroundColor: 'rgba(60,87,75,0.1)',
+      borderWidth: 2,
+      tension: 0.3,
+      fill: true,
+      pointRadius: 4,
+      pointBackgroundColor: '#3C574B',
+      pointBorderColor: '#000',
+      pointBorderWidth: 2
+    }]
+  },
+  options: chartDefaults
+});
+</script>
+</body>
+</html>

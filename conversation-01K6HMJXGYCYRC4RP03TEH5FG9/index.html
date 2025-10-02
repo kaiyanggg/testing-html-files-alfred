@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Bazaarvoice Platform Usage Dashboard</title>
+<style>
+  :root { 
+    --bg:#000; 
+    --text:#FCFDFD; 
+    --teal:#67eadd; 
+    --dark-green:#3C574B;
+    --gray:#B6B9B5;
+    --card:#0a0a0a; 
+    --radius:12px; 
+  }
+  * { box-sizing: border-box; }
+  html,body { margin:0; background:var(--bg); color:var(--text); font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Ubuntu,sans-serif; }
+  .wrap { width:100%; padding:20px; }
+  h1,h2,h3 { margin:0 0 12px; color:var(--teal); }
+  .sub { opacity:.9; margin-bottom:24px; color:var(--gray); }
+
+  .grid { display:grid; gap:16px; }
+  .kpis { grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); }
+  .charts { grid-template-columns: repeat(auto-fit, minmax(400px, 1fr)); }
+  @media (max-width:800px){ .charts{grid-template-columns:1fr} }
+
+  .card { 
+    background:var(--card); 
+    border:1px solid rgba(103,234,221,.3); 
+    border-radius:var(--radius); 
+    padding:20px;
+    position:relative;
+  }
+  
+  .kpi .num { 
+    font-size:2.5rem; 
+    font-weight:800; 
+    color:var(--teal); 
+    line-height:1; 
+  }
+  .kpi .lab { 
+    opacity:.85; 
+    font-size:.95rem; 
+    margin-top:8px;
+    color:var(--gray);
+  }
+  .kpi .delta {
+    font-size:0.9rem;
+    margin-top:4px;
+    font-weight:600;
+  }
+  .delta.positive { color:#4ade80; }
+  .delta.negative { color:#f87171; }
+  .delta.neutral { color:var(--gray); }
+
+  .tag { 
+    display:inline-block; 
+    font-size:.75rem; 
+    font-weight:700; 
+    color:#000; 
+    background:var(--teal); 
+    padding:3px 10px; 
+    border-radius:999px; 
+    margin-bottom:12px; 
+  }
+  
+  .section { margin-top:32px; }
+  
+  .chart-container {
+    position:relative;
+    height:300px;
+    margin-top:16px;
+  }
+  
+  .insights {
+    margin-top:16px;
+    padding:12px;
+    background:rgba(103,234,221,.05);
+    border-left:3px solid var(--teal);
+    border-radius:6px;
+  }
+  
+  .insights li {
+    margin:8px 0;
+    color:var(--text);
+    opacity:0.95;
+  }
+  
+  .highlight {
+    color:var(--teal);
+    font-weight:600;
+  }
+  
+  ul { 
+    margin:0; 
+    padding-left:20px; 
+    list-style-type:disc;
+  }
+  
+  .stats-grid {
+    display:grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap:12px;
+    margin-top:16px;
+  }
+  
+  .stat-item {
+    padding:8px;
+    background:rgba(103,234,221,.05);
+    border-radius:6px;
+  }
+  
+  .stat-label {
+    font-size:0.85rem;
+    color:var(--gray);
+    margin-bottom:4px;
+  }
+  
+  .stat-value {
+    font-size:1.2rem;
+    font-weight:700;
+    color:var(--teal);
+  }
+</style>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.js"></script>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <h1>Bazaarvoice Platform Usage Analytics</h1>
+      <div class="sub">Automation footprint, capability adoption, and platform maturity insights • Last 90 days</div>
+    </header>
+
+    <section class="section">
+      <h2>Executive Summary</h2>
+      <div class="grid kpis">
+        <div class="card kpi">
+          <div class="num">534</div>
+          <div class="lab">Active Recipes</div>
+          <div class="delta positive">↑ 13% from 90 days ago</div>
+        </div>
+        <div class="card kpi">
+          <div class="num">28.5%</div>
+          <div class="lab">Task Utilization</div>
+          <div class="delta positive">↑ 2.8pp from 90 days ago</div>
+        </div>
+        <div class="card kpi">
+          <div class="num">3</div>
+          <div class="lab">Active Builders</div>
+          <div class="delta neutral">→ Stable</div>
+        </div>
+        <div class="card kpi">
+          <div class="num">2/6</div>
+          <div class="lab">Capabilities Used</div>
+          <div class="delta positive">↑ Recently activated</div>
+        </div>
+        <div class="card kpi">
+          <div class="num">29</div>
+          <div class="lab">Integrated Apps</div>
+          <div class="delta positive">↑ 2 new integrations</div>
+        </div>
+        <div class="card kpi">
+          <div class="num">77%</div>
+          <div class="lab">Production Ratio</div>
+          <div class="delta positive">↑ Healthy maturity</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="grid charts">
+        <div class="card">
+          <h3>Recipe Growth & Task Utilization Trend</h3>
+          <div class="chart-container">
+            <canvas id="trendChart"></canvas>
+          </div>
+          <div class="insights">
+            <ul>
+              <li><span class="highlight">15% recipe growth</span> over 90 days (464 → 534), indicating strong automation expansion</li>
+              <li>Task utilization increased from <span class="highlight">25.6% to 28.5%</span>, suggesting room for 3.5x growth</li>
+              <li>Steady growth pattern with no major disruptions signals healthy platform adoption</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="card">
+          <h3>Capability Distribution by Environment</h3>
+          <div class="chart-container">
+            <canvas id="capabilityChart"></canvas>
+          </div>
+          <div class="insights">
+            <ul>
+              <li><span class="highlight">iPaaS dominates with 161 recipes</span> (89%), core integration focus</li>
+              <li><span class="highlight">AI capability underutilized</span> with only 6 recipes - expansion opportunity</li>
+              <li>Strong production ratio (43% prod) indicates mature implementation</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="card">
+          <h3>Top Integrated Applications</h3>
+          <div class="chart-container">
+            <canvas id="appsChart"></canvas>
+          </div>
+          <div class="insights">
+            <ul>
+              <li><span class="highlight">Salesforce ecosystem</span> heavily integrated (Salesforce, SalesforceREST, CPQ)</li>
+              <li>Strong data infrastructure with <span class="highlight">Snowflake + S3</span> combination</li>
+              <li>Recent additions: <span class="highlight">OpenAI integration</span> signals AI exploration</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="card">
+          <h3>Platform Maturity Indicators</h3>
+          <div class="stats-grid">
+            <div class="stat-item">
+              <div class="stat-label">Power Builders</div>
+              <div class="stat-value">2 of 3</div>
+            </div>
+            <div class="stat-item">
+              <div class="stat-label">Capability Adoption</div>
+              <div class="stat-value">6 adopted</div>
+            </div>
+            <div class="stat-item">
+              <div class="stat-label">Prod Recipes</div>
+              <div class="stat-value">78 recipes</div>
+            </div>
+            <div class="stat-item">
+              <div class="stat-label">Dev Recipes</div>
+              <div class="stat-value">102 recipes</div>
+            </div>
+          </div>
+          <div class="insights">
+            <ul>
+              <li><span class="highlight">67% power builder ratio</span> indicates advanced team skills</li>
+              <li>Higher dev count (102 vs 78 prod) suggests <span class="highlight">active innovation pipeline</span></li>
+              <li>Only using <span class="highlight">2 of 6 adopted capabilities</span> - training opportunity</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>Expansion Opportunities</h2>
+      <div class="card">
+        <div class="tag">High Impact</div>
+        <h3>🚀 Task Capacity Expansion</h3>
+        <p style="margin:12px 0;">With only 28.5% task utilization, Bazaarvoice has room for <span class="highlight">3.5x growth</span> before needing capacity upgrade. Current growth trajectory suggests they'll reach 50% utilization within 6 months.</p>
+        
+        <div class="tag">Quick Win</div>
+        <h3>🤖 AI Capability Activation</h3>
+        <p style="margin:12px 0;">Only 6 AI recipes despite OpenAI integration. Given their data infrastructure (Snowflake + S3), there's immediate opportunity for AI-powered data processing, content generation, and intelligent routing workflows.</p>
+        
+        <div class="tag">Training Need</div>
+        <h3>📚 Capability Utilization Gap</h3>
+        <p style="margin:12px 0;">Using only 2 of 6 adopted capabilities. Focus training on ETL/ELT (only 4 recipes) and API management (6 recipes) to maximize platform value.</p>
+        
+        <div class="tag">Platform Health</div>
+        <h3>✅ Production Deployment Pipeline</h3>
+        <p style="margin:12px 0;">56% dev ratio is slightly high but healthy. Consider workflow optimization to accelerate dev-to-prod promotion, especially for the 102 dev recipes that could add immediate value.</p>
+      </div>
+    </section>
+  </div>
+
+  <script>
+    const tealColor = '#67eadd';
+    const darkGreen = '#3C574B';
+    const grayColor = '#B6B9B5';
+    
+    // Trend Chart
+    const trendCtx = document.getElementById('trendChart').getContext('2d');
+    new Chart(trendCtx, {
+      type: 'line',
+      data: {
+        labels: ['Jul 14', 'Jul 21', 'Jul 28', 'Aug 4', 'Aug 11', 'Aug 18', 'Aug 25', 'Sep 1', 'Sep 8', 'Sep 15', 'Sep 22', 'Sep 29'],
+        datasets: [{
+          label: 'Active Recipes',
+          data: [451, 464, 470, 475, 478, 489, 488, 488, 516, 517, 523, 534],
+          borderColor: tealColor,
+          backgroundColor: 'rgba(103, 234, 221, 0.1)',
+          tension: 0.3,
+          yAxisID: 'y'
+        }, {
+          label: 'Task Utilization %',
+          data: [22.2, 22.7, 23.3, 23.8, 24.7, 25.6, 25.9, 26.4, 26.9, 27.3, 28.0, 28.5],
+          borderColor: darkGreen,
+          backgroundColor: 'rgba(60, 87, 75, 0.1)',
+          tension: 0.3,
+          yAxisID: 'y1'
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        interaction: {
+          mode: 'index',
+          intersect: false
+        },
+        plugins: {
+          legend: {
+            labels: { color: '#FCFDFD' }
+          }
+        },
+        scales: {
+          x: {
+            ticks: { color: grayColor },
+            grid: { color: 'rgba(182, 185, 181, 0.1)' }
+          },
+          y: {
+            type: 'linear',
+            display: true,
+            position: 'left',
+            ticks: { color: grayColor },
+            grid: { color: 'rgba(182, 185, 181, 0.1)' }
+          },
+          y1: {
+            type: 'linear',
+            display: true,
+            position: 'right',
+            ticks: { color: grayColor },
+            grid: { drawOnChartArea: false }
+          }
+        }
+      }
+    });
+
+    // Capability Chart
+    const capCtx = document.getElementById('capabilityChart').getContext('2d');
+    new Chart(capCtx, {
+      type: 'bar',
+      data: {
+        labels: ['iPaaS', 'API', 'AI', 'Bot', 'ETL/ELT'],
+        datasets: [{
+          label: 'Production',
+          data: [70, 1, 2, 2, 3],
+          backgroundColor: tealColor
+        }, {
+          label: 'Development',
+          data: [89, 5, 4, 3, 1],
+          backgroundColor: darkGreen
+        }, {
+          label: 'Test',
+          data: [2, 0, 0, 0, 0],
+          backgroundColor: grayColor
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: {
+            labels: { color: '#FCFDFD' }
+          }
+        },
+        scales: {
+          x: {
+            stacked: true,
+            ticks: { color: grayColor },
+            grid: { color: 'rgba(182, 185, 181, 0.1)' }
+          },
+          y: {
+            stacked: true,
+            ticks: { color: grayColor },
+            grid: { color: 'rgba(182, 185, 181, 0.1)' }
+          }
+        }
+      }
+    });
+
+    // Apps Chart
+    const appsCtx = document.getElementById('appsChart').getContext('2d');
+    new Chart(appsCtx, {
+      type: 'bar',
+      data: {
+        labels: ['Salesforce*', 'NetSuite*', 'Snowflake', 'AWS (S3/SNS/SQS)', 'Okta*', 'SFTP*', 'Jira*', 'Slack*', 'GitHub', 'OpenAI'],
+        datasets: [{
+          label: 'Integration Count',
+          data: [4, 3, 1, 3, 2, 2, 2, 2, 1, 1],
+          backgroundColor: tealColor,
+          borderColor: tealColor,
+          borderWidth: 1
+        }]
+      },
+      options: {
+        indexAxis: 'y',
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: {
+            display: false
+          }
+        },
+        scales: {
+          x: {
+            ticks: { color: grayColor },
+            grid: { color: 'rgba(182, 185, 181, 0.1)' }
+          },
+          y: {
+            ticks: { color: grayColor },
+            grid: { color: 'rgba(182, 185, 181, 0.1)' }
+          }
+        }
+      }
+    });
+  </script>
+</body>
+</html>

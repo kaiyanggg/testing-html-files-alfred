@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Bazaarvoice Usage Dashboard</title>
+<style>
+  :root { --bg:#000; --text:#FCFDFD; --teal:#67eadd; --dark-green:#3C574B; --gray:#B6B9B5; --card:#111; --radius:12px; }
+  * { box-sizing: border-box; }
+  html,body { margin:0; background:var(--bg); color:var(--text); font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Ubuntu,sans-serif; }
+  .wrap { width:100%; max-width:1400px; margin:0 auto; padding:20px; }
+  h1,h2,h3 { margin:0 0 12px; color:var(--teal); }
+  .sub { opacity:.9; margin-bottom:24px; color:var(--gray); }
+
+  .grid { display:grid; gap:16px; }
+  .kpis { grid-template-columns: repeat(5, minmax(0, 1fr)); }
+  .charts { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  @media (max-width:900px){ .kpis{grid-template-columns:repeat(2,1fr)} .charts{grid-template-columns:1fr} }
+
+  .card { background:var(--card); border:1px solid rgba(103,234,221,.3); border-radius:var(--radius); padding:16px; }
+  .kpi .num { font-size:2.2rem; font-weight:800; color:var(--teal); line-height:1; }
+  .kpi .lab { opacity:.85; font-size:.9rem; margin-top:6px; }
+  .kpi .delta { font-size:.85rem; color:var(--gray); margin-top:4px; }
+
+  .tag { display:inline-block; font-size:.75rem; font-weight:700; color:#003b36; background:var(--teal); padding:3px 10px; border-radius:999px; margin-bottom:10px; }
+  .section { margin-top:32px; }
+  
+  canvas { max-height:300px; }
+  .chart-container { position:relative; height:280px; margin-top:12px; }
+  
+  .insights { list-style:none; padding:0; margin:12px 0 0; }
+  .insights li { padding:8px 0; border-left:3px solid var(--teal); padding-left:12px; margin-bottom:8px; font-size:.9rem; color:var(--gray); }
+  
+  .tier-badge { display:inline-block; padding:2px 8px; border-radius:4px; font-size:.75rem; margin-right:6px; }
+  .tier-1 { background:rgba(103,234,221,.2); color:var(--teal); }
+  .tier-2 { background:rgba(182,185,181,.2); color:var(--gray); }
+  .tier-3 { background:rgba(60,87,75,.2); color:var(--dark-green); }
+</style>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0"></script>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <h1>Bazaarvoice Platform Usage</h1>
+      <div class="sub">Automation activity, capability adoption, and connection insights over the last 3 months</div>
+    </header>
+
+    <section class="section">
+      <h2>Key Metrics</h2>
+      <div class="grid kpis">
+        <div class="card kpi">
+          <div class="num">263</div>
+          <div class="lab">Active Recipes</div>
+          <div class="delta">iPaaS: 229, Bot: 16, AI: 9</div>
+        </div>
+        <div class="card kpi">
+          <div class="num">98.6%</div>
+          <div class="lab">Job Success Rate</div>
+          <div class="delta">14,827 of 15,031 successful</div>
+        </div>
+        <div class="card kpi">
+          <div class="num">181</div>
+          <div class="lab">Active Connections</div>
+          <div class="delta">Across 39 apps</div>
+        </div>
+        <div class="card kpi">
+          <div class="num">2/6</div>
+          <div class="lab">Capabilities Used</div>
+          <div class="delta">4 capabilities adopted but unused</div>
+        </div>
+        <div class="card kpi">
+          <div class="num">1</div>
+          <div class="lab">Active User</div>
+          <div class="delta">⚠️ Single builder dependency</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>Usage Patterns</h2>
+      <div class="grid charts">
+        <div class="card">
+          <h3>Recipe Distribution by Capability</h3>
+          <div class="chart-container">
+            <canvas id="capabilityChart"></canvas>
+          </div>
+          <ul class="insights">
+            <li>iPaaS dominates with 87% of all recipes (229 of 263)</li>
+            <li>AI adoption exists with 9 recipes but underutilized vs potential</li>
+            <li>ETL/ELT minimal at 3 recipes despite 6 capabilities adopted</li>
+          </ul>
+        </div>
+
+        <div class="card">
+          <h3>Connection Distribution by App Tier</h3>
+          <div class="chart-container">
+            <canvas id="tierChart"></canvas>
+          </div>
+          <ul class="insights">
+            <li>Tier 2 apps lead with 65 connections (40% of total)</li>
+            <li>58 connections have no tier classification - review needed</li>
+            <li>Enterprise tier 1 apps underutilized at only 14 connections</li>
+          </ul>
+        </div>
+
+        <div class="card">
+          <h3>Connector vs Connection Efficiency</h3>
+          <div class="chart-container">
+            <canvas id="efficiencyChart"></canvas>
+          </div>
+          <ul class="insights">
+            <li>Tier 2: 5.0 connections per connector (high efficiency)</li>
+            <li>Tier 1: 4.7 connections per connector (good reuse)</li>
+            <li>18 untiered connectors with 3.2 connections each</li>
+          </ul>
+        </div>
+
+        <div class="card">
+          <h3>Platform Adoption Overview</h3>
+          <div style="margin-top:20px;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
+              <span>Capability Adoption</span>
+              <strong>33%</strong>
+            </div>
+            <div style="background:var(--card); border:1px solid var(--gray); border-radius:4px; height:24px; overflow:hidden;">
+              <div style="width:33%; height:100%; background:var(--teal);"></div>
+            </div>
+            
+            <div style="display:flex; justify-content:space-between; align-items:center; margin:16px 0;">
+              <span>Job Success Rate</span>
+              <strong>98.6%</strong>
+            </div>
+            <div style="background:var(--card); border:1px solid var(--gray); border-radius:4px; height:24px; overflow:hidden;">
+              <div style="width:98.6%; height:100%; background:var(--teal);"></div>
+            </div>
+
+            <div style="display:flex; justify-content:space-between; align-items:center; margin:16px 0;">
+              <span>Builder Diversity Risk</span>
+              <strong style="color:#ff6b6b;">Critical</strong>
+            </div>
+            <div style="background:var(--card); border:1px solid var(--gray); border-radius:4px; height:24px; overflow:hidden;">
+              <div style="width:100%; height:100%; background:#ff6b6b;"></div>
+            </div>
+          </div>
+          <ul class="insights">
+            <li>Only 2 of 6 adopted capabilities actively used</li>
+            <li>Single user dependency creates major continuity risk</li>
+            <li>Strong job reliability at 98.6% success rate</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>Growth Opportunities</h2>
+      <div class="grid charts">
+        <div class="card">
+          <div class="tag">High Priority</div>
+          <h3>🚨 Expand Builder Base</h3>
+          <p style="color:var(--gray); line-height:1.6;">With only 1 active user, Bazaarvoice faces critical knowledge risk. Immediate action needed to onboard additional builders and distribute automation ownership across teams.</p>
+        </div>
+
+        <div class="card">
+          <div class="tag">Quick Win</div>
+          <h3>💡 Activate Unused Capabilities</h3>
+          <p style="color:var(--gray); line-height:1.6;">4 capabilities adopted but dormant (WFA, advanced AI features). Focus on training and use case development for ETL/ELT (3 recipes) and expanding AI usage (currently 9 recipes).</p>
+        </div>
+
+        <div class="card">
+          <div class="tag">Optimization</div>
+          <h3>🔗 Leverage Tier 1 Apps</h3>
+          <p style="color:var(--gray); line-height:1.6;">Enterprise tier apps show lowest utilization (14 connections, 3 connectors). These premium integrations could unlock advanced workflows and higher business value.</p>
+        </div>
+
+        <div class="card">
+          <div class="tag">Scale</div>
+          <h3>📈 Expand iPaaS Success</h3>
+          <p style="color:var(--gray); line-height:1.6;">With 229 iPaaS recipes and 98.6% success rate, strong foundation exists. Scale this model to other capabilities and increase recipe complexity for greater impact.</p>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <script>
+    Chart.defaults.color = '#B6B9B5';
+    Chart.defaults.borderColor = 'rgba(182,185,181,0.2)';
+    
+    // Capability Distribution
+    new Chart(document.getElementById('capabilityChart'), {
+      type: 'doughnut',
+      data: {
+        labels: ['iPaaS', 'Workbot', 'AI', 'API', 'ETL/ELT'],
+        datasets: [{
+          data: [229, 16, 9, 6, 3],
+          backgroundColor: ['#67eadd', '#3C574B', '#B6B9B5', 'rgba(103,234,221,0.5)', 'rgba(60,87,75,0.5)'],
+          borderWidth: 0
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: { position: 'right', labels: { padding: 10, font: { size: 11 } } }
+        }
+      }
+    });
+
+    // Connection by Tier
+    new Chart(document.getElementById('tierChart'), {
+      type: 'bar',
+      data: {
+        labels: ['Tier 2', 'Unclassified', 'Tier 3', 'Tier 1'],
+        datasets: [{
+          label: 'Connections',
+          data: [65, 58, 23, 14],
+          backgroundColor: '#67eadd',
+          borderRadius: 6
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: { legend: { display: false } },
+        scales: {
+          y: { beginAtZero: true, grid: { color: 'rgba(182,185,181,0.1)' } },
+          x: { grid: { display: false } }
+        }
+      }
+    });
+
+    // Efficiency Chart
+    new Chart(document.getElementById('efficiencyChart'), {
+      type: 'bar',
+      data: {
+        labels: ['Tier 1', 'Tier 2', 'Tier 3', 'Unclassified'],
+        datasets: [{
+          label: 'Connectors',
+          data: [3, 13, 5, 18],
+          backgroundColor: '#3C574B',
+          borderRadius: 4
+        }, {
+          label: 'Connections',
+          data: [14, 65, 23, 58],
+          backgroundColor: '#67eadd',
+          borderRadius: 4
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: { legend: { position: 'top', labels: { padding: 8, font: { size: 11 } } } },
+        scales: {
+          y: { beginAtZero: true, grid: { color: 'rgba(182,185,181,0.1)' } },
+          x: { grid: { display: false } }
+        }
+      }
+    });
+  </script>
+</body>
+</html>

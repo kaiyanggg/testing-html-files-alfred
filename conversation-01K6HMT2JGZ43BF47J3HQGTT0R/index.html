@@ -1,0 +1,408 @@
+Looking at the data, I need to analyze Coupa's usage patterns across time periods, user engagement, capability adoption, and department distribution.
+
+Key insights to show:
+1. Platform usage trends (active recipes, tasks consumed)
+2. User engagement levels (active users, builders, power builders)
+3. Capability adoption vs actual usage gaps
+4. Department coverage and use case distribution
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Coupa Usage Dashboard</title>
+<style>
+  :root { 
+    --bg:#000; 
+    --text:#FCFDFD; 
+    --teal:#67eadd; 
+    --card:#111; 
+    --radius:12px;
+    --dark-green:#3C574B;
+    --gray:#B6B9B5;
+  }
+  * { box-sizing: border-box; }
+  html,body { margin:0; background:var(--bg); color:var(--text); font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Ubuntu,sans-serif; }
+  .wrap { width:100%; max-width:1400px; margin:0 auto; padding:20px; }
+  h1,h2 { margin:0 0 12px; color:var(--teal); }
+  .sub { opacity:.9; margin-bottom:24px; color:var(--gray); }
+
+  .grid { display:grid; gap:16px; }
+  .kpis { grid-template-columns: repeat(5, minmax(0, 1fr)); }
+  .charts { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .insights { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  @media (max-width:1000px){ 
+    .kpis{grid-template-columns:repeat(3,1fr)} 
+    .charts{grid-template-columns:1fr}
+    .insights{grid-template-columns:1fr}
+  }
+
+  .card { 
+    background:var(--card); 
+    border:1px solid rgba(103,234,221,.3); 
+    border-radius:var(--radius); 
+    padding:20px;
+    position:relative;
+  }
+  .kpi .num { font-size:2.2rem; font-weight:800; color:var(--teal); line-height:1; }
+  .kpi .lab { opacity:.85; font-size:.9rem; margin-top:8px; }
+  .kpi .delta { font-size:.8rem; color:var(--gray); margin-top:4px; }
+  
+  .chart-container { height:300px; position:relative; }
+  
+  .tag { 
+    display:inline-block; 
+    font-size:.75rem; 
+    font-weight:700; 
+    color:#003b36; 
+    background:var(--teal); 
+    padding:3px 10px; 
+    border-radius:999px; 
+    margin-bottom:12px; 
+  }
+  
+  .insight-card {
+    background:linear-gradient(135deg, var(--card) 0%, rgba(103,234,221,.05) 100%);
+  }
+  
+  .insight-card h3 { color:var(--teal); margin:12px 0 8px; font-size:1.1rem; }
+  .insight-card p { color:var(--gray); font-size:.9rem; line-height:1.4; }
+  
+  .section { margin-top:32px; }
+  
+  .capability-grid {
+    display:grid;
+    grid-template-columns: repeat(6, 1fr);
+    gap:12px;
+    margin-top:16px;
+  }
+  
+  .cap-item {
+    text-align:center;
+    padding:16px 8px;
+    border-radius:8px;
+    background:var(--card);
+    border:1px solid rgba(103,234,221,.2);
+  }
+  
+  .cap-item.adopted { border-color:var(--teal); }
+  .cap-item.used { background:rgba(103,234,221,.1); }
+  
+  .cap-name { font-size:.85rem; margin-bottom:8px; color:var(--gray); }
+  .cap-status { font-size:1.8rem; }
+  
+  .dept-bar {
+    display:flex;
+    align-items:center;
+    margin:12px 0;
+  }
+  
+  .dept-name {
+    width:180px;
+    font-size:.9rem;
+    color:var(--gray);
+  }
+  
+  .dept-progress {
+    flex:1;
+    height:24px;
+    background:rgba(103,234,221,.1);
+    border-radius:4px;
+    position:relative;
+    overflow:hidden;
+  }
+  
+  .dept-fill {
+    height:100%;
+    background:var(--teal);
+    display:flex;
+    align-items:center;
+    padding:0 8px;
+    font-size:.8rem;
+    font-weight:600;
+    color:#003b36;
+  }
+</style>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <h1>Coupa Platform Usage Dashboard</h1>
+      <div class="sub">Automation maturity analysis • September 15-29, 2025</div>
+    </header>
+
+    <section class="section">
+      <h2>Key Metrics</h2>
+      <div class="grid kpis">
+        <div class="card kpi">
+          <div class="num">523</div>
+          <div class="lab">Active Recipes</div>
+          <div class="delta">↓ 1.1% from peak</div>
+        </div>
+        <div class="card kpi">
+          <div class="num">64.8M</div>
+          <div class="lab">Tasks Consumed</div>
+          <div class="delta">↑ 17% in 2 weeks</div>
+        </div>
+        <div class="card kpi">
+          <div class="num">8</div>
+          <div class="lab">Active Users</div>
+          <div class="delta">↓ 11% from previous</div>
+        </div>
+        <div class="card kpi">
+          <div class="num">4/6</div>
+          <div class="lab">Capabilities Adopted</div>
+          <div class="delta">2 actively used</div>
+        </div>
+        <div class="card kpi">
+          <div class="num">80%</div>
+          <div class="lab">Dept Coverage</div>
+          <div class="delta">4 of 5 departments</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="grid charts">
+        <div class="card">
+          <h2>Usage Trends</h2>
+          <div class="chart-container">
+            <canvas id="trendsChart"></canvas>
+          </div>
+        </div>
+        <div class="card">
+          <h2>User Engagement</h2>
+          <div class="chart-container">
+            <canvas id="usersChart"></canvas>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>Capability Adoption vs Usage</h2>
+      <div class="card">
+        <div class="capability-grid">
+          <div class="cap-item adopted used">
+            <div class="cap-name">iPaaS</div>
+            <div class="cap-status">✅</div>
+            <div style="font-size:.75rem; color:var(--teal)">Active</div>
+          </div>
+          <div class="cap-item adopted">
+            <div class="cap-name">API</div>
+            <div class="cap-status">⚠️</div>
+            <div style="font-size:.75rem; color:var(--gray)">Adopted Only</div>
+          </div>
+          <div class="cap-item adopted used">
+            <div class="cap-name">ETL/ELT</div>
+            <div class="cap-status">✅</div>
+            <div style="font-size:.75rem; color:var(--teal)">Active</div>
+          </div>
+          <div class="cap-item adopted">
+            <div class="cap-name">WFA</div>
+            <div class="cap-status">⚠️</div>
+            <div style="font-size:.75rem; color:var(--gray)">Adopted Only</div>
+          </div>
+          <div class="cap-item">
+            <div class="cap-name">Bot</div>
+            <div class="cap-status">❌</div>
+            <div style="font-size:.75rem; color:var(--gray)">Not Adopted</div>
+          </div>
+          <div class="cap-item">
+            <div class="cap-name">AI</div>
+            <div class="cap-status">❌</div>
+            <div style="font-size:.75rem; color:var(--gray)">Not Adopted</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>Department Use Cases</h2>
+      <div class="card">
+        <div class="dept-bar">
+          <div class="dept-name">IT</div>
+          <div class="dept-progress">
+            <div class="dept-fill" style="width:41.5%">27 use cases</div>
+          </div>
+        </div>
+        <div class="dept-bar">
+          <div class="dept-name">Finance & Accounting</div>
+          <div class="dept-progress">
+            <div class="dept-fill" style="width:20%">13 use cases</div>
+          </div>
+        </div>
+        <div class="dept-bar">
+          <div class="dept-name">Data Ops & Product</div>
+          <div class="dept-progress">
+            <div class="dept-fill" style="width:20%">13 use cases</div>
+          </div>
+        </div>
+        <div class="dept-bar">
+          <div class="dept-name">Human Resources</div>
+          <div class="dept-progress">
+            <div class="dept-fill" style="width:13.8%">9 use cases</div>
+          </div>
+        </div>
+        <div class="dept-bar">
+          <div class="dept-name">RevOps & CS Ops</div>
+          <div class="dept-progress">
+            <div class="dept-fill" style="width:4.6%">3 use cases</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>Platform Insights & Opportunities</h2>
+      <div class="grid insights">
+        <div class="card insight-card">
+          <div class="tag">Expansion Opportunity</div>
+          <h3>📈 Strong Task Growth Signal</h3>
+          <p>17% task consumption increase over 2 weeks indicates strong automation momentum. Platform is handling increased volume efficiently - ideal time for capability expansion.</p>
+        </div>
+        
+        <div class="card insight-card">
+          <div class="tag">Adoption Gap</div>
+          <h3>⚡ Activate Dormant Capabilities</h3>
+          <p>API and WFA adopted but unused. These represent immediate value opportunities without additional licensing. Focus on practical use case workshops.</p>
+        </div>
+        
+        <div class="card insight-card">
+          <div class="tag">User Engagement</div>
+          <h3>👥 Builder Consolidation Pattern</h3>
+          <p>Power builders decreased 20% while regular builders stayed stable. Consider advanced training to develop more automation champions.</p>
+        </div>
+        
+        <div class="card insight-card">
+          <div class="tag">Whitespace</div>
+          <h3>🤖 AI & Bot Automation Gap</h3>
+          <p>Zero adoption of AI and Bot capabilities despite high iPaaS maturity. These represent natural next steps for automation evolution.</p>
+        </div>
+        
+        <div class="card insight-card">
+          <div class="tag">Department Focus</div>
+          <h3>🎯 IT Leading, RevOps Lagging</h3>
+          <p>IT dominates with 41% of use cases while RevOps has only 3. Cross-pollinate IT successes to sales and customer success teams.</p>
+        </div>
+        
+        <div class="card insight-card">
+          <div class="tag">Platform Maturity</div>
+          <h3>🚀 Ready for Scale</h3>
+          <p>330+ iPaaS recipes and 80% department coverage shows strong foundation. Focus on depth within existing departments before expanding.</p>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <script>
+    // Trends Chart
+    const trendsCtx = document.getElementById('trendsChart').getContext('2d');
+    new Chart(trendsCtx, {
+      type: 'line',
+      data: {
+        labels: ['Sep 15', 'Sep 22', 'Sep 29'],
+        datasets: [
+          {
+            label: 'Active Recipes',
+            data: [529, 527, 523],
+            borderColor: '#67eadd',
+            backgroundColor: 'rgba(103,234,221,0.1)',
+            tension: 0.3,
+            yAxisID: 'y'
+          },
+          {
+            label: 'Tasks (Millions)',
+            data: [55.2, 60.2, 64.8],
+            borderColor: '#3C574B',
+            backgroundColor: 'rgba(60,87,75,0.1)',
+            tension: 0.3,
+            yAxisID: 'y1'
+          }
+        ]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        interaction: { mode: 'index', intersect: false },
+        plugins: {
+          legend: { 
+            display: true,
+            labels: { color: '#FCFDFD' }
+          }
+        },
+        scales: {
+          x: {
+            grid: { color: 'rgba(182,185,181,0.1)' },
+            ticks: { color: '#B6B9B5' }
+          },
+          y: {
+            type: 'linear',
+            display: true,
+            position: 'left',
+            title: { display: true, text: 'Active Recipes', color: '#B6B9B5' },
+            grid: { color: 'rgba(182,185,181,0.1)' },
+            ticks: { color: '#B6B9B5' }
+          },
+          y1: {
+            type: 'linear',
+            display: true,
+            position: 'right',
+            title: { display: true, text: 'Tasks (M)', color: '#B6B9B5' },
+            grid: { drawOnChartArea: false },
+            ticks: { color: '#B6B9B5' }
+          }
+        }
+      }
+    });
+
+    // Users Chart
+    const usersCtx = document.getElementById('usersChart').getContext('2d');
+    new Chart(usersCtx, {
+      type: 'bar',
+      data: {
+        labels: ['Sep 15', 'Sep 22', 'Sep 29'],
+        datasets: [
+          {
+            label: 'Active Users',
+            data: [9, 9, 8],
+            backgroundColor: '#67eadd'
+          },
+          {
+            label: 'Builders',
+            data: [22, 22, 20],
+            backgroundColor: '#3C574B'
+          },
+          {
+            label: 'Power Builders',
+            data: [5, 3, 4],
+            backgroundColor: '#B6B9B5'
+          }
+        ]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: { 
+            display: true,
+            labels: { color: '#FCFDFD' }
+          }
+        },
+        scales: {
+          x: {
+            grid: { color: 'rgba(182,185,181,0.1)' },
+            ticks: { color: '#B6B9B5' }
+          },
+          y: {
+            grid: { color: 'rgba(182,185,181,0.1)' },
+            ticks: { color: '#B6B9B5' }
+          }
+        }
+      }
+    });
+  </script>
+</body>
+</html>
